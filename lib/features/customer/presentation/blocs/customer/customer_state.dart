@@ -1,7 +1,7 @@
 part of 'customer_bloc.dart';
 
 class CustomerState {
-  final CWSStatus status;
+  final UiStatus status;
   final List<MarketModel>? markets;
   final List<CustomerReqModel>? request;
   final List? orders;
@@ -13,14 +13,14 @@ class CustomerState {
   });
 
   factory CustomerState.initial() => const CustomerState(
-    status: CWSStatus.initial,
+    status: UiIdle(),
     markets: [],
     request: [],
     orders: [],
   );
 
   CustomerState copyWith({
-    CWSStatus? status,
+    UiStatus? status,
     List<MarketModel>? markets,
     List<CustomerReqModel>? request,
     List? orders,

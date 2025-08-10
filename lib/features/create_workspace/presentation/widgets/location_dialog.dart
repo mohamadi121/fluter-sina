@@ -1,6 +1,6 @@
-import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/http_client/api_status.dart';
-import 'package:asood/features/create_workspace/presentation/bloc/create_workspace_bloc.dart';
+import 'package:asoud/core/constants/constants.dart';
+import 'package:asoud/core/ui/ui_status.dart';
+import 'package:asoud/features/create_workspace/presentation/bloc/create_workspace_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -38,7 +38,7 @@ class LocationDialog {
           backgroundColor: Colora.primaryColor,
           content: BlocBuilder<CreateWorkSpaceBloc, CreateWorkSpaceState>(
             builder: (context, state) {
-              if (state.status == CWSStatus.success) {
+              if (state.status is UiSuccess) {
                 return Container(
                   width: Dimensions.width * 0.7,
                   height: Dimensions.height * 0.5,
@@ -76,7 +76,7 @@ class LocationDialog {
                     },
                   ),
                 );
-              } else if (state.status == CWSStatus.loading) {
+              } else if (state.status is UiLoading) {
                 return SizedBox(
                   width: Dimensions.width * 0.7,
                   height: Dimensions.height * 0.5,

@@ -1,5 +1,5 @@
-import 'package:asood/features/market/data/model/product_model.dart';
-import 'package:asood/features/market/presentation/blocs/add_product/add_product_bloc.dart';
+import 'package:asoud/features/market/data/model/product_model.dart';
+import 'package:asoud/features/market/presentation/blocs/add_product/add_product_bloc.dart';
 
 abstract class ProductRepository {
   Future<dynamic> productList(productId) async {}
@@ -17,4 +17,10 @@ abstract class ProductRepository {
     required String themeId,
     required String themeIndex,
   }) async {}
+
+  // Additional methods needed by AddProductBloc and MarketBloc
+  Future<dynamic> listOwner(String marketId) async {}
+  Future<dynamic> createDiscount(Map<String, dynamic> discountData) async {}
+  Future<dynamic> create(dynamic dto) async {}
+  Future<dynamic> listMarketThemes(String marketId) async {}
 }

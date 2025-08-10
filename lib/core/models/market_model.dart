@@ -1,4 +1,4 @@
-import 'package:asood/core/models/theme_model.dart';
+import 'package:asoud/core/models/theme_model.dart';
 
 class MarketModel {
   String? id;

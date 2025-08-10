@@ -1,48 +1,273 @@
-# Miscellaneous
-*.class
-*.log
-*.pyc
-*.swp
-.DS_Store
-.atom/
-.build/
-.buildlog/
-.history
-.svn/
-.swiftpm/
-migrate_working_dir/
+# ==========================================
+# FLUTTER & DART GITIGNORE
+# Professional Configuration for Production
+# ==========================================
 
+# ==========================================
+# SECURITY & SENSITIVE DATA
+# ==========================================
+# Environment variables and secrets
+.env
+.env.local
+.env.production
+.env.staging
+.env.development
+*.env
+config.json
+secrets.json
+
+# API Keys and Authentication
+**/api_keys.dart
+**/secrets.dart
+**/config/prod.dart
+**/config/staging.dart
+google-services.json
+GoogleService-Info.plist
+firebase_options.dart
+keystore.properties
+key.properties
+
+# SSL Certificates and Keys
+*.pem
+*.key
+*.crt
+*.p12
+*.jks
+*.keystore
+
+# ==========================================
+# FLUTTER & DART SPECIFIC
+# ==========================================
+# Dart/Flutter generated files
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+pubspec.lock
+
+# Build outputs
+**/doc/api/
+.pub-cache/
+.pub/
+build/
+**/build/
+
+# Coverage reports
+coverage/
+lcov.info
+test/coverage/
+
+# Generated files
+*.g.dart
+*.freezed.dart
+*.chopper.dart
+*.retrofit.dart
+lib/core/gen/
+lib/**/*.g.dart
+lib/**/*.freezed.dart
+
+# Flutter version management
+.fvm/flutter_sdk
+.fvm/version
+.fvm/versions
+
+# ==========================================
+# PLATFORM SPECIFIC - ANDROID
+# ==========================================
+/android/**/gradle-wrapper.jar
+/android/.gradle
+/android/captures/
+/android/gradlew
+/android/gradlew.bat
+/android/local.properties
+/android/**/GeneratedPluginRegistrant.java
+/android/app/debug
+/android/app/profile
+/android/app/release
+/android/key.properties
+/android/app/google-services.json
+
+# ==========================================
+# PLATFORM SPECIFIC - iOS
+# ==========================================
+**/ios/**/*.mode1v3
+**/ios/**/*.mode2v3
+**/ios/**/*.moved-aside
+**/ios/**/*.pbxuser
+**/ios/**/*.perspectivev3
+**/ios/**/*sync/
+**/ios/**/.sconsign.dblite
+**/ios/**/.tags*
+**/ios/**/.vagrant/
+**/ios/**/DerivedData/
+**/ios/**/Icon?
+**/ios/**/Pods/
+**/ios/**/.symlinks/
+**/ios/**/profile
+**/ios/**/xcuserdata
+**/ios/.generated/
+**/ios/Flutter/App.framework
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Flutter.podspec
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/ephemeral
+**/ios/Flutter/.last_build_id
+**/ios/ServiceDefinitions.json
+**/ios/Runner/GeneratedPluginRegistrant.*
+**/ios/Runner/GoogleService-Info.plist
+
+# ==========================================
+# PLATFORM SPECIFIC - WEB
+# ==========================================
+**/web/assets/AssetManifest.json
+**/web/assets/FontManifest.json
+**/web/assets/NOTICES
+**/web/assets/packages/
+**/web/assets/fonts/
+**/web/firebase-config.js
+
+# ==========================================
+# PLATFORM SPECIFIC - WINDOWS/LINUX/MACOS
+# ==========================================
+**/windows/flutter/generated_plugins.cmake
+**/windows/flutter/generated_plugin_registrant.cc
+**/windows/flutter/generated_plugin_registrant.h
+**/linux/flutter/generated_plugins.cmake
+**/linux/flutter/generated_plugin_registrant.cc
+**/linux/flutter/generated_plugin_registrant.h
+**/macos/Flutter/GeneratedPluginRegistrant.swift
+**/macos/Flutter/ephemeral
+
+# ==========================================
+# DEVELOPMENT TOOLS & EDITORS
+# ==========================================
 # IntelliJ related
 *.iml
 *.ipr
 *.iws
 .idea/
 
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-#.vscode/
+# VS Code (uncomment if you don't want to version control)
+.vscode/settings.json
+.vscode/tasks.json
+.vscode/launch.json
+.vscode/extensions.json
+.vscode/.ropeproject
 
-# Flutter/Dart/Pub related
-**/doc/api/
-**/ios/Flutter/.last_build_id
-.dart_tool/
-.flutter-plugins
+# Android Studio
+.android/
+.androidStudio/
+.gradle/
+local.properties
+
+# Xcode
+*.xcworkspace
+xcuserdata/
+*.xcscmblueprint
+*.xccheckout
+
+# ==========================================
+# TESTING & DEBUGGING
+# ==========================================
+# Test outputs
+test_driver/screenshots/
+integration_test/reports/
+test/reports/
 .flutter-plugins-dependencies
-.pub-cache/
-.pub/
-/build/
 
-# Symbolication related
+# Debug and profiling
+*.symbols
 app.*.symbols
-
-# Obfuscation related
 app.*.map.json
+*.trace
+*.log
 
-# Android Studio will place build artifacts here
-/android/app/debug
-/android/app/profile
-/android/app/release
+# ==========================================
+# DOCKER & CONTAINERIZATION
+# ==========================================
+# Docker build context exclusions
+.dockerignore
+Dockerfile.dev
+Dockerfile.staging
+docker-compose.override.yml
+docker-compose.local.yml
 
-# FVM Version Cache
-.fvm/
+# Docker volumes and logs
+docker-data/
+.docker/
+*.log
+logs/
+
+# ==========================================
+# CI/CD & DEPLOYMENT
+# ==========================================
+# GitHub Actions artifacts
+.github/outputs/
+actions-runner/
+
+# Deployment artifacts
+dist/
+release/
+artifacts/
+*.apk
+*.ipa
+*.appbundle
+*.dmg
+*.exe
+*.msix
+
+# Fastlane
+**/fastlane/report.xml
+**/fastlane/Preview.html
+**/fastlane/screenshots
+**/fastlane/test_output
+**/fastlane/readme.md
+
+# ==========================================
+# MISCELLANEOUS
+# ==========================================
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor generated files
+*.swp
+*.swo
+*~
+.vimrc
+.atom/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+
+# Log files
+*.log
+*.pyc
+*.class
+
+# Temporary files
+*.tmp
+*.temp
+node_modules/
+*.pid
+*.seed
+*.pid.lock
+
+# Archive files (when not intended for version control)
+*.zip
+*.tar.gz
+*.rar
+
+# Custom project specific
+# Add your project-specific ignores here
+scripts/temp/
+scripts/logs/
+backup/
+temp/

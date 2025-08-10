@@ -8,14 +8,14 @@ class BusinessState {
     required this.message,
   });
 
-  final CWSStatus status;
+  final UiStatus status;
   final LatLng location;
   final bool isSelected;
   final String message;
 
   factory BusinessState.initial() {
     return const BusinessState(
-      status: CWSStatus.initial,
+      status: UiIdle(),
       location: LatLng(0, 0),
       isSelected: false,
       message: '',
@@ -23,14 +23,13 @@ class BusinessState {
   }
 
   BusinessState copyWith({
-    CWSStatus? status,
+    UiStatus? status,
     LatLng? location,
     bool? isSelected,
     String? message,
   }) {
     return BusinessState(
       status: status ?? this.status,
-
       location: location ?? this.location,
       isSelected: isSelected ?? this.isSelected,
       message: message ?? this.message,

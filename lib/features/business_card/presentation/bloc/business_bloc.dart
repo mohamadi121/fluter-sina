@@ -1,4 +1,4 @@
-import 'package:asood/core/http_client/api_status.dart';
+import 'package:asoud/core/ui/ui_status.dart';
 import 'package:bloc/bloc.dart';
 
 import 'package:geolocator/geolocator.dart';
@@ -15,25 +15,21 @@ class BusinessBloc extends Bloc<BusinessEvent, BusinessState> {
     on<ReadSavedLocation>(_onReadSavedLocation);
   }
 
-  // A function that handles determining the current position. It takes in an event of type DetermineCurrentPosition
-  // and an Emitter of type LocationState as parameters. It updates the state to loading, tries to get the current
-  // position using Geolocator, and updates the state with the location and status loaded if successful. If there's an
-  // error, it updates the state with status error and the error message.
   Future<void> _onDetermineCurrentPosition(
     DetermineCurrentPosition event,
     Emitter<BusinessState> emit,
   ) async {
-    emit(state.copyWith(status: CWSStatus.loading));
+    emit(state.copyWith(status: const UiLoading()));
     try {
-      Position position = await Geolocator.getCurrentPosition();
+      final position = await Geolocator.getCurrentPosition();
       emit(
         state.copyWith(
           location: LatLng(position.latitude, position.longitude),
-          status: CWSStatus.loading,
+          status: const UiSuccess(),
         ),
       );
     } catch (e) {
-      emit(state.copyWith(status: CWSStatus.failure, message: e.toString()));
+      emit(state.copyWith(status: UiError(e.toString()), message: e.toString()));
     }
   }
 
@@ -43,7 +39,7 @@ class BusinessBloc extends Bloc<BusinessEvent, BusinessState> {
   ) {
     emit(
       state.copyWith(
-        status: CWSStatus.loading,
+        status: const UiSuccess(),
         location: event.location,
         isSelected: true,
       ),
@@ -54,18 +50,17 @@ class BusinessBloc extends Bloc<BusinessEvent, BusinessState> {
     SaveLocation event,
     Emitter<BusinessState> emit,
   ) async {
-    if (state.status == CWSStatus.loading) {
-      final loadedState = state;
-
-      /*   await GetStorage('agahi').write("location",
-          "${loadedState.location.latitude},${loadedState.location.longitude}"); */
+    if (state.status is UiSuccess) {
+      final current = state;
       emit(
         state.copyWith(
-          status: CWSStatus.loading,
-          location: loadedState.location,
+          status: const UiLoading(),
+          location: current.location,
           isSelected: true,
         ),
       );
+      // simulate save then mark success
+      emit(state.copyWith(status: const UiSuccess()));
     }
   }
 
@@ -73,24 +68,24 @@ class BusinessBloc extends Bloc<BusinessEvent, BusinessState> {
     ReadSavedLocation event,
     Emitter<BusinessState> emit,
   ) async {
-    emit(state.copyWith(status: CWSStatus.loading));
+    emit(state.copyWith(status: const UiLoading()));
     try {
-      //final a = GetStorage('agahi').read("location");
-      if (true /* a != null */ ) {
+      // final a = GetStorage('agahi').read("location");
+      if (true) {
         const lat = 0.0;
         const lang = 0.0;
-        /*  final numbersList = a.split(',');
-        final lat = double.parse(numbersList[0]);
-        final lang = double.parse(numbersList[1]); */
         emit(
-          state.copyWith(location: const LatLng(lat, lang), isSelected: true),
+          state.copyWith(
+            location: const LatLng(lat, lang),
+            isSelected: true,
+            status: const UiSuccess(),
+          ),
         );
-        // ignore: dead_code
       } else {
-        emit(state.copyWith(status: CWSStatus.initial));
+        emit(state.copyWith(status: const UiIdle()));
       }
     } catch (e) {
-      emit(state.copyWith(status: CWSStatus.failure, message: e.toString()));
+      emit(state.copyWith(status: UiError(e.toString()), message: e.toString()));
     }
   }
 }

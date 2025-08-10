@@ -1,15 +1,15 @@
-import 'package:asood/core/http_client/api_status.dart';
-import 'package:asood/features/job_managment/presentation/bloc/jobmanagment_bloc.dart';
-import 'package:asood/features/job_managment/presentation/screen/cat_tab.dart';
-import 'package:asood/features/job_managment/presentation/screen/group_tab.dart';
-import 'package:asood/features/job_managment/presentation/screen/sub_tab.dart';
+import 'package:asoud/features/job_managment/presentation/bloc/jobmanagment_bloc.dart';
+import 'package:asoud/features/job_managment/presentation/screen/cat_tab.dart';
+import 'package:asoud/features/job_managment/presentation/screen/group_tab.dart';
+import 'package:asoud/features/job_managment/presentation/screen/sub_tab.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/helper/secure_storage.dart';
-import 'package:asood/core/helper/snack_bar_util.dart';
-import 'package:asood/core/widgets/appbar/default_appbar.dart';
+import 'package:asoud/core/constants/constants.dart';
+import 'package:asoud/core/helper/secure_storage.dart';
+import 'package:asoud/core/helper/snack_bar_util.dart';
+import 'package:asoud/core/ui/ui_status.dart';
+import 'package:asoud/core/widgets/appbar/default_appbar.dart';
 
 class JobManagementScreen extends StatefulWidget {
   const JobManagementScreen({super.key});
@@ -60,8 +60,8 @@ class _JobManagementScreenState extends State<JobManagementScreen>
                 _tabController.index = state.activeTabIndex;
               }
 
-              if (state.status == CWSStatus.failure) {
-                showSnackBar(context, "مشکلی پیش آمده مجددا تلاش کنید");
+              if (state.status is UiError) {
+                showSnackBar(context, (state.status as UiError).message.isNotEmpty ? (state.status as UiError).message : "مشکلی پیش آمده مجددا تلاش کنید");
               }
             },
             builder: (context, state) {

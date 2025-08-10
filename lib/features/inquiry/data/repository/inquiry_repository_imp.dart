@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:asood/features/inquiry/data/data_source/inquiry_api_service.dart';
-import 'package:asood/features/inquiry/domain/inquiry_repository.dart';
+import 'package:asoud/features/inquiry/data/data_source/inquiry_api_service.dart';
+import 'package:asoud/features/inquiry/domain/inquiry_repository.dart';
 
 class InquiryRepoImp implements InquiryRepo {
   InquiryAPIService inquiryAPIService;

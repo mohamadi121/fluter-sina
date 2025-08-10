@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "asood" "\0"
+            VALUE "FileDescription", "asoud" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "asood" "\0"
+            VALUE "InternalName", "asoud" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2025 com.example. All rights reserved." "\0"
-            VALUE "OriginalFilename", "asood.exe" "\0"
-            VALUE "ProductName", "asood" "\0"
+            VALUE "OriginalFilename", "asoud.exe" "\0"
+            VALUE "ProductName", "asoud" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

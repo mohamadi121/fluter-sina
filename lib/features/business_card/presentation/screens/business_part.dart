@@ -1,9 +1,10 @@
 import 'dart:convert';
 
-import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/helper/secure_storage.dart';
-import 'package:asood/features/business_card/presentation/screens/business_list.dart';
-import 'package:asood/features/business_card/presentation/screens/without_market_visit.dart';
+import 'package:asoud/core/constants/constants.dart';
+import 'package:asoud/core/helper/secure_storage.dart';
+import 'package:asoud/core/config/env_config.dart';
+import 'package:asoud/features/business_card/presentation/screens/business_list.dart';
+import 'package:asoud/features/business_card/presentation/screens/without_market_visit.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -18,7 +19,7 @@ class _BusinessPartState extends State<BusinessPart> {
   List<Map<String, dynamic>> dataList = [];
 
   void getVisitCard() async {
-    String url = 'http://asoud.ir/api/v1/owner/market/list/';
+    String url = '${EnvConfig.baseUrl}/api/v1/owner/market/list/';
     String? token = await SecureStorage.readSecureStorage(Keys.token);
 
     var response = await http.get(
@@ -31,7 +32,7 @@ class _BusinessPartState extends State<BusinessPart> {
       String businessId = market['business_id'];
 
       var getVisitCard = await http.get(
-        Uri.parse('http://asoud.ir/$businessId'),
+        Uri.parse('${EnvConfig.baseUrl}/$businessId'),
         headers: {'Authorization': 'Token $token'},
       );
       setState(() {

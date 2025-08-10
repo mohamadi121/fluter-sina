@@ -1,20 +1,20 @@
 import 'dart:io';
 
-import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/helper/snack_bar_util.dart';
-import 'package:asood/core/http_client/api_status.dart';
-import 'package:asood/core/models/location_model.dart';
-import 'package:asood/core/models/market_model.dart';
-import 'package:asood/core/widgets/custom_bottom_navbar.dart';
-import 'package:asood/core/widgets/map_widget_2.dart';
-import 'package:asood/features/market/data/model/theme_model_model.dart';
-import 'package:asood/features/market/presentation/blocs/bloc/market_bloc.dart';
-import 'package:asood/features/market/presentation/widgets/comment_messagebox_widget.dart';
-import 'package:asood/features/market/presentation/widgets/share_store.dart';
-import 'package:asood/features/market/presentation/widgets/store_appbar.dart';
-import 'package:asood/features/market/presentation/widgets/themes_screen.dart';
-import 'package:asood/features/vendor/presentation/bloc/vendor/vendor_bloc.dart';
-import 'package:asood/features/vendor/presentation/bloc/workspace/workspace_bloc.dart';
+import 'package:asoud/core/constants/constants.dart';
+import 'package:asoud/core/helper/snack_bar_util.dart';
+import 'package:asoud/core/ui/ui_status.dart';
+import 'package:asoud/core/models/location_model.dart';
+import 'package:asoud/core/models/market_model.dart';
+import 'package:asoud/core/widgets/custom_bottom_navbar.dart';
+import 'package:asoud/core/widgets/map_widget_2.dart';
+import 'package:asoud/features/market/data/model/theme_model_model.dart';
+import 'package:asoud/features/market/presentation/blocs/bloc/market_bloc.dart';
+import 'package:asoud/features/market/presentation/widgets/comment_messagebox_widget.dart';
+import 'package:asoud/features/market/presentation/widgets/share_store.dart';
+import 'package:asoud/features/market/presentation/widgets/store_appbar.dart';
+import 'package:asoud/features/market/presentation/widgets/themes_screen.dart';
+import 'package:asoud/features/vendor/presentation/bloc/vendor/vendor_bloc.dart';
+import 'package:asoud/features/vendor/presentation/bloc/workspace/workspace_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
@@ -205,10 +205,10 @@ class _StoreDetailScreenState extends State<StoreDetailScreen> {
                   width: Dimensions.width * 0.7,
                   child: BlocConsumer<VendorBloc, VendorState>(
                     listener: (context, state) {
-                      if (state.sliderStatus == CWSStatus.success) {
+                      if (state.sliderStatus is UiSuccess) {
                         loadSlider();
                         Navigator.pop(context);
-                      } else if (state.sliderStatus == CWSStatus.failure) {
+                      } else if (state.sliderStatus is UiError) {
                         showSnackBar(context, "مشکلی پیش آمده مجددا تلاش کنید");
                         Navigator.pop(context);
                       }
@@ -351,7 +351,7 @@ class _StoreDetailScreenState extends State<StoreDetailScreen> {
                               Align(
                                 alignment: Alignment.centerLeft,
                                 child:
-                                    state.sliderStatus == CWSStatus.loading
+                                    state.sliderStatus.isLoading
                                         ? Container(
                                           width: Dimensions.width * 0.3,
                                           height: Dimensions.height * 0.042,
@@ -436,7 +436,7 @@ class _StoreDetailScreenState extends State<StoreDetailScreen> {
                               ),
 
                               //back
-                              state.sliderStatus == CWSStatus.loading
+                              state.sliderStatus.isLoading
                                   ? const SizedBox()
                                   : InkWell(
                                     onTap: () {
@@ -547,7 +547,7 @@ class _StoreDetailScreenState extends State<StoreDetailScreen> {
                                       autoPlay: false,
                                     ),
                                     items:
-                                        state.status == CWSStatus.loading
+                                        state.status.isLoading
                                             ? List.generate(1, (index) {
                                               return Container(
                                                 width: Dimensions.width,

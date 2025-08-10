@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/router/app_routers.dart';
-import 'package:asood/features/splash/blocs/splash_bloc.dart';
+import 'package:asoud/core/constants/constants.dart';
+import 'package:asoud/core/router/app_routers.dart';
+import 'package:asoud/features/splash/blocs/splash_bloc.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});

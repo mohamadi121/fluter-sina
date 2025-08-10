@@ -1,13 +1,14 @@
-import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/http_client/api_status.dart';
-import 'package:asood/features/create_workspace/data/model/market_contact.dart';
-import 'package:asood/features/create_workspace/data/model/market_schedule.dart';
-import 'package:asood/features/create_workspace/data/model/marketbase_model.dart';
-import 'package:asood/features/create_workspace/domain/repository/create_market_repository.dart';
-import 'package:asood/features/create_workspace/domain/repository/region_repository.dart';
-import 'package:asood/features/vendor/data/model/country_model.dart';
-import 'package:asood/features/vendor/data/model/market_location_model.dart';
-import 'package:asood/features/vendor/data/model/work_hours_model.dart';
+import 'package:asoud/core/constants/constants.dart';
+import 'package:asoud/core/network/app_result.dart';
+import 'package:asoud/core/ui/ui_status.dart';
+import 'package:asoud/features/create_workspace/data/model/market_contact.dart';
+import 'package:asoud/features/create_workspace/data/model/market_schedule.dart';
+import 'package:asoud/features/create_workspace/data/model/marketbase_model.dart';
+import 'package:asoud/features/create_workspace/domain/repository/create_market_repository.dart';
+import 'package:asoud/features/create_workspace/domain/repository/region_repository.dart';
+import 'package:asoud/features/vendor/data/model/country_model.dart';
+import 'package:asoud/features/vendor/data/model/market_location_model.dart';
+import 'package:asoud/features/vendor/data/model/work_hours_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -31,47 +32,18 @@ class CreateWorkSpaceBloc
       emit(state.copyWith(messengerIds: event.messengerIds));
     });
     on<SetMarketScheduleEvent>((event, emit) async {
-      emit(state.copyWith(status: CWSStatus.loading));
-
+      emit(state.copyWith(status: const UiLoading()));
       try {
         var res = await marketRepo.createSchedule(event.scheduleModel);
-
         if (res is Success) {
-          final existingIndex = state.marketSchedules.indexWhere(
-            (s) =>
-                s.market == event.scheduleModel.market &&
-                s.day == event.scheduleModel.day,
-          );
-
-          List<MarketScheduleModel> updatedSchedules = List.from(
-            state.marketSchedules,
-          );
-
-          if (existingIndex != -1) {
-            // اگر قبلاً وجود داشت، جایگزین کن
-            updatedSchedules[existingIndex] = event.scheduleModel;
-          } else {
-            // اگر نبود، اضافه کن
-            updatedSchedules.add(event.scheduleModel);
-          }
-
-          emit(
-            state.copyWith(
-              marketSchedules: updatedSchedules,
-              status: CWSStatus.success,
-            ),
-          );
+          final existingIndex = state.marketSchedules.indexWhere((s) => s.market == event.scheduleModel.market && s.day == event.scheduleModel.day);
+          List<MarketScheduleModel> updatedSchedules = List.from(state.marketSchedules);
+          if (existingIndex != -1) { updatedSchedules[existingIndex] = event.scheduleModel; } else { updatedSchedules.add(event.scheduleModel); }
+          emit(state.copyWith(marketSchedules: updatedSchedules, status: const UiSuccess()));
         } else {
-          emit(
-            state.copyWith(
-              status: CWSStatus.failure,
-              error: res.error.toString(),
-            ),
-          );
+          emit(state.copyWith(status: UiError(res.error.toString()), error: res.error.toString()));
         }
-      } catch (e) {
-        emit(state.copyWith(status: CWSStatus.failure));
-      }
+      } catch (e) { emit(state.copyWith(status: UiError(e.toString()))); }
     });
 
     //set market type
@@ -81,50 +53,16 @@ class CreateWorkSpaceBloc
 
     on<CreateMarket>((event, emit) async {
       try {
-        emit(
-          state.copyWith(
-            status: CWSStatus.loading,
-            marketType: "shop",
-            businessId: event.businessId,
-            name: event.name,
-            description: event.description,
-            subCategory: event.subCategory,
-            slogan: event.slogan,
-          ),
-        );
-
-        var res = await marketRepo.createMarketBase(
-          event.marketType,
-          event.businessId,
-          event.name,
-          event.description,
-          event.subCategory,
-          event.slogan,
-        );
-
+        emit(state.copyWith(status: const UiLoading(), marketType: "shop", businessId: event.businessId, name: event.name, description: event.description, subCategory: event.subCategory, slogan: event.slogan));
+        var res = await marketRepo.createMarketBase(event.marketType, event.businessId, event.name, event.description, event.subCategory, event.slogan);
         if (res is Success) {
-          final initList = res.response as Map<String, dynamic>;
-
+          final initList = res.data as Map<String, dynamic>;
           MarketBaseModel marketBaseModel = MarketBaseModel.fromJson(initList);
-
-          emit(
-            state.copyWith(
-              activeTabIndex: 1,
-              status: CWSStatus.success,
-              marketId: marketBaseModel.market,
-            ),
-          );
+          emit(state.copyWith(activeTabIndex: 1, status: const UiSuccess(), marketId: marketBaseModel.market));
         } else {
-          emit(
-            state.copyWith(
-              status: CWSStatus.failure,
-              error: res.error.toString(),
-            ),
-          );
+          emit(state.copyWith(status: UiError(res.error.toString()), error: res.error.toString()));
         }
-      } catch (e) {
-        emit(state.copyWith(status: CWSStatus.failure));
-      }
+      } catch (e) { emit(state.copyWith(status: UiError(e.toString()))); }
     });
 
     on<ChangeHasWorkTime>((event, emit) {
@@ -180,18 +118,7 @@ class CreateWorkSpaceBloc
     MarketContact event,
     Emitter<CreateWorkSpaceState> emit,
   ) async {
-    emit(
-      state.copyWith(
-        phoneNumber1: event.phoneNumber1,
-        phoneNumber2: event.phoneNumber2,
-        telephone: event.telephone,
-        status: CWSStatus.loading,
-        fax: event.fax,
-        email: event.email,
-        websiteUrl: event.websiteUrl,
-        messengerIds: event.messengerIds,
-      ),
-    );
+    emit(state.copyWith(phoneNumber1: event.phoneNumber1, phoneNumber2: event.phoneNumber2, telephone: event.telephone, status: const UiLoading(), fax: event.fax, email: event.email, websiteUrl: event.websiteUrl, messengerIds: event.messengerIds));
     MarketContactModel marketContact = MarketContactModel(
       market: event.marketId,
       firstMobileNumber: event.phoneNumber1,
@@ -205,18 +132,11 @@ class CreateWorkSpaceBloc
     try {
       var res = await marketRepo.createMarketContact(marketContact);
       if (res is Success) {
-        emit(state.copyWith(status: CWSStatus.success, activeTabIndex: 2));
+        emit(state.copyWith(status: const UiSuccess(), activeTabIndex: 2));
       } else {
-        emit(
-          state.copyWith(
-            status: CWSStatus.failure,
-            error: res.error.toString(),
-          ),
-        );
+        emit(state.copyWith(status: UiError(res.error.toString()), error: res.error.toString()));
       }
-    } catch (e) {
-      emit(state.copyWith(status: CWSStatus.failure));
-    }
+    } catch (e) { emit(state.copyWith(status: UiError(e.toString()))); }
   }
 
   //market location
@@ -224,7 +144,7 @@ class CreateWorkSpaceBloc
     SaveMarketLocationEvent event,
     Emitter<CreateWorkSpaceState> emit,
   ) async {
-    emit(state.copyWith(status: CWSStatus.loading));
+    emit(state.copyWith(status: const UiLoading()));
     MarketLocationModel marketLocation = MarketLocationModel(
       market: state.marketId,
       address: state.address,
@@ -237,99 +157,80 @@ class CreateWorkSpaceBloc
     try {
       var res = await marketRepo.createMarketLocation(marketLocation);
       if (res is Success) {
-        emit(state.copyWith(status: CWSStatus.success));
+        emit(state.copyWith(status: const UiSuccess()));
       } else {
-        emit(
-          state.copyWith(
-            status: CWSStatus.failure,
-            error: res.error.toString(),
-          ),
-        );
+        emit(state.copyWith(status: UiError(res.error.toString()), error: res.error.toString()));
       }
-    } catch (e) {}
+    } catch (e) { emit(state.copyWith(status: UiError(e.toString()))); }
   }
 
   _calPrice(CalPrice event, Emitter<CreateWorkSpaceState> emit) async {
-    emit(state.copyWith(status: CWSStatus.loading));
+    emit(state.copyWith(status: const UiLoading()));
     try {
-      final res = Success();
-      emit(state.copyWith(status: CWSStatus.success));
-    } catch (e) {}
+      final res = Success(true); // TODO: Implement price calculation
+      emit(state.copyWith(status: const UiSuccess()));
+    } catch (e) {
+      emit(state.copyWith(status: UiError(e.toString())));
+    }
   }
 
   _setDiscount(SetDiscount event, Emitter<CreateWorkSpaceState> emit) async {
-    emit(state.copyWith(status: CWSStatus.loading));
+    emit(state.copyWith(status: const UiLoading()));
     try {
-      final res = Success();
-      emit(state.copyWith(status: CWSStatus.success));
-    } catch (e) {}
+      final res = Success(true); // TODO: Implement discount setting
+      emit(state.copyWith(status: const UiSuccess()));
+    } catch (e) {
+      emit(state.copyWith(status: UiError(e.toString())));
+    }
   }
 
   _payPrice(PayPrice event, Emitter<CreateWorkSpaceState> emit) async {
-    emit(state.copyWith(status: CWSStatus.loading));
+    emit(state.copyWith(status: const UiLoading()));
     try {
-      final res = Success();
-      emit(state.copyWith(status: CWSStatus.success));
-    } catch (e) {}
+      final res = Success(true); // TODO: Implement payment
+      emit(state.copyWith(status: const UiSuccess()));
+    } catch (e) {
+      emit(state.copyWith(status: UiError(e.toString())));
+    }
   }
 
   //--------------- Region ----------
   //list of countries
   _getCountries(LoadCountry event, Emitter<CreateWorkSpaceState> emit) async {
-    emit(state.copyWith(status: CWSStatus.loading));
+    emit(state.copyWith(status: const UiLoading()));
     try {
       final res = await regionRepo.getCountryList();
-
       if (res is Success) {
-        var resp = res.response as List;
+        var resp = res.data as List;
         final countryList = resp.map((e) => CountryModel.fromJson(e)).toList();
-
-        emit(
-          state.copyWith(status: CWSStatus.success, countryList: countryList),
-        );
+        emit(state.copyWith(status: const UiSuccess(), countryList: countryList));
       } else {
-        emit(state.copyWith(status: CWSStatus.failure));
+        emit(state.copyWith(status: UiError(res.errorOrNull?.message ?? 'Unknown error')));
       }
     } catch (e) {
-      emit(state.copyWith(status: CWSStatus.failure));
+      emit(state.copyWith(status: UiError(e.toString())));
     }
   }
-
   //list of provinces
   _getProvinces(LoadProvince event, Emitter<CreateWorkSpaceState> emit) async {
-    emit(state.copyWith(status: CWSStatus.loading));
+    emit(state.copyWith(status: const UiLoading()));
     try {
       final res = await regionRepo.getProvinceList(event.countryId);
       if (res is Success) {
-        var resp = res.response as List;
-        final provinceList = resp.map((e) => CountryModel.fromJson(e)).toList();
-
-        emit(
-          state.copyWith(status: CWSStatus.success, provinceList: provinceList),
-        );
-      } else {
-        emit(state.copyWith(status: CWSStatus.failure));
-      }
-    } catch (e) {
-      emit(state.copyWith(status: CWSStatus.failure));
-    }
+        var resp = res.data as List; final provinceList = resp.map((e) => CountryModel.fromJson(e)).toList();
+        emit(state.copyWith(status: const UiSuccess(), provinceList: provinceList));
+      } else { emit(state.copyWith(status: UiError(res.error.toString()))); }
+    } catch (e) { emit(state.copyWith(status: UiError(e.toString()))); }
   }
-
   //list of cities
   _getCities(LoadCity event, Emitter<CreateWorkSpaceState> emit) async {
-    emit(state.copyWith(status: CWSStatus.loading));
+    emit(state.copyWith(status: const UiLoading()));
     try {
       final res = await regionRepo.getCityList(event.provinceId);
       if (res is Success) {
-        var resp = res.response as List;
-        final cityList = resp.map((e) => CountryModel.fromJson(e)).toList();
-
-        emit(state.copyWith(status: CWSStatus.success, cityList: cityList));
-      } else {
-        emit(state.copyWith(status: CWSStatus.failure));
-      }
-    } catch (e) {
-      emit(state.copyWith(status: CWSStatus.failure));
-    }
+        var resp = res.data as List; final cityList = resp.map((e) => CountryModel.fromJson(e)).toList();
+        emit(state.copyWith(status: const UiSuccess(), cityList: cityList));
+      } else { emit(state.copyWith(status: UiError(res.error.toString()))); }
+    } catch (e) { emit(state.copyWith(status: UiError(e.toString()))); }
   }
 }

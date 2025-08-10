@@ -1,6 +1,6 @@
-import 'package:asood/core/constants/endpoints.dart';
-import 'package:asood/core/http_client/api_client.dart';
-import 'package:asood/core/http_client/api_status.dart';
+import 'package:asoud/core/constants/endpoints.dart';
+import 'package:asoud/core/http_client/api_client.dart';
+import 'package:asoud/core/http_client/api_status.dart';
 import 'package:dio/dio.dart';
 
 class CategoryApiService {

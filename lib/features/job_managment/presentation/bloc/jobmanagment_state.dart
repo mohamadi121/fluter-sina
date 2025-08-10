@@ -2,7 +2,7 @@ part of 'jobmanagment_bloc.dart';
 
 class JobmanagmentState {
   final int activeTabIndex;
-  final CWSStatus status;
+  final UiStatus status;
   final String error;
   final String activeCategoryId;
   final List<CategoryModel> categoryList;
@@ -26,7 +26,7 @@ class JobmanagmentState {
 
   factory JobmanagmentState.initial() {
     return JobmanagmentState(
-      status: CWSStatus.initial,
+      status: const UiIdle(),
       error: "",
       activeTabIndex: 0,
       selectedCategoryName: "",
@@ -39,7 +39,7 @@ class JobmanagmentState {
   }
 
   JobmanagmentState copyWith({
-    CWSStatus? status,
+    UiStatus? status,
     String? error,
     int? activeTabIndex,
     String? activeCategoryId,

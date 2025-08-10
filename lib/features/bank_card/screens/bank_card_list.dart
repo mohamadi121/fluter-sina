@@ -1,11 +1,12 @@
 import 'dart:convert';
+import 'package:asoud/core/config/env_config.dart';
 import 'dart:developer';
 
-import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/helper/secure_storage.dart';
-import 'package:asood/core/widgets/appbar/default_appbar.dart';
-import 'package:asood/features/bank_card/screens/bank_card_sharing_screen.dart';
-import 'package:asood/features/bank_card/screens/card_sample.dart';
+import 'package:asoud/core/constants/constants.dart';
+import 'package:asoud/core/helper/secure_storage.dart';
+import 'package:asoud/core/widgets/appbar/default_appbar.dart';
+import 'package:asoud/features/bank_card/screens/bank_card_sharing_screen.dart';
+import 'package:asoud/features/bank_card/screens/card_sample.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -47,7 +48,7 @@ class _BankCardListScreenState extends State<BankCardListScreen> {
   int whichExpanded = -1;
 
   void getBanks() async {
-    String url = 'http://asoud.ir/api/v1/user/bank-info/list/';
+    String url = '${EnvConfig.baseUrl}/api/v1/user/bank-info/list/';
     String? token = await SecureStorage.readSecureStorage(Keys.token);
 
     var response2 = await http.get(
@@ -63,7 +64,7 @@ class _BankCardListScreenState extends State<BankCardListScreen> {
   }
 
   void getBankCards() async {
-    String url = 'http://asoud.ir/api/v1/user/bank/info/list/';
+    String url = '${EnvConfig.baseUrl}/api/v1/user/bank/info/list/';
     String? token = await SecureStorage.readSecureStorage(Keys.token);
 
     var response = await http.get(
@@ -92,7 +93,7 @@ class _BankCardListScreenState extends State<BankCardListScreen> {
     branchName,
     description,
   ) async {
-    String url = 'http://asoud.ir/api/v1/user/bank/info/create/';
+    String url = '${EnvConfig.baseUrl}/api/v1/user/bank/info/create/';
     String? token = await SecureStorage.readSecureStorage(Keys.token);
 
     Map<String, dynamic> data_ = {
@@ -240,7 +241,7 @@ class _BankCardListScreenState extends State<BankCardListScreen> {
                                                       5,
                                                     ),
                                                 child: Image.network(
-                                                  'http://asoud.ir/${bank['logo']}',
+                                                  '${EnvConfig.baseUrl}/${bank['logo']}',
                                                   height: 30,
                                                   width: 30,
                                                   fit: BoxFit.fill,

@@ -10,7 +10,7 @@ class VendorState {
   final String message;
   final String marketType;
   final String error;
-  final CWSStatus status;
+  final UiStatus status;
 
   final XFile logoFile;
   final String logoUrl;
@@ -18,7 +18,7 @@ class VendorState {
   final XFile backgroundFile;
 
   final XFile sliderFile;
-  final CWSStatus sliderStatus;
+  final UiStatus sliderStatus;
   final List<SliderModel> sliderList;
 
   final Color topColor;
@@ -30,7 +30,7 @@ class VendorState {
   final String fontFamily;
 
   final List<CommentModel> commentList;
-  final commentStatus;
+  final UiStatus commentStatus;
 
   const VendorState({
     required this.id,
@@ -72,7 +72,7 @@ class VendorState {
       description: '',
       subCategory: "",
       slogan: '',
-      status: CWSStatus.initial,
+      status: const UiIdle(),
       message: '',
       marketType: 'shop',
       error: '',
@@ -82,7 +82,7 @@ class VendorState {
       backgroundFile: XFile(''),
 
       sliderFile: XFile(''),
-      sliderStatus: CWSStatus.initial,
+      sliderStatus: const UiIdle(),
       sliderList: const [],
 
       topColor: const Color.fromARGB(255, 10, 25, 146),
@@ -94,7 +94,7 @@ class VendorState {
       fontFamily: '',
 
       commentList: const [],
-      commentStatus: CWSStatus.initial,
+      commentStatus: const UiIdle(),
     );
   }
 
@@ -105,7 +105,7 @@ class VendorState {
     String? description,
     String? subCategory,
     String? slogan,
-    CWSStatus? status,
+    UiStatus? status,
     String? message,
     String? marketType,
     String? error,
@@ -114,7 +114,7 @@ class VendorState {
     String? logoUrl,
     XFile? backgroundFile,
 
-    CWSStatus? sliderStatus,
+    UiStatus? sliderStatus,
     XFile? sliderFile,
     List<SliderModel>? sliderList,
 
@@ -127,7 +127,7 @@ class VendorState {
     String? fontFamily,
 
     List<CommentModel>? commentList,
-    CWSStatus? commentStatus,
+    UiStatus? commentStatus,
   }) {
     return VendorState(
       id: id ?? this.id,

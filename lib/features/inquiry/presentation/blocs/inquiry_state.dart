@@ -18,7 +18,7 @@ class InquiryState {
     required this.inquiryCity,
   });
 
-  final CWSStatus status;
+  final UiStatus status;
   // ثبت استعلام
   final String inquiryType;
   final String inquiryTitle;
@@ -37,8 +37,8 @@ class InquiryState {
   final String inquiryCity;
 
   factory InquiryState.initial() {
-    return InquiryState(
-      status: CWSStatus.initial,
+    return const InquiryState(
+      status: UiIdle(),
       inquiryType: 'product',
       inquiryTitle: '',
       inquiryDescription: '',
@@ -56,7 +56,7 @@ class InquiryState {
   }
 
   InquiryState copyWith({
-    CWSStatus? status,
+    UiStatus? status,
     String? inquiryType,
     String? inquiryTitle,
     String? inquiryDescription,

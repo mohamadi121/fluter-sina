@@ -1,6 +1,6 @@
 // ignore_for_file: avoid_unnecessary_containers, sized_box_for_whitespace
 
-import 'package:asood/core/constants/constants.dart';
+import 'package:asoud/core/constants/constants.dart';
 import 'package:flutter/material.dart';
 
 class SimpleBotNavBar extends StatelessWidget {

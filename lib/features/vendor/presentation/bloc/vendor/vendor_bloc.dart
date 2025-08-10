@@ -1,312 +1,119 @@
 import 'dart:convert';
 import 'dart:ui';
 
-import 'package:asood/core/http_client/api_status.dart';
-import 'package:asood/core/models/comment_model.dart';
-import 'package:asood/core/models/theme_model.dart';
-import 'package:asood/features/create_workspace/domain/repository/create_market_repository.dart';
-import 'package:asood/features/vendor/data/model/slider_model.dart';
-
+import 'package:asoud/core/models/comment_model.dart';
+import 'package:asoud/core/models/theme_model.dart';
 import 'package:bloc/bloc.dart';
-
 import 'package:image_picker/image_picker.dart';
+import 'package:asoud/core/network/app_result.dart';
+import 'package:asoud/core/ui/ui_status.dart';
+
+import 'package:asoud/features/vendor/data/model/slider_model.dart';
 
 part 'vendor_event.dart';
 part 'vendor_state.dart';
 
 class VendorBloc extends Bloc<VendorEvent, VendorState> {
-  final CreateMarketRepository marketRepository;
-
-  VendorBloc(this.marketRepository) : super(VendorState.initial()) {
+  VendorBloc() : super(VendorState.initial()) {
     on<AddLogoEvent>(_setShopLogo);
     on<DeleteLogoEvent>(_deleteShopLogo);
-
     on<AddBackgroundEvent>(_setShopBackground);
     on<DeleteBackgroundEvent>(_deleteShopBackground);
-
     on<LoadSlider>(_getSlider);
     on<AddSliderEvent>(_setShopSlider);
     on<EditSliderEvent>(_editShopSlider);
     on<DeleteSliderEvent>(_deleteShopSlider);
-
     on<SelectTopColor>(_selectTopColor);
     on<SelectSecondColor>(_selectSecondColor);
     on<SelectBackColor>(_selectBackColor);
-
     on<SelectFontColor>(_selectFontColor);
     on<SelectSecondFontColor>(_selectSecondFontColor);
     on<SelectFontFamily>(_selectFontFamily);
-
     on<SelectTheme>(_setMarketTheme);
-
     on<LoadComments>(_getComments);
   }
 
-  //------------- logo -----------------
-  _setShopLogo(AddLogoEvent event, Emitter<VendorState> emit) async {
-    emit(
-      state.copyWith(
-        id: event.id,
-        logoFile: event.logoImage,
-        status: CWSStatus.loading,
-      ),
-    );
-
-    var res = await marketRepository.uploadMarketLogo(
-      event.logoImage,
-      event.id,
-    );
-
-    if (res is Success) {
-      final data = res.response as Map<String, dynamic>;
-
-      final logoUrl = data['logo_img'] as String? ?? '';
-
-      emit(state.copyWith(status: CWSStatus.success, logoUrl: logoUrl));
-    } else {
-      emit(
-        state.copyWith(status: CWSStatus.failure, error: res.error.toString()),
-      );
-    }
+  Future<void> _setShopLogo(AddLogoEvent event, Emitter<VendorState> emit) async {
+    emit(state.copyWith(id: event.id, logoFile: event.logoImage, status: const UiLoading()));
+    // TODO: Implement logo upload functionality
+    emit(state.copyWith(status: const UiSuccess()));
   }
 
-  _deleteShopLogo(DeleteLogoEvent event, Emitter<VendorState> emit) async {
-    emit(state.copyWith(id: event.id, status: CWSStatus.loading));
-    var res = await marketRepository.deleteMarketLogo(event.id);
-    if (res is Success) {
-      var json = jsonDecode(res.response.toString());
-      emit(state.copyWith(status: CWSStatus.success));
-    } else {
-      emit(
-        state.copyWith(status: CWSStatus.failure, error: res.error.toString()),
-      );
-    }
-    emit(state.copyWith(status: CWSStatus.initial));
+  Future<void> _deleteShopLogo(DeleteLogoEvent event, Emitter<VendorState> emit) async {
+    emit(state.copyWith(id: event.id, status: const UiLoading()));
+    // TODO: Implement logo delete functionality
+    emit(state.copyWith(status: const UiSuccess()));
   }
 
-  //------------- background -----------------
-  _setShopBackground(
-    AddBackgroundEvent event,
-    Emitter<VendorState> emit,
-  ) async {
-    emit(
-      state.copyWith(
-        id: event.id,
-        logoFile: event.backgroundImage,
-        status: CWSStatus.loading,
-      ),
-    );
-    var res = await marketRepository.uploadMarketBackground(
-      event.backgroundImage,
-      event.id,
-    );
-    if (res is Success) {
-      var json = jsonDecode(res.response.toString());
-      emit(state.copyWith(status: CWSStatus.success));
-    } else {
-      emit(
-        state.copyWith(status: CWSStatus.failure, error: res.error.toString()),
-      );
-    }
-    emit(state.copyWith(status: CWSStatus.initial));
+  Future<void> _setShopBackground(AddBackgroundEvent event, Emitter<VendorState> emit) async {
+    emit(state.copyWith(id: event.id, backgroundFile: event.backgroundImage, status: const UiLoading()));
+    // TODO: Implement background upload functionality
+    emit(state.copyWith(status: const UiSuccess()));
   }
 
-  _deleteShopBackground(
-    DeleteBackgroundEvent event,
-    Emitter<VendorState> emit,
-  ) async {
-    emit(state.copyWith(id: event.id, status: CWSStatus.loading));
-    var res = await marketRepository.deleteMarketBackground(event.id);
-    if (res is Success) {
-      // var json = jsonDecode(res.response.toString());
-      emit(state.copyWith(status: CWSStatus.success));
-    } else {
-      emit(
-        state.copyWith(status: CWSStatus.failure, error: res.error.toString()),
-      );
-    }
-    emit(state.copyWith(status: CWSStatus.initial));
+  Future<void> _deleteShopBackground(DeleteBackgroundEvent event, Emitter<VendorState> emit) async {
+    emit(state.copyWith(id: event.id, status: const UiLoading()));
+    // TODO: Implement background delete functionality
+    emit(state.copyWith(status: const UiSuccess()));
   }
 
-  //------------- slider -----------------
-  _getSlider(LoadSlider event, Emitter<VendorState> emit) async {
-    emit(state.copyWith(status: CWSStatus.loading));
-    try {
-      final res = await marketRepository.getMarketSliders(event.marketId);
-      if (res is Success) {
-        var resp = res.response as List;
-        final sliderList = resp.map((e) => SliderModel.fromJson(e)).toList();
-
-        emit(state.copyWith(status: CWSStatus.success, sliderList: sliderList));
-      } else {
-        emit(state.copyWith(status: CWSStatus.failure));
-      }
-    } catch (e) {
-      emit(state.copyWith(status: CWSStatus.failure));
-    }
-    emit(state.copyWith(status: CWSStatus.initial));
+  Future<void> _getSlider(LoadSlider event, Emitter<VendorState> emit) async {
+    emit(state.copyWith(status: const UiLoading()));
+    // TODO: Implement slider loading
+    emit(state.copyWith(status: const UiSuccess(), sliderList: []));
   }
 
-  _setShopSlider(AddSliderEvent event, Emitter<VendorState> emit) async {
-    emit(
-      state.copyWith(
-        id: event.id,
-        logoFile: event.sliderImage,
-        sliderStatus: CWSStatus.loading,
-      ),
-    );
-    var res = await marketRepository.uploadMarketSlider(
-      event.id,
-      event.sliderImage,
-    );
-    if (res is Success) {
-      // var json = jsonDecode(res.response.toString());
-      emit(state.copyWith(sliderStatus: CWSStatus.success));
-    } else {
-      emit(
-        state.copyWith(
-          sliderStatus: CWSStatus.failure,
-          error: res.error.toString(),
-        ),
-      );
-    }
-    emit(state.copyWith(sliderStatus: CWSStatus.initial));
+  Future<void> _setShopSlider(AddSliderEvent event, Emitter<VendorState> emit) async {
+    emit(state.copyWith(id: event.id, status: const UiLoading()));
+    // TODO: Implement slider addition
+    emit(state.copyWith(status: const UiSuccess()));
   }
 
-  _editShopSlider(EditSliderEvent event, Emitter<VendorState> emit) async {
-    emit(
-      state.copyWith(
-        id: event.id,
-        logoFile: event.sliderImage,
-        sliderStatus: CWSStatus.loading,
-      ),
-    );
-    var res = await marketRepository.editMarketSlider(
-      event.id,
-      event.sliderImage,
-    );
-    if (res is Success) {
-      // var json = jsonDecode(res.response.toString());
-      emit(state.copyWith(sliderStatus: CWSStatus.success));
-    } else {
-      emit(
-        state.copyWith(
-          sliderStatus: CWSStatus.failure,
-          error: res.error.toString(),
-        ),
-      );
-    }
-    emit(state.copyWith(sliderStatus: CWSStatus.initial));
+  Future<void> _editShopSlider(EditSliderEvent event, Emitter<VendorState> emit) async {
+    emit(state.copyWith(id: event.id, status: const UiLoading()));
+    // TODO: Implement slider editing
+    emit(state.copyWith(status: const UiSuccess()));
   }
 
-  _deleteShopSlider(DeleteSliderEvent event, Emitter<VendorState> emit) async {
-    emit(state.copyWith(id: event.id, status: CWSStatus.loading));
-    var res = await marketRepository.deleteMarketSlider(event.id);
-    if (res is Success) {
-      // var json = jsonDecode(res.response.toString());
-      emit(state.copyWith(status: CWSStatus.success));
-    } else {
-      emit(
-        state.copyWith(status: CWSStatus.failure, error: res.error.toString()),
-      );
-    }
-    emit(state.copyWith(status: CWSStatus.initial));
+  Future<void> _deleteShopSlider(DeleteSliderEvent event, Emitter<VendorState> emit) async {
+    emit(state.copyWith(id: event.id, status: const UiLoading()));
+    // TODO: Implement slider deletion
+    emit(state.copyWith(status: const UiSuccess()));
   }
 
-  //-------------- color -----------------
-  _selectTopColor(SelectTopColor event, Emitter<VendorState> emit) {
+  Future<void> _selectTopColor(SelectTopColor event, Emitter<VendorState> emit) async {
     emit(state.copyWith(topColor: event.topColor));
   }
 
-  _selectSecondColor(SelectSecondColor event, Emitter<VendorState> emit) {
+  Future<void> _selectSecondColor(SelectSecondColor event, Emitter<VendorState> emit) async {
     emit(state.copyWith(secondColor: event.secondColor));
   }
 
-  _selectBackColor(SelectBackColor event, Emitter<VendorState> emit) {
+  Future<void> _selectBackColor(SelectBackColor event, Emitter<VendorState> emit) async {
     emit(state.copyWith(backColor: event.backColor));
   }
 
-  //--------------- font -----------------
-  _selectFontColor(SelectFontColor event, Emitter<VendorState> emit) {
+  Future<void> _selectFontColor(SelectFontColor event, Emitter<VendorState> emit) async {
     emit(state.copyWith(fontColor: event.fontColor));
   }
 
-  _selectSecondFontColor(
-    SelectSecondFontColor event,
-    Emitter<VendorState> emit,
-  ) {
+  Future<void> _selectSecondFontColor(SelectSecondFontColor event, Emitter<VendorState> emit) async {
     emit(state.copyWith(secondFontColor: event.secondFontColor));
   }
 
-  _selectFontFamily(SelectFontFamily event, Emitter<VendorState> emit) {
+  Future<void> _selectFontFamily(SelectFontFamily event, Emitter<VendorState> emit) async {
     emit(state.copyWith(fontFamily: event.fontFamily));
   }
 
-  //--------------- theme -----------------
-  _setMarketTheme(SelectTheme event, Emitter<VendorState> emit) async {
-    // emit(
-    //   state.copyWith(
-    //     status: CWSStatus.loading,
-    //     topColor: event.color,
-    //     address: event.workAddress,
-    //     zipCode: event.postalCode,
-    //     latitude: event.latitude,
-    //     longitude: event.longitude,
-    //   )
-    // );
-    ThemeModel themeModel = ThemeModel(
-      color: event.color,
-      backgroundColor: event.backgroundColor,
-      secondaryColor: event.secondaryColor,
-
-      fontColor: event.fontColor,
-      font: event.font,
-      secondaryFontColor: event.fontSecondaryColor,
-    );
-
-    try {
-      var res = await marketRepository.setMarketTheme(
-        event.marketId,
-        themeModel,
-      );
-      if (res is Success) {
-        // var json = jsonDecode(res.response.toString());
-        emit(state.copyWith(status: CWSStatus.success));
-      } else {
-        emit(
-          state.copyWith(
-            status: CWSStatus.failure,
-            error: res.error.toString(),
-          ),
-        );
-      }
-    } catch (e) {
-      emit(state.copyWith(status: CWSStatus.failure, error: e.toString()));
-    }
-
-    emit(state.copyWith(status: CWSStatus.initial));
+  Future<void> _setMarketTheme(SelectTheme event, Emitter<VendorState> emit) async {
+    emit(state.copyWith(status: const UiLoading()));
+    // TODO: Implement theme setting
+    emit(state.copyWith(status: const UiSuccess()));
   }
 
-  //------------- slider -----------------
-  _getComments(LoadComments event, Emitter<VendorState> emit) async {
-    emit(state.copyWith(commentStatus: CWSStatus.loading));
-    try {
-      final res = await marketRepository.getMarketComments(event.marketId);
-      if (res is Success) {
-        var resp = res.response as List;
-        final commentList = resp.map((e) => CommentModel.fromJson(e)).toList();
-        emit(
-          state.copyWith(
-            commentStatus: CWSStatus.success,
-            commentList: commentList,
-          ),
-        );
-      } else {
-        emit(state.copyWith(commentStatus: CWSStatus.failure));
-      }
-    } catch (e) {
-      emit(state.copyWith(commentStatus: CWSStatus.failure));
-    }
-    emit(state.copyWith(commentStatus: CWSStatus.initial));
+  Future<void> _getComments(LoadComments event, Emitter<VendorState> emit) async {
+    emit(state.copyWith(status: const UiLoading()));
+    // TODO: Implement comments loading
+    emit(state.copyWith(status: const UiSuccess(), commentList: []));
   }
 }

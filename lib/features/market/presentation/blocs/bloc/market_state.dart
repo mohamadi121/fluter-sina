@@ -1,7 +1,7 @@
 part of 'market_bloc.dart';
 
 class MarketState {
-  final CWSStatus status;
+  final UiStatus status;
   final List<TemplateModel> templateList;
   final bool showTemplates;
   final int templateIndex;
@@ -17,7 +17,7 @@ class MarketState {
 
   factory MarketState.initial() {
     return const MarketState(
-      status: CWSStatus.initial,
+      status: UiIdle(),
       templateList: [],
       showTemplates: false,
       templateIndex: 0,
@@ -26,7 +26,7 @@ class MarketState {
   }
 
   MarketState copyWith({
-    CWSStatus? status,
+    UiStatus? status,
     List<TemplateModel>? templateList,
     bool? showTemplates,
     int? templateIndex,

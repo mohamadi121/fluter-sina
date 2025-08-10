@@ -1,6 +1,7 @@
-import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/router/app_routers.dart';
-import 'package:asood/features/auth/presentation/blocs/auth_bloc.dart';
+import 'package:asoud/core/constants/constants.dart';
+import 'package:asoud/core/router/app_routers.dart';
+import 'package:asoud/core/ui/ui_status.dart';
+import 'package:asoud/features/auth/presentation/blocs/auth_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
@@ -26,9 +27,9 @@ class OtpScreen extends StatelessWidget {
               width: MediaQuery.of(context).size.width,
               child: BlocConsumer<AuthBloc, AuthState>(
                 listener: (context, state) {
-                  if (state.status == AuthStatus.success) {
+                  if (state.status is UiSuccess) {
                     context.go(AppRoutes.vendorHome);
-                  } else if (state.status == AuthStatus.error) {
+                  } else if (state.status is UiError) {
                     _showToast(
                       state.error == 'Pin not valid'
                           ? 'کد تایید اشتباه است'
@@ -68,7 +69,7 @@ class OtpScreen extends StatelessWidget {
           child: Center(
             child: AspectRatio(
               aspectRatio: 1,
-              child: Assets.images.asood.image(
+              child: Assets.images.asoud.image(
                 fit: BoxFit.scaleDown,
                 color: Colors.blue.shade900,
               ),
@@ -148,7 +149,7 @@ class OtpScreen extends StatelessWidget {
         ); // در اینجا نیازی به بررسی مقدار OTP نیست چون در `_buildOtpField` ارسال شده است.
       },
       child:
-          (state.status == AuthStatus.loading)
+          (state.status.isLoading)
               ? const SizedBox(
                 width: 20,
                 height: 20,

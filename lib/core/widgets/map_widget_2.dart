@@ -1,5 +1,5 @@
-import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/models/location_model.dart';
+import 'package:asoud/core/constants/constants.dart';
+import 'package:asoud/core/models/location_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';

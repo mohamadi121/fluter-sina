@@ -1,7 +1,7 @@
-import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/widgets/appbar/default_appbar.dart';
+import 'package:asoud/core/constants/constants.dart';
+import 'package:asoud/core/widgets/appbar/default_appbar.dart';
 
-import 'package:asood/core/widgets/order_card_widget.dart';
+import 'package:asoud/core/widgets/order_card_widget.dart';
 
 import 'package:flutter/material.dart';
 

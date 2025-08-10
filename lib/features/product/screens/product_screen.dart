@@ -1,12 +1,13 @@
 import 'dart:convert';
 
-import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/helper/secure_storage.dart';
-import 'package:asood/core/router/app_routers.dart';
-import 'package:asood/core/widgets/custom_bottom_navbar.dart';
-import 'package:asood/features/market/data/model/theme_model_model.dart';
-import 'package:asood/features/product/widgets/product_app_bar.dart';
-import 'package:asood/features/vendor/presentation/bloc/vendor/vendor_bloc.dart';
+import 'package:asoud/core/constants/constants.dart';
+import 'package:asoud/core/config/env_config.dart';
+import 'package:asoud/core/helper/secure_storage.dart';
+import 'package:asoud/core/router/app_routers.dart';
+import 'package:asoud/core/widgets/custom_bottom_navbar.dart';
+import 'package:asoud/features/market/data/model/theme_model_model.dart';
+import 'package:asoud/features/product/widgets/product_app_bar.dart';
+import 'package:asoud/features/vendor/presentation/bloc/vendor/vendor_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -61,7 +62,7 @@ class _ProductScreenState extends State<ProductScreen> {
   var reqProductWidget;
 
   void getProductByID(id) async {
-    String url = 'http://asoud.ir/api/v1/owner/product/detail/$id/';
+    String url = '${EnvConfig.baseUrl}/api/v1/owner/product/detail/$id/';
     String? token = await SecureStorage.readSecureStorage(Keys.token);
 
     var response = await http.get(
@@ -110,7 +111,7 @@ class _ProductScreenState extends State<ProductScreen> {
   }
 
   void sendComment(String name, String email, String message) async {
-    String url = 'http://asoud.ir/api/v1/user/comment/create/';
+    String url = '${EnvConfig.baseUrl}/api/v1/user/comment/create/';
 
     String? token = await SecureStorage.readSecureStorage(Keys.token);
 
@@ -146,7 +147,7 @@ class _ProductScreenState extends State<ProductScreen> {
   }
 
   void getCommentsByID(id) async {
-    String url = 'http://asoud.ir/api/v1/user/comment/comments/product/$id/';
+    String url = '${EnvConfig.baseUrl}/api/v1/user/comment/comments/product/$id/';
 
     String? token = await SecureStorage.readSecureStorage(Keys.token);
     var response = await http.get(
@@ -169,7 +170,7 @@ class _ProductScreenState extends State<ProductScreen> {
   }
 
   void sendReply(parrentId, message) async {
-    String url = 'http://asoud.ir/api/v1/user/comment/create/';
+    String url = '${EnvConfig.baseUrl}/api/v1/user/comment/create/';
 
     String? token = await SecureStorage.readSecureStorage(Keys.token);
 

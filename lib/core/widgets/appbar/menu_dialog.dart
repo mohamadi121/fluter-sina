@@ -1,4 +1,4 @@
-import 'package:asood/core/router/app_routers.dart';
+import 'package:asoud/core/router/app_routers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';

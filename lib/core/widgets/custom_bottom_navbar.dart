@@ -1,9 +1,10 @@
-import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/helper/secure_storage.dart';
-import 'package:asood/core/router/app_routers.dart';
-import 'package:asood/core/widgets/colorpicker.dart';
-import 'package:asood/features/market/presentation/blocs/bloc/market_bloc.dart';
-import 'package:asood/features/vendor/presentation/bloc/vendor/vendor_bloc.dart';
+import 'package:asoud/core/constants/constants.dart';
+import 'package:asoud/core/config/env_config.dart';
+import 'package:asoud/core/helper/secure_storage.dart';
+import 'package:asoud/core/router/app_routers.dart';
+import 'package:asoud/core/widgets/colorpicker.dart';
+import 'package:asoud/features/market/presentation/blocs/bloc/market_bloc.dart';
+import 'package:asoud/features/vendor/presentation/bloc/vendor/vendor_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
@@ -340,7 +341,7 @@ void showBottomSheet(
 }
 
 void sendProductToShoppingCart(String id) async {
-  String url = 'http://asoud.ir/api/v1/user/order/add_item';
+  String url = '${EnvConfig.baseUrl}/api/v1/user/order/add_item';
   String? token = await SecureStorage.readSecureStorage(Keys.token);
 
   var response = await http.post(

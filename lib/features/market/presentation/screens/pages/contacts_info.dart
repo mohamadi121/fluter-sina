@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/widgets/custom_button.dart';
-import 'package:asood/core/widgets/custom_textfield.dart';
-import 'package:asood/features/market/presentation/widgets/custom_switch.dart';
-import 'package:asood/features/market/presentation/widgets/row_widget_title_widget.dart';
+import 'package:asoud/core/constants/constants.dart';
+import 'package:asoud/core/widgets/custom_button.dart';
+import 'package:asoud/core/widgets/custom_textfield.dart';
+import 'package:asoud/features/market/presentation/widgets/custom_switch.dart';
+import 'package:asoud/features/market/presentation/widgets/row_widget_title_widget.dart';
 
 class ContactsInfo extends StatefulWidget {
   const ContactsInfo({super.key});

@@ -2,8 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 
-import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/helper/secure_storage.dart';
+import 'package:asoud/core/constants/constants.dart';
+import 'package:asoud/core/helper/secure_storage.dart';
 
 import 'error_response.dart';
 

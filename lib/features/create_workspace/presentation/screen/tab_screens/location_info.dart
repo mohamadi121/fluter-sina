@@ -1,13 +1,13 @@
-import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/helper/snack_bar_util.dart';
-import 'package:asood/core/helper/validators.dart';
-import 'package:asood/core/http_client/api_status.dart';
-import 'package:asood/core/widgets/custom_button.dart';
-import 'package:asood/core/widgets/custom_textfield.dart';
-import 'package:asood/core/widgets/map_widget_2.dart';
-import 'package:asood/features/create_workspace/presentation/bloc/create_workspace_bloc.dart';
-import 'package:asood/features/create_workspace/presentation/widgets/location_dialog.dart';
-import 'package:asood/features/create_workspace/presentation/widgets/payment_dialog.dart';
+import 'package:asoud/core/constants/constants.dart';
+import 'package:asoud/core/helper/snack_bar_util.dart';
+import 'package:asoud/core/helper/validators.dart';
+import 'package:asoud/core/ui/ui_status.dart';
+import 'package:asoud/core/widgets/custom_button.dart';
+import 'package:asoud/core/widgets/custom_textfield.dart';
+import 'package:asoud/core/widgets/map_widget_2.dart';
+import 'package:asoud/features/create_workspace/presentation/bloc/create_workspace_bloc.dart';
+import 'package:asoud/features/create_workspace/presentation/widgets/location_dialog.dart';
+import 'package:asoud/features/create_workspace/presentation/widgets/payment_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -67,7 +67,7 @@ class _LocationInfoState extends State<LocationInfo> {
                         CustomButton(
                           onPress: () {
                             widget.bloc.add(LoadCountry());
-                            if (state.status == CWSStatus.success) {
+                            if (state.status is UiSuccess) {
                               LocationDialog.showLocationSelector(
                                 title: "کشور",
                                 context: context,
@@ -110,7 +110,7 @@ class _LocationInfoState extends State<LocationInfo> {
                                 context,
                                 "لطفا ابتدا کشور را انتخاب کنید",
                               );
-                            } else if (state.status == CWSStatus.success) {
+                            } else if (state.status is UiSuccess) {
                               widget.bloc.add(
                                 LoadProvince(countryId: state.countryId),
                               );
@@ -160,7 +160,7 @@ class _LocationInfoState extends State<LocationInfo> {
                                 context,
                                 "لطفا ابتدا استان را انتخاب کنید",
                               );
-                            } else if (state.status == CWSStatus.success) {
+                            } else if (state.status is UiSuccess) {
                               widget.bloc.add(
                                 LoadCity(provinceId: state.provinceId),
                               );
@@ -287,8 +287,7 @@ class _LocationInfoState extends State<LocationInfo> {
                                         SaveMarketLocationEvent(),
                                       );
 
-                                      if (widget.bloc.state.status ==
-                                          CWSStatus.success) {
+                                      if (widget.bloc.state.status is UiSuccess) {
                                         paymentDialog(context);
                                       }
                                     }

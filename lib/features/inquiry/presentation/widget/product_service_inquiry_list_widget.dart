@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:asood/features/inquiry/presentation/widget/product_service_card_widget.dart';
+import 'package:asoud/features/inquiry/presentation/widget/product_service_card_widget.dart';
 
 class ProductServiceInquiryList extends StatelessWidget {
   const ProductServiceInquiryList({super.key});

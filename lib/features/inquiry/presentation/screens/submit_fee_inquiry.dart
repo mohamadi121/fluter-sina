@@ -1,13 +1,14 @@
 import 'dart:convert';
+import 'package:asoud/core/config/env_config.dart';
 import 'dart:io';
 
-import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/helper/secure_storage.dart';
-import 'package:asood/core/helper/snack_bar_util.dart';
-import 'package:asood/core/widgets/appbar/default_appbar.dart';
-import 'package:asood/core/widgets/custom_button.dart';
-import 'package:asood/core/widgets/custom_textfield.dart';
-import 'package:asood/core/widgets/radio_button.dart';
+import 'package:asoud/core/constants/constants.dart';
+import 'package:asoud/core/helper/secure_storage.dart';
+import 'package:asoud/core/helper/snack_bar_util.dart';
+import 'package:asoud/core/widgets/appbar/default_appbar.dart';
+import 'package:asoud/core/widgets/custom_button.dart';
+import 'package:asoud/core/widgets/custom_textfield.dart';
+import 'package:asoud/core/widgets/radio_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -48,7 +49,7 @@ class _SubmitFeeInquiryScreenState extends State<SubmitFeeInquiryScreen> {
   var imageFile;
 
   void getLastData() async {
-    String url = 'http://asoud.ir/api/v1/user/inquiries/${widget.id}/';
+    String url = '${EnvConfig.baseUrl}/api/v1/user/inquiries/${widget.id}/';
     String? token = await SecureStorage.readSecureStorage(Keys.token);
 
     var response = await http.get(
@@ -68,13 +69,13 @@ class _SubmitFeeInquiryScreenState extends State<SubmitFeeInquiryScreen> {
       lastImage =
           data['images'].isEmpty
               ? ''
-              : 'http://asoud.ir${data['images'][0]['image']}';
+              : '${EnvConfig.baseUrl}${data['images'][0]['image']}';
       send = data['send'];
     });
   }
 
   void putChanges() async {
-    String url = 'http://asoud.ir/api/v1/user/inquiries/${widget.id}/update/';
+    String url = '${EnvConfig.baseUrl}/api/v1/user/inquiries/${widget.id}/update/';
     String? token = await SecureStorage.readSecureStorage(Keys.token);
 
     Map<String, String> data_ = {
@@ -130,8 +131,8 @@ class _SubmitFeeInquiryScreenState extends State<SubmitFeeInquiryScreen> {
     void sendData(String send) async {
       String? token = await SecureStorage.readSecureStorage(Keys.token);
 
-      String url = 'http://asoud.ir/api/v1/user/inquiries/$id/send/';
-      String imageUrl = 'http://asoud.ir/api/v1/user/inquiries/$id/image/';
+      String url = '${EnvConfig.baseUrl}/api/v1/user/inquiries/$id/send/';
+      String imageUrl = '${EnvConfig.baseUrl}/api/v1/user/inquiries/$id/image/';
       final request = http.MultipartRequest('POST', Uri.parse(imageUrl));
 
       Map<String, dynamic> data = {'send': send};
@@ -258,7 +259,7 @@ class _SubmitFeeInquiryScreenState extends State<SubmitFeeInquiryScreen> {
     String unit,
     int date,
   ) async {
-    String url = 'http://asoud.ir/api/v1/user/inquiries/create/';
+    String url = '${EnvConfig.baseUrl}/api/v1/user/inquiries/create/';
 
     String? token = await SecureStorage.readSecureStorage(Keys.token);
     final request = http.MultipartRequest('POST', Uri.parse(url));
@@ -316,7 +317,7 @@ class _SubmitFeeInquiryScreenState extends State<SubmitFeeInquiryScreen> {
     }
 
     //   void sendReply(parrentId, message) async {
-    //   String url = 'http://asoud.ir/api/v1/user/comment/create/';
+    //   String url = '${EnvConfig.baseUrl}/api/v1/user/comment/create/';
 
     //   String? token = await SecureStorage.readSecureStorage(Keys.token);
 

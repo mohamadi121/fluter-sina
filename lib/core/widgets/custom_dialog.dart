@@ -1,6 +1,6 @@
 // ignore_for_file: unnecessary_import
 
-import 'package:asood/core/constants/constants.dart';
+import 'package:asoud/core/constants/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';

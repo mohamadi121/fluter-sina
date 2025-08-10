@@ -1,6 +1,7 @@
-import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/models/location_model.dart';
-import 'package:asood/core/widgets/map_widget_2.dart';
+import 'package:asoud/core/constants/constants.dart';
+import 'package:asoud/core/config/env_config.dart';
+import 'package:asoud/core/models/location_model.dart';
+import 'package:asoud/core/widgets/map_widget_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:iconsax/iconsax.dart';
@@ -134,7 +135,7 @@ class _BusinessCardState extends State<BusinessCard> {
                                               onTap: () {
                                                 launchUrl(
                                                   Uri.parse(
-                                                    'http://asoud.ir/${widget.data["data"]["business_id"]}',
+                                                    '${EnvConfig.baseUrl}/${widget.data["data"]["business_id"]}',
                                                   ),
                                                 );
                                               },
@@ -616,7 +617,7 @@ class _BusinessCardState extends State<BusinessCard> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          //asood
+                                          //asoud
                                           Padding(
                                             padding: EdgeInsets.symmetric(
                                               horizontal:

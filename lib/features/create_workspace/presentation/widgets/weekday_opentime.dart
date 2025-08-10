@@ -1,12 +1,12 @@
-import 'package:asood/core/http_client/api_status.dart';
-import 'package:asood/features/create_workspace/data/model/market_schedule.dart';
-import 'package:asood/features/create_workspace/presentation/bloc/create_workspace_bloc.dart';
+import 'package:asoud/core/ui/ui_status.dart';
+import 'package:asoud/features/create_workspace/data/model/market_schedule.dart';
+import 'package:asoud/features/create_workspace/presentation/bloc/create_workspace_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
-import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/widgets/custom_button.dart';
-import 'package:asood/features/create_workspace/presentation/widgets/row_widget_title_widget.dart';
+import 'package:asoud/core/constants/constants.dart';
+import 'package:asoud/core/widgets/custom_button.dart';
+import 'package:asoud/features/create_workspace/presentation/widgets/row_widget_title_widget.dart';
 
 class WeekdayOpentime extends StatefulWidget {
   final String marketId;
@@ -421,23 +421,20 @@ void showCustomTimePicker({
                               },
 
                               text:
-                                  state.status == CWSStatus.loading
-                                      ? null
-                                      : "تایید",
+                                  state.status is UiLoading ? null : "تایید",
                               color: Colors.white,
                               textColor: Colora.primaryColor,
                               height: 40,
                               width: 100,
-                              btnWidget:
-                                  state.status == CWSStatus.loading
-                                      ? const Center(
-                                        child: SizedBox(
-                                          height: 25,
-                                          width: 25,
-                                          child: CircularProgressIndicator(),
-                                        ),
-                                      )
-                                      : null,
+                              btnWidget: state.status is UiLoading
+                                  ? const Center(
+                                      child: SizedBox(
+                                        height: 25,
+                                        width: 25,
+                                        child: CircularProgressIndicator(),
+                                      ),
+                                    )
+                                  : null,
                             ),
                           ),
                         );

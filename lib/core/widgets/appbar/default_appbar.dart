@@ -1,5 +1,5 @@
-import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/widgets/appbar/menu_dialog.dart';
+import 'package:asoud/core/constants/constants.dart';
+import 'package:asoud/core/widgets/appbar/menu_dialog.dart';
 import 'package:flutter/material.dart';
 
 import 'profile_menu_widget.dart';
@@ -256,7 +256,7 @@ class NewAppBar extends StatelessWidget {
                       //     fontWeight: FontWeight.bold,
                       //   ),
                       // ),
-                      child: Assets.images.asood.image(
+                      child: Assets.images.asoud.image(
                         fit: BoxFit.scaleDown,
                         width: Dimensions.width * 0.15,
                         color: Colors.white,

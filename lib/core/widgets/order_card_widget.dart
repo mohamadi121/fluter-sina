@@ -1,4 +1,4 @@
-import 'package:asood/features/vendor/presentation/bloc/workspace/workspace_bloc.dart';
+import 'package:asoud/features/vendor/presentation/bloc/workspace/workspace_bloc.dart';
 import 'package:flutter/material.dart';
 
 import '../constants/constants.dart';

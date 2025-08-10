@@ -1,10 +1,11 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/helper/secure_storage.dart';
-import 'package:asood/core/widgets/appbar/default_appbar.dart';
-import 'package:asood/core/widgets/simple_bot_navbar.dart';
+import 'package:asoud/core/constants/constants.dart';
+import 'package:asoud/core/helper/secure_storage.dart';
+import 'package:asoud/core/config/env_config.dart';
+import 'package:asoud/core/widgets/appbar/default_appbar.dart';
+import 'package:asoud/core/widgets/simple_bot_navbar.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -59,7 +60,7 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
   // }
 
   Future<String?> nameOfProduct(id) async {
-    String url = 'http://asoud.ir/api/v1/owner/product/detail/$id/';
+    String url = '${EnvConfig.baseUrl}/api/v1/owner/product/detail/$id/';
     String? token = await SecureStorage.readSecureStorage(Keys.token);
 
     var response = await http.get(
@@ -78,7 +79,7 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
   void getOrders() async {
     id = '';
 
-    String url = 'http://asoud.ir/api/v1/user/order/orders';
+    String url = '${EnvConfig.baseUrl}/api/v1/user/order/orders';
     String? token = await SecureStorage.readSecureStorage(Keys.token);
 
     var response = await http.get(
@@ -99,7 +100,7 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
   }
 
   void addQuantity(String orderId, String productId, quantity) async {
-    String url = 'http://asoud.ir/api/v1/user/order/update_item/$orderId';
+    String url = '${EnvConfig.baseUrl}/api/v1/user/order/update_item/$orderId';
     String? token = await SecureStorage.readSecureStorage(Keys.token);
 
     var response = await http.put(
@@ -116,7 +117,7 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
   }
 
   void removeQuantity(String orderId, String productId, quantity) async {
-    String url = 'http://asoud.ir/api/v1/user/order/update_item/$orderId';
+    String url = '${EnvConfig.baseUrl}/api/v1/user/order/update_item/$orderId';
     String? token = await SecureStorage.readSecureStorage(Keys.token);
 
     var response = await http.put(
@@ -1046,7 +1047,7 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
                           // order['product']['images'] != []
                           //     ? CachedNetworkImage(
                           //       imageUrl:
-                          //           'http://asoud.ir/${order['product']['images'][0]['image']}',
+                          //           '${EnvConfig.baseUrl}/${order['product']['images'][0]['image']}',
                           //       fit: BoxFit.cover,
                           //     )
                           //     : Container(),

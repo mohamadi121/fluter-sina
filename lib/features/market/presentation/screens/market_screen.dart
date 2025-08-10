@@ -1,11 +1,11 @@
-import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/helper/snack_bar_util.dart';
-import 'package:asood/core/http_client/api_status.dart';
-import 'package:asood/core/router/app_routers.dart';
-import 'package:asood/core/widgets/appbar/default_appbar.dart';
-import 'package:asood/core/widgets/order_card_widget.dart';
-import 'package:asood/core/widgets/store_card.dart';
-import 'package:asood/features/vendor/presentation/bloc/workspace/workspace_bloc.dart';
+import 'package:asoud/core/constants/constants.dart';
+import 'package:asoud/core/helper/snack_bar_util.dart';
+import 'package:asoud/core/ui/ui_status.dart';
+import 'package:asoud/core/router/app_routers.dart';
+import 'package:asoud/core/widgets/appbar/default_appbar.dart';
+import 'package:asoud/core/widgets/order_card_widget.dart';
+import 'package:asoud/core/widgets/store_card.dart';
+import 'package:asoud/features/vendor/presentation/bloc/workspace/workspace_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -58,21 +58,10 @@ class _MarketsScreenState extends State<MarketsScreen>
       floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
       body: BlocConsumer<WorkspaceBloc, WorkspaceState>(
         listener: (context, state) {
-          // _tabController.index = state.activeTabIndex;
-          // _tabController.index > state.activeTabIndex
-          //   ? _tabController.index = state.activeTabIndex
-          //   : null;
-          // if (state.status == WorkspaceStatus.success) {
-          //   _tabController.index = state.activeTabIndex;
-          // }
-          if (state.status == CWSStatus.failure) {
-            showSnackBar(
-              context,
-              "مشکلی در بارگذاری پیش آمده , مجدد تلاش کنید!",
-            );
+          if (state.status is UiError) {
+            showSnackBar(context, (state.status as UiError).message.isNotEmpty ? (state.status as UiError).message : "مشکلی در بارگذاری پیش آمده , مجدد تلاش کنید!");
           }
         },
-
         builder: (context, state) {
           return Container(
             color: Colora.primaryColor,
@@ -83,186 +72,93 @@ class _MarketsScreenState extends State<MarketsScreen>
                     SizedBox(
                       height: Dimensions.height,
                       width: Dimensions.width,
-                      child:
-                          state.status == CWSStatus.loading
-                              ? Column(
-                                children: [
-                                  SizedBox(height: Dimensions.height * 0.11),
-                                  ListView.builder(
-                                    itemCount: 5,
-                                    shrinkWrap: true,
-                                    itemBuilder:
-                                        (context, index) => Container(
-                                          height: Dimensions.height * 0.14,
-                                          width: Dimensions.width,
-                                          decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(
-                                              20,
-                                            ),
-                                            color: Colora.lightBlue.withOpacity(
-                                              0.3,
-                                            ),
-                                          ),
-                                          margin: const EdgeInsets.all(8.0),
-                                          child: Shimmer.fromColors(
-                                            baseColor: Colors.grey.withOpacity(
-                                              0.2,
-                                            ),
-                                            highlightColor: Colors.black
-                                                .withOpacity(0.2),
-                                            direction: ShimmerDirection.rtl,
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                color: Colors.grey,
-                                                borderRadius:
-                                                    BorderRadius.circular(20),
-                                              ),
-                                            ),
-                                          ),
+                      child: state.status.isLoading
+                          ? Column(
+                              children: [
+                                SizedBox(height: Dimensions.height * 0.11),
+                                ListView.builder(
+                                  itemCount: 5,
+                                  shrinkWrap: true,
+                                  itemBuilder: (context, index) => Container(
+                                    height: Dimensions.height * 0.14,
+                                    width: Dimensions.width,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(20),
+                                      color: Colora.lightBlue.withOpacity(0.3),
+                                    ),
+                                    margin: const EdgeInsets.all(8.0),
+                                    child: Shimmer.fromColors(
+                                      baseColor: Colors.grey.withOpacity(0.2),
+                                      highlightColor: Colors.black.withOpacity(0.2),
+                                      direction: ShimmerDirection.rtl,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey,
+                                          borderRadius: BorderRadius.circular(20),
                                         ),
-                                  ),
-                                ],
-                              )
-                              : state.status == CWSStatus.failure
-                              ? Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    'مشکلی در بارگذاری پیش آمده , مجدد تلاش کنید!',
-                                    style: TextStyle(
-                                      color: Colora.primaryColor,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: Dimensions.width * 0.04,
+                                      ),
                                     ),
                                   ),
-                                  SizedBox(height: Dimensions.height * 0.05),
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      bloc.add(LoadStores());
-                                    },
-                                    child: const Text('تلاش مجدد'),
-                                  ),
-                                ],
-                              )
+                                ),
+                              ],
+                            )
+                          : state.status is UiError
+                              ? Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      (state.status as UiError).message.isNotEmpty ? (state.status as UiError).message : 'مشکلی در بارگذاری پیش آمده , مجدد تلاش کنید!',
+                                      style: TextStyle(
+                                        color: Colora.primaryColor,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: Dimensions.width * 0.04,
+                                      ),
+                                    ),
+                                    SizedBox(height: Dimensions.height * 0.05),
+                                    ElevatedButton(
+                                      onPressed: () { bloc.add(LoadStores()); },
+                                      child: const Text('تلاش مجدد'),
+                                    ),
+                                  ],
+                                )
                               : Column(
-                                children: [
-                                  SizedBox(height: Dimensions.height * 0.11),
-                                  Expanded(
-                                    child: ListView.builder(
-                                      itemCount: state.storesList.length + 1,
-                                      itemBuilder: (context, index) {
-                                        if (index >= state.storesList.length) {
-                                          return SizedBox(
-                                            height: Dimensions.height * 0.2,
-                                            child: Padding(
-                                              padding: EdgeInsetsGeometry.all(
-                                                8,
-                                              ),
-                                              child: Align(
-                                                alignment: Alignment.topRight,
-                                                child: FloatingActionButton(
-                                                  onPressed: () {
-                                                    context.push(
-                                                      AppRoutes.createWorkSpace,
-                                                    );
-                                                  },
-                                                  backgroundColor:
-                                                      Colora.primaryColor,
-                                                  child: Icon(
-                                                    Icons.add,
-                                                    color: Colora.scaffold,
+                                  children: [
+                                    SizedBox(height: Dimensions.height * 0.11),
+                                    Expanded(
+                                      child: ListView.builder(
+                                        itemCount: state.storesList.length + 1,
+                                        itemBuilder: (context, index) {
+                                          if (index >= state.storesList.length) {
+                                            return SizedBox(
+                                              height: Dimensions.height * 0.2,
+                                              child: Padding(
+                                                padding: EdgeInsetsGeometry.all(8),
+                                                child: Align(
+                                                  alignment: Alignment.topRight,
+                                                  child: FloatingActionButton(
+                                                    onPressed: () { context.push(AppRoutes.createWorkSpace); },
+                                                    backgroundColor: Colora.primaryColor,
+                                                    child: Icon(Icons.add, color: Colora.scaffold),
                                                   ),
                                                 ),
                                               ),
-                                            ),
-                                          );
-                                        } else {
-                                          return StoreCard(
-                                            index: index,
-                                            market: state.storesList[index],
-                                            bloc: bloc,
-                                          );
-                                        }
-                                      },
+                                            );
+                                          } else {
+                                            return StoreCard(
+                                              index: index,
+                                              market: state.storesList[index],
+                                              bloc: bloc,
+                                            );
+                                          }
+                                        },
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              ),
+                                  ],
+                                ),
                     ),
-
                     const NewAppBar(title: 'لیست فروشگاه‌های من‌'),
-
-                    // invoice
                     if (state.showInvoice == true) ...[invoice(bloc, state)],
-
                     if (state.invoiceConfirm == true) ...[confirmInvoice(bloc)],
-
-                    //header buttons
-                    // Positioned(
-                    //   top: Dimensions.height * 0.08,
-                    //   width: Dimensions.width,
-                    //   height: Dimensions.height * 0.05,
-                    //   child: Row(
-                    //     mainAxisAlignment: MainAxisAlignment.center,
-                    //     children: [
-                    //
-                    //       //add new shop
-                    //       Container(
-                    //         width: Dimensions.width * 0.35,
-                    //         height: Dimensions.height * 0.05,
-                    //         decoration: BoxDecoration(
-                    //           color: Colora.primaryColor,
-                    //           borderRadius: BorderRadius.circular(20),
-                    //           boxShadow: [
-                    //             BoxShadow(
-                    //               color: Colors.grey.withOpacity(0.4),
-                    //               spreadRadius: 3,
-                    //               blurRadius: 5,
-                    //               offset: const Offset(0, 5)
-                    //             )
-                    //           ]
-                    //         ),
-                    //         alignment: AlignmentDirectional.center,
-                    //         child: const Text(
-                    //           'ثبت فروشگاه جدید',
-                    //           style: TextStyle(
-                    //             color: Colora.scaffold,
-                    //           ),
-                    //         ),
-                    //       ),
-                    //
-                    //       SizedBox(
-                    //         width: Dimensions.width * 0.05,
-                    //       ),
-                    //
-                    //       //shop reports
-                    //       Container(
-                    //         width: Dimensions.width * 0.35,
-                    //         height: Dimensions.height * 0.05,
-                    //         decoration: BoxDecoration(
-                    //             color: Colora.primaryColor,
-                    //             borderRadius: BorderRadius.circular(20),
-                    //             boxShadow: [
-                    //               BoxShadow(
-                    //                   color: Colors.grey.withOpacity(0.4),
-                    //                   spreadRadius: 3,
-                    //                   blurRadius: 5,
-                    //                   offset: const Offset(0, 5)
-                    //               )
-                    //             ]
-                    //         ),
-                    //         alignment: AlignmentDirectional.center,
-                    //         child: const Text(
-                    //           'گزارشات فروشگاه',
-                    //           style: TextStyle(
-                    //             color: Colora.scaffold,
-                    //           ),
-                    //         ),
-                    //       ),
-                    //
-                    //     ],
-                    //   ),
-                    // ),
                   ],
                 ),
               ),

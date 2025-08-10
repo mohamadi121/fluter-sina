@@ -1,7 +1,7 @@
-import 'package:asood/core/models/market_model.dart';
-import 'package:asood/core/router/app_routers.dart';
-import 'package:asood/features/market/presentation/widgets/share_store.dart';
-import 'package:asood/features/vendor/presentation/bloc/workspace/workspace_bloc.dart';
+import 'package:asoud/core/models/market_model.dart';
+import 'package:asoud/core/router/app_routers.dart';
+import 'package:asoud/features/market/presentation/widgets/share_store.dart';
+import 'package:asoud/features/vendor/presentation/bloc/workspace/workspace_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';

@@ -1,12 +1,12 @@
 import 'dart:io';
 
-import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/helper/snack_bar_util.dart';
-import 'package:asood/core/http_client/api_status.dart';
-import 'package:asood/core/widgets/appbar/menu_dialog.dart';
-import 'package:asood/core/widgets/appbar/profile_menu_widget.dart';
-import 'package:asood/features/vendor/presentation/bloc/vendor/vendor_bloc.dart';
-import 'package:asood/features/vendor/presentation/bloc/workspace/workspace_bloc.dart';
+import 'package:asoud/core/constants/constants.dart';
+import 'package:asoud/core/helper/snack_bar_util.dart';
+import 'package:asoud/core/ui/ui_status.dart';
+import 'package:asoud/core/widgets/appbar/menu_dialog.dart';
+import 'package:asoud/core/widgets/appbar/profile_menu_widget.dart';
+import 'package:asoud/features/vendor/presentation/bloc/vendor/vendor_bloc.dart';
+import 'package:asoud/features/vendor/presentation/bloc/workspace/workspace_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -51,7 +51,7 @@ class StoreAppBar extends StatelessWidget implements PreferredSizeWidget {
                   ),
                   alignment: Alignment.center,
                   child: const Text(
-                    'Asood Store',
+                    'asoud Store',
                     style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -189,303 +189,541 @@ class _StoreAppbar2State extends State<StoreAppbar2> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder:
-          (context) => StatefulBuilder(
-            builder: (context, setState) {
-              return AlertDialog(
-                content: SizedBox(
-                  height: Dimensions.height * 0.27,
-                  child: BlocConsumer<VendorBloc, VendorState>(
-                    listener: (context, state) {
-                      if (state.status == CWSStatus.failure) {
-                        showSnackBar(context, "مشکلی پیش آمده مجددا تلاش کنید");
-                      }
-                    },
-                    builder: (context, state) {
-                      return Column(
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            content: SizedBox(
+              height: Dimensions.height * 0.27,
+              child: BlocConsumer<VendorBloc, VendorState>(
+                listener: (context, state) {
+                  if (state.status is UiError) {
+                    showSnackBar(context, "مشکلی پیش آمده مجددا تلاش کنید");
+                  }
+                },
+                builder: (context, state) {
+                  return Column(
+                    children: [
+                      //title
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          'عکس لوگو',
+                          style: TextStyle(
+                            color: Colora.primaryColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: Dimensions.width * 0.05,
+                          ),
+                        ),
+                      ),
+
+                      const Divider(color: Colora.primaryColor),
+
+                      //description
+                      Text(
+                        'جهت انتخاب عکس خود بر روی افزودن عکس کلیک کنید.',
+                        textAlign: TextAlign.justify,
+                        style: TextStyle(
+                          color: Colora.primaryColor,
+                          fontWeight: FontWeight.w600,
+                          fontSize: Dimensions.width * 0.035,
+                        ),
+                      ),
+
+                      //buttons and preview
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          //title
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: Text(
-                              'عکس لوگو',
-                              style: TextStyle(
+                          //add
+                          InkWell(
+                            onTap: () async {
+                              var maxFileSizeInBytes = 5 * 1048576;
+
+                              final ImagePicker picker = ImagePicker();
+                              logoImage = await picker.pickImage(
+                                source: ImageSource.gallery,
+                              );
+
+                              var imagePath =
+                                  await logoImage!.readAsBytes();
+                              var fileSize = imagePath.length;
+
+                              if (fileSize <= maxFileSizeInBytes) {
+                                setState(() {
+                                  editLogoImage = logoImage!.path;
+                                });
+                              } else {
+                                showSnackBar(
+                                  context,
+                                  "حجم عکس بیش از ۵ مگابایت است",
+                                );
+                              }
+                            },
+                            child: Container(
+                              width: Dimensions.width * 0.2,
+                              padding: EdgeInsets.symmetric(
+                                vertical: Dimensions.height * 0.01,
+                              ),
+                              decoration: BoxDecoration(
                                 color: Colora.primaryColor,
-                                fontWeight: FontWeight.bold,
-                                fontSize: Dimensions.width * 0.05,
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Center(
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Text(
+                                    'افزودن عکس',
+                                    style: TextStyle(
+                                      color: Colora.scaffold,
+                                      fontSize: Dimensions.width * 0.033,
+                                    ),
+                                  ),
+                                ),
                               ),
                             ),
                           ),
 
-                          const Divider(color: Colora.primaryColor),
-
-                          //description
-                          Text(
-                            'جهت انتخاب عکس خود بر روی افزودن عکس کلیک کنید.',
-                            textAlign: TextAlign.justify,
-                            style: TextStyle(
-                              color: Colora.primaryColor,
-                              fontWeight: FontWeight.w600,
-                              fontSize: Dimensions.width * 0.035,
+                          // delete
+                          InkWell(
+                            onTap: () {
+                              setState(() {
+                                editLogoImage = '';
+                              });
+                            },
+                            child: Container(
+                              width: Dimensions.width * 0.2,
+                              padding: EdgeInsets.symmetric(
+                                vertical: Dimensions.height * 0.01,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colora.primaryColor,
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Center(
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Text(
+                                    'حذف عکس',
+                                    style: TextStyle(
+                                      color: Colora.scaffold,
+                                      fontSize: Dimensions.width * 0.033,
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
 
-                          //buttons and preview
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              //add
-                              InkWell(
-                                onTap: () async {
-                                  var maxFileSizeInBytes = 5 * 1048576;
-
-                                  final ImagePicker picker = ImagePicker();
-                                  logoImage = await picker.pickImage(
-                                    source: ImageSource.gallery,
-                                  );
-
-                                  var imagePath =
-                                      await logoImage!.readAsBytes();
-                                  var fileSize = imagePath.length;
-
-                                  if (fileSize <= maxFileSizeInBytes) {
-                                    setState(() {
-                                      editLogoImage = logoImage!.path;
-                                    });
-                                  } else {
-                                    showSnackBar(
-                                      context,
-                                      "حجم عکس بیش از ۵ مگابایت است",
-                                    );
-                                  }
-                                },
-                                child: Container(
-                                  width: Dimensions.width * 0.2,
-                                  padding: EdgeInsets.symmetric(
-                                    vertical: Dimensions.height * 0.01,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colora.primaryColor,
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: Center(
-                                    child: FittedBox(
-                                      fit: BoxFit.scaleDown,
-                                      child: Text(
-                                        'افزودن عکس',
-                                        style: TextStyle(
-                                          color: Colora.scaffold,
-                                          fontSize: Dimensions.width * 0.033,
-                                        ),
-                                      ),
-                                    ),
+                          //preview
+                          SizedBox(
+                            width: Dimensions.width * 0.2,
+                            child: AspectRatio(
+                              aspectRatio: 1,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colora.backgroundSwitch,
+                                    width: 3,
                                   ),
                                 ),
-                              ),
-
-                              // delete
-                              InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    editLogoImage = '';
-                                  });
-                                },
-                                child: Container(
-                                  width: Dimensions.width * 0.2,
-                                  padding: EdgeInsets.symmetric(
-                                    vertical: Dimensions.height * 0.01,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colora.primaryColor,
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: Center(
-                                    child: FittedBox(
-                                      fit: BoxFit.scaleDown,
-                                      child: Text(
-                                        'حذف عکس',
-                                        style: TextStyle(
-                                          color: Colora.scaffold,
-                                          fontSize: Dimensions.width * 0.033,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-
-                              //preview
-                              SizedBox(
-                                width: Dimensions.width * 0.2,
-                                child: AspectRatio(
-                                  aspectRatio: 1,
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: Colora.backgroundSwitch,
-                                        width: 3,
-                                      ),
-                                    ),
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(100),
-                                      child:
-                                          editLogoImage == ''
-                                              ? Image.asset(
-                                                'assets/images/logo.png',
-                                                fit: BoxFit.cover,
-                                              )
-                                              : editLogoImage.contains('http')
-                                              ? CachedNetworkImage(
-                                                imageUrl: editLogoImage,
-                                                imageBuilder: (
-                                                  context,
-                                                  imageProvider,
-                                                ) {
-                                                  return Container(
-                                                    decoration: BoxDecoration(
-                                                      image: DecorationImage(
-                                                        image: imageProvider,
-                                                        fit: BoxFit.cover,
-                                                      ),
-                                                    ),
-                                                  );
-                                                },
-                                                placeholder:
-                                                    (
-                                                      context,
-                                                      url,
-                                                    ) => Shimmer.fromColors(
-                                                      baseColor: Colors.grey
-                                                          .withOpacity(0.2),
-                                                      highlightColor: Colors
-                                                          .black
-                                                          .withOpacity(0.2),
-                                                      direction:
-                                                          ShimmerDirection.rtl,
-                                                      child: Container(
-                                                        decoration: BoxDecoration(
-                                                          color: Colors.grey,
-                                                          borderRadius:
-                                                              BorderRadius.circular(
-                                                                5,
-                                                              ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                errorWidget:
-                                                    (context, url, error) =>
-                                                        const Icon(Icons.error),
-                                              )
-                                              : Image.file(
-                                                File(editLogoImage),
-                                                fit: BoxFit.cover,
-                                              ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-
-                          //back and save
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              //save
-                              Align(
-                                alignment: Alignment.centerLeft,
-                                child:
-                                    state.status == CWSStatus.loading
-                                        ? Container(
-                                          width: Dimensions.width * 0.3,
-                                          height: Dimensions.height * 0.042,
-                                          padding: EdgeInsets.symmetric(
-                                            vertical: Dimensions.height * 0.01,
-                                          ),
-                                          margin: EdgeInsets.only(
-                                            top: Dimensions.height * 0.02,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: Colora.primaryColor,
-                                            borderRadius: BorderRadius.circular(
-                                              20,
-                                            ),
-                                          ),
-                                          child: const Center(
-                                            child: FittedBox(
-                                              fit: BoxFit.scaleDown,
-                                              child: CircularProgressIndicator(
-                                                color: Colora.scaffold_,
-                                              ),
-                                            ),
-                                          ),
-                                        )
-                                        : InkWell(
-                                          onTap: () {
-                                            if (logoImage != null) {
-                                              bloc.add(
-                                                AddLogoEvent(
-                                                  id: widget.id,
-                                                  logoImage: logoImage!,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(100),
+                                  child:
+                                      editLogoImage == ''
+                                          ? Image.asset(
+                                            'assets/images/logo.png',
+                                            fit: BoxFit.cover,
+                                          )
+                                          : editLogoImage.contains('http')
+                                          ? CachedNetworkImage(
+                                            imageUrl: editLogoImage,
+                                            imageBuilder: (
+                                              context,
+                                              imageProvider,
+                                            ) {
+                                              return Container(
+                                                decoration: BoxDecoration(
+                                                  image: DecorationImage(
+                                                    image: imageProvider,
+                                                    fit: BoxFit.cover,
+                                                  ),
                                                 ),
                                               );
-                                              Navigator.pop(context);
-                                              initLogoImage = editLogoImage;
-                                            } else if (editLogoImage == '') {
-                                              bloc.add(
-                                                DeleteLogoEvent(id: widget.id),
-                                              );
-                                              Navigator.pop(context);
-                                              initLogoImage = editLogoImage;
-                                            } else {
-                                              showSnackBar(
-                                                context,
-                                                "لطفا عکس خود را انتخاب یا حذف کنید",
-                                              );
-                                            }
+                                            },
+                                            placeholder:
+                                                (
+                                                  context,
+                                                  url,
+                                                ) => Shimmer.fromColors(
+                                                  baseColor: Colors.grey
+                                                      .withOpacity(0.2),
+                                                  highlightColor: Colors.black
+                                                      .withOpacity(0.2),
+                                                  direction:
+                                                      ShimmerDirection.rtl,
+                                                  child: Container(
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.grey,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            5,
+                                                          ),
+                                                    ),
+                                                  ),
+                                                ),
+                                            errorWidget:
+                                                (context, url, error) =>
+                                                    const Icon(Icons.error),
+                                          )
+                                          : Image.file(
+                                            File(editLogoImage),
+                                            fit: BoxFit.cover,
+                                          ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      //back and save
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          //save
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: state.status is UiLoading
+                                ? Container(
+                                    width: Dimensions.width * 0.3,
+                                    height: Dimensions.height * 0.042,
+                                    padding: EdgeInsets.symmetric(
+                                      vertical: Dimensions.height * 0.01,
+                                    ),
+                                    margin: EdgeInsets.only(
+                                      top: Dimensions.height * 0.02,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colora.primaryColor,
+                                      borderRadius: BorderRadius.circular(
+                                        20,
+                                      ),
+                                    ),
+                                    child: const Center(
+                                      child: FittedBox(
+                                        fit: BoxFit.scaleDown,
+                                        child: CircularProgressIndicator(
+                                          color: Colora.scaffold_,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                : InkWell(
+                                    onTap: () {
+                                      if (logoImage != null) {
+                                        bloc.add(AddLogoEvent(
+                                            id: widget.id, logoImage: logoImage!));
+                                        Navigator.pop(context);
+                                        initLogoImage = editLogoImage;
+                                      } else if (editLogoImage == '') {
+                                        bloc.add(DeleteLogoEvent(id: widget.id));
+                                        Navigator.pop(context);
+                                        initLogoImage = editLogoImage;
+                                      } else {
+                                        showSnackBar(context,
+                                            "لطفا عکس خود را انتخاب یا حذف کنید");
+                                      }
+                                    },
+                                    child: Container(
+                                      width: Dimensions.width * 0.3,
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: Dimensions.height * 0.01,
+                                      ),
+                                      margin: EdgeInsets.only(
+                                        top: Dimensions.height * 0.02,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colora.primaryColor,
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      child: Center(
+                                        child: FittedBox(
+                                          fit: BoxFit.scaleDown,
+                                          child: Text(
+                                            'ذخیره',
+                                            style: TextStyle(
+                                              color: Colora.scaffold,
+                                              fontSize: Dimensions.width * 0.033,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                          ),
+
+                          //back
+                          InkWell(
+                            onTap: () {
+                              editLogoImage = widget.logoImage!;
+                              Navigator.pop(context);
+                            },
+                            child: Container(
+                              width: Dimensions.width * 0.3,
+                              padding: EdgeInsets.symmetric(
+                                vertical: Dimensions.height * 0.01,
+                              ),
+                              margin: EdgeInsets.only(
+                                top: Dimensions.height * 0.02,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colora.primaryColor,
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Center(
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Text(
+                                    'بازگشت',
+                                    style: TextStyle(
+                                      color: Colora.scaffold,
+                                      fontSize: Dimensions.width * 0.033,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void changeBack(context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            content: BlocConsumer<VendorBloc, VendorState>(
+              listener: (context, state) {
+                if (state.status is UiError) {
+                  showSnackBar(context, "مشکلی پیش آمده مجددا تلاش کنید");
+                }
+              },
+              builder: (context, state) => SizedBox(
+                height: Dimensions.height * 0.25,
+                child: Column(
+                  children: [
+                    //title
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        'عکس پس زمینه',
+                        style: TextStyle(
+                          color: Colora.primaryColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: Dimensions.width * 0.05,
+                        ),
+                      ),
+                    ),
+
+                    const Divider(color: Colora.primaryColor),
+
+                    //description
+                    Text(
+                      'جهت انتخاب عکس خود بر روی افزودن عکس کلیک کنید.',
+                      textAlign: TextAlign.justify,
+                      style: TextStyle(
+                        color: Colora.primaryColor,
+                        fontWeight: FontWeight.w600,
+                        fontSize: Dimensions.width * 0.035,
+                      ),
+                    ),
+
+                    //buttons and preview
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        // add
+                        InkWell(
+                          onTap: () async {
+                            var maxFileSizeInBytes = 5 * 1048576;
+
+                            final ImagePicker picker = ImagePicker();
+                            backImage = await picker.pickImage(
+                              source: ImageSource.gallery,
+                            );
+
+                            var imagePath =
+                                await backImage!.readAsBytes();
+                            var fileSize = imagePath.length;
+
+                            if (fileSize <= maxFileSizeInBytes) {
+                              setState(() {
+                                editBackImage = backImage!.path;
+                              });
+                            } else {
+                              showSnackBar(
+                                context,
+                                "حجم عکس بیش از ۵ مگابایت است",
+                              );
+                            }
+                          },
+                          child: Container(
+                            width: Dimensions.width * 0.2,
+                            padding: EdgeInsets.symmetric(
+                              vertical: Dimensions.height * 0.01,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colora.primaryColor,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Center(
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  'افزودن عکس',
+                                  style: TextStyle(
+                                    color: Colora.scaffold,
+                                    fontSize: Dimensions.width * 0.033,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        // delete
+                        InkWell(
+                          onTap: () {
+                            setState(() {
+                              editBackImage = '';
+                            });
+                          },
+                          child: Container(
+                            width: Dimensions.width * 0.2,
+                            padding: EdgeInsets.symmetric(
+                              vertical: Dimensions.height * 0.01,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colora.primaryColor,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Center(
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  'حذف عکس',
+                                  style: TextStyle(
+                                    color: Colora.scaffold,
+                                    fontSize: Dimensions.width * 0.033,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        //preview
+                        SizedBox(
+                          width: Dimensions.width * 0.2,
+                          child: AspectRatio(
+                            aspectRatio: 4 / 3,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                  color: Colora.backgroundSwitch,
+                                  width: 3,
+                                ),
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(5),
+                                child:
+                                    editBackImage == ''
+                                        ? Image.asset(
+                                          'assets/images/home_app_bar.png',
+                                          fit: BoxFit.cover,
+                                        )
+                                        : editBackImage.contains('http')
+                                        ? CachedNetworkImage(
+                                          imageUrl: editBackImage,
+                                          imageBuilder: (
+                                            context,
+                                            imageProvider,
+                                          ) {
+                                            return Container(
+                                              decoration: BoxDecoration(
+                                                image: DecorationImage(
+                                                  image: imageProvider,
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              ),
+                                            );
                                           },
-                                          child: Container(
-                                            width: Dimensions.width * 0.3,
-                                            padding: EdgeInsets.symmetric(
-                                              vertical:
-                                                  Dimensions.height * 0.01,
-                                            ),
-                                            margin: EdgeInsets.only(
-                                              top: Dimensions.height * 0.02,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: Colora.primaryColor,
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                            ),
-                                            child: Center(
-                                              child: FittedBox(
-                                                fit: BoxFit.scaleDown,
-                                                child: Text(
-                                                  'ذخیره',
-                                                  style: TextStyle(
-                                                    color: Colora.scaffold,
-                                                    fontSize:
-                                                        Dimensions.width *
-                                                        0.033,
+                                          placeholder:
+                                              (
+                                                context,
+                                                url,
+                                              ) => Shimmer.fromColors(
+                                                baseColor: Colors.grey
+                                                    .withOpacity(0.2),
+                                                highlightColor: Colors
+                                                    .black
+                                                    .withOpacity(0.2),
+                                                direction:
+                                                    ShimmerDirection
+                                                        .rtl,
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.grey,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          5,
+                                                        ),
                                                   ),
                                                 ),
                                               ),
-                                            ),
-                                          ),
+                                          errorWidget:
+                                              (context, url, error) =>
+                                                  const Icon(
+                                                    Icons.error,
+                                                  ),
+                                        )
+                                        : Image.file(
+                                          File(editBackImage),
+                                          fit: BoxFit.cover,
                                         ),
                               ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
 
-                              //back
-                              InkWell(
-                                onTap: () {
-                                  editLogoImage = widget.logoImage!;
-                                  Navigator.pop(context);
-                                },
-                                child: Container(
+                    //save and back
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        //save
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: state.status is UiLoading
+                              ? Container(
                                   width: Dimensions.width * 0.3,
+                                  height: Dimensions.height * 0.042,
                                   padding: EdgeInsets.symmetric(
                                     vertical: Dimensions.height * 0.01,
                                   ),
@@ -496,338 +734,31 @@ class _StoreAppbar2State extends State<StoreAppbar2> {
                                     color: Colora.primaryColor,
                                     borderRadius: BorderRadius.circular(20),
                                   ),
-                                  child: Center(
+                                  child: const Center(
                                     child: FittedBox(
                                       fit: BoxFit.scaleDown,
-                                      child: Text(
-                                        'بازگشت',
-                                        style: TextStyle(
-                                          color: Colora.scaffold,
-                                          fontSize: Dimensions.width * 0.033,
-                                        ),
+                                      child: CircularProgressIndicator(
+                                        color: Colora.scaffold_,
                                       ),
                                     ),
                                   ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-                ),
-              );
-            },
-          ),
-    );
-  }
-
-  void changeBack(context) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder:
-          (context) => StatefulBuilder(
-            builder: (context, setState) {
-              return AlertDialog(
-                content: BlocConsumer<VendorBloc, VendorState>(
-                  listener: (context, state) {
-                    if (state.status == CWSStatus.success) {
-                    } else if (state.status == CWSStatus.failure) {
-                      showSnackBar(context, "مشکلی پیش آمده مجددا تلاش کنید");
-                    }
-                  },
-                  builder:
-                      (context, state) => SizedBox(
-                        height: Dimensions.height * 0.25,
-                        child: Column(
-                          children: [
-                            //title
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: Text(
-                                'عکس پس زمینه',
-                                style: TextStyle(
-                                  color: Colora.primaryColor,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: Dimensions.width * 0.05,
-                                ),
-                              ),
-                            ),
-
-                            const Divider(color: Colora.primaryColor),
-
-                            //description
-                            Text(
-                              'جهت انتخاب عکس خود بر روی افزودن عکس کلیک کنید.',
-                              textAlign: TextAlign.justify,
-                              style: TextStyle(
-                                color: Colora.primaryColor,
-                                fontWeight: FontWeight.w600,
-                                fontSize: Dimensions.width * 0.035,
-                              ),
-                            ),
-
-                            //buttons and preview
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                // add
-                                InkWell(
-                                  onTap: () async {
-                                    var maxFileSizeInBytes = 5 * 1048576;
-
-                                    final ImagePicker picker = ImagePicker();
-                                    backImage = await picker.pickImage(
-                                      source: ImageSource.gallery,
-                                    );
-
-                                    var imagePath =
-                                        await backImage!.readAsBytes();
-                                    var fileSize = imagePath.length;
-
-                                    if (fileSize <= maxFileSizeInBytes) {
-                                      setState(() {
-                                        editBackImage = backImage!.path;
-                                      });
+                                )
+                              : InkWell(
+                                  onTap: () {
+                                    if (backImage != null) {
+                                      bloc.add(AddBackgroundEvent(
+                                          id: widget.id,
+                                          backgroundImage: backImage!));
+                                      Navigator.pop(context);
+                                      initBackImage = editBackImage;
+                                    } else if (editBackImage == '') {
+                                      bloc.add(DeleteBackgroundEvent(id: widget.id));
+                                      Navigator.pop(context);
+                                      initBackImage = editBackImage;
                                     } else {
-                                      showSnackBar(
-                                        context,
-                                        "حجم عکس بیش از ۵ مگابایت است",
-                                      );
+                                      showSnackBar(context,
+                                          "لطفا عکس خود را انتخاب یا حذف کنید");
                                     }
-                                  },
-                                  child: Container(
-                                    width: Dimensions.width * 0.2,
-                                    padding: EdgeInsets.symmetric(
-                                      vertical: Dimensions.height * 0.01,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Colora.primaryColor,
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    child: Center(
-                                      child: FittedBox(
-                                        fit: BoxFit.scaleDown,
-                                        child: Text(
-                                          'افزودن عکس',
-                                          style: TextStyle(
-                                            color: Colora.scaffold,
-                                            fontSize: Dimensions.width * 0.033,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-
-                                // delete
-                                InkWell(
-                                  onTap: () {
-                                    setState(() {
-                                      editBackImage = '';
-                                    });
-                                  },
-                                  child: Container(
-                                    width: Dimensions.width * 0.2,
-                                    padding: EdgeInsets.symmetric(
-                                      vertical: Dimensions.height * 0.01,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Colora.primaryColor,
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    child: Center(
-                                      child: FittedBox(
-                                        fit: BoxFit.scaleDown,
-                                        child: Text(
-                                          'حذف عکس',
-                                          style: TextStyle(
-                                            color: Colora.scaffold,
-                                            fontSize: Dimensions.width * 0.033,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-
-                                //preview
-                                SizedBox(
-                                  width: Dimensions.width * 0.2,
-                                  child: AspectRatio(
-                                    aspectRatio: 4 / 3,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(10),
-                                        border: Border.all(
-                                          color: Colora.backgroundSwitch,
-                                          width: 3,
-                                        ),
-                                      ),
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(5),
-                                        child:
-                                            editBackImage == ''
-                                                ? Image.asset(
-                                                  'assets/images/home_app_bar.png',
-                                                  fit: BoxFit.cover,
-                                                )
-                                                : editBackImage.contains('http')
-                                                ? CachedNetworkImage(
-                                                  imageUrl: editBackImage,
-                                                  imageBuilder: (
-                                                    context,
-                                                    imageProvider,
-                                                  ) {
-                                                    return Container(
-                                                      decoration: BoxDecoration(
-                                                        image: DecorationImage(
-                                                          image: imageProvider,
-                                                          fit: BoxFit.cover,
-                                                        ),
-                                                      ),
-                                                    );
-                                                  },
-                                                  placeholder:
-                                                      (
-                                                        context,
-                                                        url,
-                                                      ) => Shimmer.fromColors(
-                                                        baseColor: Colors.grey
-                                                            .withOpacity(0.2),
-                                                        highlightColor: Colors
-                                                            .black
-                                                            .withOpacity(0.2),
-                                                        direction:
-                                                            ShimmerDirection
-                                                                .rtl,
-                                                        child: Container(
-                                                          decoration: BoxDecoration(
-                                                            color: Colors.grey,
-                                                            borderRadius:
-                                                                BorderRadius.circular(
-                                                                  5,
-                                                                ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                  errorWidget:
-                                                      (context, url, error) =>
-                                                          const Icon(
-                                                            Icons.error,
-                                                          ),
-                                                )
-                                                : Image.file(
-                                                  File(editBackImage),
-                                                  fit: BoxFit.cover,
-                                                ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-
-                            //save and back
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                //save
-                                Align(
-                                  alignment: Alignment.centerLeft,
-                                  child:
-                                      state.status == CWSStatus.loading
-                                          ? Container(
-                                            width: Dimensions.width * 0.3,
-                                            height: Dimensions.height * 0.042,
-                                            padding: EdgeInsets.symmetric(
-                                              vertical:
-                                                  Dimensions.height * 0.01,
-                                            ),
-                                            margin: EdgeInsets.only(
-                                              top: Dimensions.height * 0.02,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: Colora.primaryColor,
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                            ),
-                                            child: const Center(
-                                              child: FittedBox(
-                                                fit: BoxFit.scaleDown,
-                                                child:
-                                                    CircularProgressIndicator(
-                                                      color: Colora.scaffold_,
-                                                    ),
-                                              ),
-                                            ),
-                                          )
-                                          : InkWell(
-                                            onTap: () {
-                                              if (backImage != null) {
-                                                bloc.add(
-                                                  AddBackgroundEvent(
-                                                    id: widget.id,
-                                                    backgroundImage: backImage!,
-                                                  ),
-                                                );
-                                                Navigator.pop(context);
-                                                initBackImage = editBackImage;
-                                              } else if (editBackImage == '') {
-                                                bloc.add(
-                                                  DeleteBackgroundEvent(
-                                                    id: widget.id,
-                                                  ),
-                                                );
-                                                Navigator.pop(context);
-                                                initBackImage = editBackImage;
-                                              } else {
-                                                showSnackBar(
-                                                  context,
-                                                  "لطفا عکس خود را انتخاب یا حذف کنید",
-                                                );
-                                              }
-                                            },
-                                            child: Container(
-                                              width: Dimensions.width * 0.3,
-                                              padding: EdgeInsets.symmetric(
-                                                vertical:
-                                                    Dimensions.height * 0.01,
-                                              ),
-                                              margin: EdgeInsets.only(
-                                                top: Dimensions.height * 0.02,
-                                              ),
-                                              decoration: BoxDecoration(
-                                                color: Colora.primaryColor,
-                                                borderRadius:
-                                                    BorderRadius.circular(20),
-                                              ),
-                                              child: Center(
-                                                child: FittedBox(
-                                                  fit: BoxFit.scaleDown,
-                                                  child: Text(
-                                                    'ذخیره',
-                                                    style: TextStyle(
-                                                      color: Colora.scaffold,
-                                                      fontSize:
-                                                          Dimensions.width *
-                                                          0.033,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                ),
-
-                                //back
-                                InkWell(
-                                  onTap: () {
-                                    editBackImage = widget.backImage!;
-                                    Navigator.pop(context);
                                   },
                                   child: Container(
                                     width: Dimensions.width * 0.3,
@@ -845,7 +776,7 @@ class _StoreAppbar2State extends State<StoreAppbar2> {
                                       child: FittedBox(
                                         fit: BoxFit.scaleDown,
                                         child: Text(
-                                          'بازگشت',
+                                          'ذخیره',
                                           style: TextStyle(
                                             color: Colora.scaffold,
                                             fontSize: Dimensions.width * 0.033,
@@ -855,15 +786,49 @@ class _StoreAppbar2State extends State<StoreAppbar2> {
                                     ),
                                   ),
                                 ),
-                              ],
-                            ),
-                          ],
                         ),
-                      ),
+
+                        //back
+                        InkWell(
+                          onTap: () {
+                            editBackImage = widget.backImage!;
+                            Navigator.pop(context);
+                          },
+                          child: Container(
+                            width: Dimensions.width * 0.3,
+                            padding: EdgeInsets.symmetric(
+                              vertical: Dimensions.height * 0.01,
+                            ),
+                            margin: EdgeInsets.only(
+                              top: Dimensions.height * 0.02,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colora.primaryColor,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Center(
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  'بازگشت',
+                                  style: TextStyle(
+                                    color: Colora.scaffold,
+                                    fontSize: Dimensions.width * 0.033,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-              );
-            },
-          ),
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 

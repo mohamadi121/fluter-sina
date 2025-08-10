@@ -1,8 +1,9 @@
 import 'dart:io';
 
-import 'package:asood/core/http_client/api_status.dart';
-import 'package:asood/features/inquiry/data/model/inquiry_card_model.dart';
-import 'package:asood/features/inquiry/domain/inquiry_repository.dart';
+import 'package:asoud/core/ui/ui_status.dart';
+import 'package:asoud/core/network/app_result.dart';
+import 'package:asoud/features/inquiry/data/model/inquiry_card_model.dart';
+import 'package:asoud/features/inquiry/domain/inquiry_repository.dart';
 import 'package:bloc/bloc.dart';
 
 part 'inquiry_event.dart';
@@ -18,7 +19,7 @@ class InquiryBloc extends Bloc<InquiryEvent, InquiryState> {
   }
 
   _inquirySubmit(InquirySubmit event, Emitter<InquiryState> emit) async {
-    emit(state.copyWith(status: CWSStatus.loading));
+    emit(state.copyWith(status: const UiLoading()));
     try {
       var res = await inquiryRepo.submitInquiry(
         event.inquiryType,
@@ -32,10 +33,12 @@ class InquiryBloc extends Bloc<InquiryEvent, InquiryState> {
         event.inquiryImages,
       );
       if (res is Success) {
-        emit(state.copyWith(status: CWSStatus.success));
+        emit(state.copyWith(status: const UiSuccess()));
+      } else {
+        emit(state.copyWith(status: UiError(res.error.message)));
       }
     } catch (e) {
-      emit(state.copyWith(status: CWSStatus.failure));
+      emit(state.copyWith(status: UiError(e.toString())));
     }
   }
 

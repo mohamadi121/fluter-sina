@@ -1,19 +1,19 @@
-import 'package:asood/core/helper/snack_bar_util.dart';
-import 'package:asood/core/helper/validators.dart';
-import 'package:asood/core/http_client/api_status.dart';
-import 'package:asood/features/create_workspace/data/model/market_contact.dart';
-import 'package:asood/features/create_workspace/presentation/bloc/create_workspace_bloc.dart';
-import 'package:asood/features/create_workspace/presentation/widgets/custom_switch.dart';
-import 'package:asood/features/create_workspace/presentation/widgets/row_widget_title_widget.dart';
-import 'package:asood/features/create_workspace/presentation/widgets/socialmedia_listbuilder.dart';
-import 'package:asood/features/create_workspace/presentation/widgets/socialmedia_selector.dart';
-import 'package:asood/features/create_workspace/presentation/widgets/weekday_opentime.dart';
+import 'package:asoud/core/helper/snack_bar_util.dart';
+import 'package:asoud/core/helper/validators.dart';
+import 'package:asoud/features/create_workspace/data/model/market_contact.dart';
+import 'package:asoud/features/create_workspace/presentation/bloc/create_workspace_bloc.dart';
+import 'package:asoud/features/create_workspace/presentation/widgets/custom_switch.dart';
+import 'package:asoud/features/create_workspace/presentation/widgets/row_widget_title_widget.dart';
+import 'package:asoud/features/create_workspace/presentation/widgets/socialmedia_listbuilder.dart';
+import 'package:asoud/features/create_workspace/presentation/widgets/socialmedia_selector.dart';
+import 'package:asoud/features/create_workspace/presentation/widgets/weekday_opentime.dart';
 import 'package:flutter/material.dart';
 
-import 'package:asood/core/constants/constants.dart';
+import 'package:asoud/core/constants/constants.dart';
+import 'package:asoud/core/ui/ui_status.dart';
 
-import 'package:asood/core/widgets/custom_button.dart';
-import 'package:asood/core/widgets/custom_textfield.dart';
+import 'package:asoud/core/widgets/custom_button.dart';
+import 'package:asoud/core/widgets/custom_textfield.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ContactsInfo extends StatefulWidget {
@@ -279,21 +279,13 @@ class _ContactsInfoState extends State<ContactsInfo>
                         CustomButton(
                           onPress: () => submit(),
                           text:
-                              BlocProvider.of<CreateWorkSpaceBloc>(
-                                        context,
-                                      ).state.status ==
-                                      CWSStatus.loading
-                                  ? null
-                                  : "بعدی",
+                              BlocProvider.of<CreateWorkSpaceBloc>(context).state.status is UiLoading ? null : "بعدی",
                           color: Colors.white,
                           textColor: Colora.primaryColor,
                           height: 40,
                           width: 100,
                           btnWidget:
-                              BlocProvider.of<CreateWorkSpaceBloc>(
-                                        context,
-                                      ).state.status ==
-                                      CWSStatus.loading
+                              BlocProvider.of<CreateWorkSpaceBloc>(context).state.status is UiLoading
                                   ? const Center(
                                     child: SizedBox(
                                       height: 25,

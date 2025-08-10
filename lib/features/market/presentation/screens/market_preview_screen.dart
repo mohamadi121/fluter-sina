@@ -1,21 +1,22 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/helper/secure_storage.dart';
-import 'package:asood/core/http_client/api_status.dart';
-import 'package:asood/core/models/location_model.dart';
-import 'package:asood/core/models/market_model.dart';
-import 'package:asood/core/widgets/custom_bottom_navbar.dart';
-import 'package:asood/core/widgets/map_widget_2.dart';
-import 'package:asood/features/market/data/model/theme_model_model.dart';
-import 'package:asood/features/market/presentation/blocs/bloc/market_bloc.dart';
-import 'package:asood/features/market/presentation/widgets/comment_messagebox_widget.dart';
-import 'package:asood/features/market/presentation/widgets/share_store.dart';
-import 'package:asood/features/market/presentation/widgets/store_appbar.dart';
-import 'package:asood/features/market/presentation/widgets/themes_screen.dart';
-import 'package:asood/features/vendor/presentation/bloc/vendor/vendor_bloc.dart';
-import 'package:asood/features/vendor/presentation/bloc/workspace/workspace_bloc.dart';
+import 'package:asoud/core/constants/constants.dart';
+import 'package:asoud/core/config/env_config.dart';
+import 'package:asoud/core/helper/secure_storage.dart';
+import 'package:asoud/core/ui/ui_status.dart';
+import 'package:asoud/core/models/location_model.dart';
+import 'package:asoud/core/models/market_model.dart';
+import 'package:asoud/core/widgets/custom_bottom_navbar.dart';
+import 'package:asoud/core/widgets/map_widget_2.dart';
+import 'package:asoud/features/market/data/model/theme_model_model.dart';
+import 'package:asoud/features/market/presentation/blocs/bloc/market_bloc.dart';
+import 'package:asoud/features/market/presentation/widgets/comment_messagebox_widget.dart';
+import 'package:asoud/features/market/presentation/widgets/share_store.dart';
+import 'package:asoud/features/market/presentation/widgets/store_appbar.dart';
+import 'package:asoud/features/market/presentation/widgets/themes_screen.dart';
+import 'package:asoud/features/vendor/presentation/bloc/vendor/vendor_bloc.dart';
+import 'package:asoud/features/vendor/presentation/bloc/workspace/workspace_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
@@ -190,7 +191,7 @@ class _MarketPreviewScreenState extends State<MarketPreviewScreen> {
   bool isMarketBookmarked = false;
 
   void getUserBookMarks() async {
-    String url = 'http://asoud.ir/api/v1/user/market/bookmark/';
+    String url = '${EnvConfig.baseUrl}/api/v1/user/market/bookmark/';
     String? token = await SecureStorage.readSecureStorage(Keys.token);
     var response = await http.get(
       Uri.parse(url),
@@ -217,7 +218,7 @@ class _MarketPreviewScreenState extends State<MarketPreviewScreen> {
     // print('sina this is market id :');
     // print(marketId);
 
-    String url = 'http://asoud.ir/api/v1/user/market/bookmark/$marketId/';
+    String url = '${EnvConfig.baseUrl}/api/v1/user/market/bookmark/$marketId/';
     String? token = await SecureStorage.readSecureStorage(Keys.token);
 
     var response = await http.post(
@@ -305,7 +306,7 @@ class _MarketPreviewScreenState extends State<MarketPreviewScreen> {
                                       autoPlay: false,
                                     ),
                                     items:
-                                        state.status == CWSStatus.loading
+                                        state.status.isLoading
                                             ? List.generate(1, (index) {
                                               return Container(
                                                 width: Dimensions.width,

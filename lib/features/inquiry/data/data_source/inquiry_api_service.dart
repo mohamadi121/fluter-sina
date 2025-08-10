@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:asood/core/http_client/api_client.dart';
-import 'package:asood/core/http_client/api_status.dart';
+import 'package:asoud/core/http_client/api_client.dart';
+import 'package:asoud/core/http_client/api_status.dart';
 import 'package:dio/dio.dart';
 
 class InquiryAPIService {

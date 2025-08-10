@@ -1,10 +1,12 @@
-import 'package:asood/core/helper/enum_changer.dart';
-import 'package:asood/core/http_client/api_status.dart';
-import 'package:asood/features/market/data/model/product_model.dart';
-import 'package:asood/features/market/data/model/theme_model_model.dart';
-import 'package:asood/features/market/domain/repository/product_repository.dart';
+import 'package:asoud/core/helper/enum_changer.dart';
+import 'package:asoud/features/market/data/model/product_model.dart';
+import 'package:asoud/features/market/data/model/theme_model_model.dart';
+import 'package:asoud/core/ui/ui_status.dart';
 import 'package:bloc/bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:asoud/features/market/domain/repository/product_repository.dart';
+import 'package:asoud/core/network/app_result.dart';
+import 'package:asoud/core/models/dto/product_dto.dart';
 
 part 'add_product_event.dart';
 part 'add_product_state.dart';
@@ -14,35 +16,24 @@ class AddProductBloc extends Bloc<AddProductEvent, AddProductState> {
   AddProductBloc(this.productRepository) : super(AddProductState.initial()) {
     on<ResetDataEvent>((event, emit) => emit(AddProductState.initial()));
     on<AddProductEvent>((event, emit) {});
-
     on<ProductTypeEvent>(_changeProductType);
-
     on<SetIsMarketerEvent>(_changeMarketerType);
     on<SetIsRequirementEvent>(_changeIsRequirementType);
-
     on<SetCategoryEvent>(_changeCategory);
-
     on<ProductPriceStockEvent>(_changeProductPriceStockExtra);
     on<ChangeProductStockEvent>(_changeProductStock);
-
     on<DiscountTypeEvent>(_changeDiscountType);
     on<DiscountValuesEvent>(_changeDiscountValues);
-
     on<ProductExtraEvent>(_changeProductExtra);
     on<LoadProductListEvent>(_loadProductList);
     on<ChangeProductGiftAndRequiredEvent>(_changeProductRequiredGifted);
-
     on<ProductTagSaleEvent>(_changeProductTgSale);
-
     on<AddTagsEvent>(_addTags);
     on<AddKeywordsEvent>(_addKeywords);
     on<RemoveKeywordsEvent>(_removeKeywords);
-
     on<SubmitNewProductEvent>(_submitNewProduct);
     on<UpdatePublishStatusEvent>(_updatePublishStatus);
-
     on<UpdateProductDetailEvent>(_updateProductDetail);
-
     on<UpdateCategoryImageEvent>(_updateCategoryImage);
     on<SubmitThemeWithProductEvent>(_submitAndUpdatewithProduct);
   }
@@ -157,21 +148,14 @@ class AddProductBloc extends Bloc<AddProductEvent, AddProductState> {
     );
   }
 
-  _loadProductList(
-    LoadProductListEvent event,
-    Emitter<AddProductState> emit,
-  ) async {
-    emit(state.copyWith(giftStatus: CWSStatus.loading));
-    var res = await productRepository.productList(event.marketId);
-    if (res is Success) {
-      List<ThemeProductModel> product =
-          (res.response as List)
-              .map((e) => ThemeProductModel.fromJson(e))
-              .toList();
-
-      emit(state.copyWith(giftStatus: CWSStatus.success, productList: product));
-    } else if (res is Failure) {
-      emit(state.copyWith(giftStatus: CWSStatus.failure));
+  _loadProductList(LoadProductListEvent event, Emitter<AddProductState> emit) async {
+    emit(state.copyWith(giftStatus: const UiLoading()));
+    final res = await productRepository.listOwner(event.marketId);
+    if (res is Success<List<ProductListItemDto>>) {
+      final product = res.data.map((e) => ThemeProductModel.fromJson(e.toJson())).toList();
+      emit(state.copyWith(giftStatus: const UiSuccess(), productList: product));
+    } else {
+      emit(state.copyWith(giftStatus: UiError(res.error.message)));
     }
   }
 
@@ -220,80 +204,56 @@ class AddProductBloc extends Bloc<AddProductEvent, AddProductState> {
     SubmitThemeWithProductEvent event,
     Emitter<AddProductState> emit,
   ) async {}
-  _submitNewProduct(
-    SubmitNewProductEvent event,
-    Emitter<AddProductState> emit,
-  ) async {
-    emit(state.copyWith(status: CWSStatus.loading));
-
+  _submitNewProduct(SubmitNewProductEvent event, Emitter<AddProductState> emit) async {
+    emit(state.copyWith(status: const UiLoading()));
     try {
-      // مرحله ۱: اگر تخفیف فعاله، اول تخفیف رو ایجاد کن
       if (state.discountType != DiscountType.none) {
-        final discountRes = await productRepository.createProductDiscount(
-          event.market,
-          state.discountPosition,
-          state.discountPercentage,
-          state.discountDays,
-        );
-
-        if (discountRes is! Success) {
-          throw Exception('Failed to create product discount');
+        final discountRes = await productRepository.createDiscount({
+          'productId': event.market,
+          'position': tagPositionEnumChanger(state.discountPosition),
+          'percentage': state.discountPercentage,
+          'duration': state.discountDays,
+        });
+        if (discountRes is Failure<bool>) {
+          emit(state.copyWith(status: UiError(discountRes.error.message)));
+          return;
         }
       }
-
-      // مرحله ۲: ساخت مدل محصول
-      final product = ProductModel(
+      final dto = ProductCreateDto(
         market: event.market,
         type: state.productType.name,
         name: event.name,
         description: event.description,
-        technicalDetail: event.technicalDetail,
-        stock: state.productStock,
-        price: state.productPrice,
-        requiredProduct: state.selectedProductGift?.id ?? "",
-        giftProduct: state.selectedProductGift?.id ?? "",
-        isMarketer: state.isMarketer,
-        sellType: sellTypeEnumChanger(state.productSellType),
-        shipCost: 2000, // TODO: Update ship cost from backend
-        shipCostPayType: state.productSendPrice.name,
-        publishStatus: publishStatusEnumChanger(state.publishStatus),
+        technicalDetails: event.technicalDetail,
         subCategory: state.selectedCategoryId,
         keywords: state.keywords,
-        tag: tagEnumChanger(state.productTag),
-        tagPosition: tagPositionEnumChanger(state.productPosition),
+        stock: state.productStock,
+        price: state.productPrice,
         mainPrice: state.productPrice,
         colleaguePrice: state.productPrice,
         marketerPrice: state.productPrice,
         maximumSellPrice: state.productPrice,
+        status: publishStatusEnumChanger(state.publishStatus),
+        requiredProduct: state.selectedProductGift?.id ?? '',
+        giftProduct: state.selectedProductGift?.id ?? '',
+        isMarketer: state.isMarketer,
         isRequirement: state.isRequirement,
-        image: state.selectedCategoryImageFile,
+        tag: tagEnumChanger(state.productTag),
+        tagPosition: tagPositionEnumChanger(state.productPosition),
+        sellType: sellTypeEnumChanger(state.productSellType),
+        shipCost: 2000,
+        shipCostPayType: state.productSendPrice.name,
       );
-
-      // مرحله ۳: ساخت محصول
-      final createProductRes = await productRepository.createProduct(product);
-      if (createProductRes is Success) {
-        final productModel = ProductModel.fromJson(
-          createProductRes.response as Map<String, dynamic>,
-        );
-
-        // مرحله ۴: آپدیت تم مارکت
-        final themeRes = await productRepository.updateMarketTheme(
-          themeId: event.themeId,
-          productId: productModel.product!,
-          themeIndex: event.themeIndex,
-        );
-
-        if (themeRes is! Success) {
-          throw Exception('Failed to update market theme');
-        }
-
-        emit(state.copyWith(status: CWSStatus.success));
+      final createRes = await productRepository.create(dto);
+      if (createRes is Success<ProductDto>) {
+        emit(state.copyWith(status: const UiSuccess()));
+      } else {
+        emit(state.copyWith(status: UiError(createRes.error.message)));
       }
     } catch (e) {
-      print('Add product error: $e');
-      emit(state.copyWith(status: CWSStatus.failure));
+      emit(state.copyWith(status: UiError(e.toString())));
     } finally {
-      emit(state.copyWith(status: CWSStatus.initial));
+      emit(state.copyWith(status: const UiIdle()));
     }
   }
 }

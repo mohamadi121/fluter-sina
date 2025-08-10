@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:asood/core/constants/constants.dart';
-import 'package:asood/features/market/presentation/blocs/add_product/add_product_bloc.dart';
-import 'package:asood/features/market/presentation/widgets/create_product/position_selector.dart';
+import 'package:asoud/core/constants/constants.dart';
+import 'package:asoud/features/market/presentation/blocs/add_product/add_product_bloc.dart';
+import 'package:asoud/features/market/presentation/widgets/create_product/position_selector.dart';
 
 class DiscountBuilder extends StatelessWidget {
   DiscountBuilder({super.key});

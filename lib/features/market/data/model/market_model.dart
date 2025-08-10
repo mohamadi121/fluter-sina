@@ -1,4 +1,4 @@
-import 'package:asood/features/market/data/model/theme_model_model.dart';
+import 'package:asoud/features/market/data/model/theme_model_model.dart';
 
 class TemplateModel {
   final String id;

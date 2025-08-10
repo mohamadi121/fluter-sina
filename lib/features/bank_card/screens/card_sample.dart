@@ -1,5 +1,5 @@
-import 'package:asood/core/constants/constants.dart';
-import 'package:asood/features/bank_card/screens/bank_card_sharing_screen.dart';
+import 'package:asoud/core/constants/constants.dart';
+import 'package:asoud/features/bank_card/screens/bank_card_sharing_screen.dart';
 import 'package:flutter/material.dart';
 
 class BankSample extends StatefulWidget {

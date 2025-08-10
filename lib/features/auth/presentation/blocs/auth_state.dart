@@ -1,10 +1,8 @@
 part of 'auth_bloc.dart';
 
-enum AuthStatus { initial, loading, success, error }
-
 class AuthState {
   final String phoneNumber;
-  final AuthStatus status;
+  final UiStatus status;
   final bool termStatus;
   final String error;
 
@@ -17,7 +15,7 @@ class AuthState {
 
   factory AuthState.initial() {
     return const AuthState(
-      status: AuthStatus.initial,
+      status: UiIdle(),
       termStatus: false,
       error: '',
       phoneNumber: '',
@@ -25,7 +23,7 @@ class AuthState {
   }
 
   AuthState copyWith({
-    AuthStatus? status,
+    UiStatus? status,
     bool? termStatus,
     String? error,
     String? phoneNumber,

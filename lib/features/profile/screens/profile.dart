@@ -1,12 +1,12 @@
-import 'package:asood/core/widgets/appbar/default_appbar.dart';
+import 'package:asoud/core/widgets/appbar/default_appbar.dart';
 import 'package:flutter/material.dart';
 
-import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/widgets/custom_button.dart';
-import 'package:asood/core/widgets/custom_textfield.dart';
+import 'package:asoud/core/constants/constants.dart';
+import 'package:asoud/core/widgets/custom_button.dart';
+import 'package:asoud/core/widgets/custom_textfield.dart';
 
-import 'package:asood/core/widgets/simple_bot_navbar.dart';
-import 'package:asood/features/profile/widget/picture_selector.dart';
+import 'package:asoud/core/widgets/simple_bot_navbar.dart';
+import 'package:asoud/features/profile/widget/picture_selector.dart';
 
 class VendorProfileScreen extends StatelessWidget {
   const VendorProfileScreen({super.key});

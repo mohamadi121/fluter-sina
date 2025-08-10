@@ -1,7 +1,7 @@
 part of 'workspace_bloc.dart';
 
 class WorkspaceState {
-  final CWSStatus status;
+  final UiStatus status;
   final List<MarketModel> storesList;
   final int? selectedMarket;
 
@@ -25,7 +25,7 @@ class WorkspaceState {
 
   factory WorkspaceState.initial() {
     return const WorkspaceState(
-      status: CWSStatus.initial,
+      status: UiIdle(),
       storesList: [],
       activeTabIndex: 0,
 
@@ -36,7 +36,7 @@ class WorkspaceState {
   }
 
   WorkspaceState copyWith({
-    CWSStatus? status,
+    UiStatus? status,
     List<MarketModel>? storesList,
     int? selectedMarket,
 

@@ -1,14 +1,15 @@
 import 'dart:convert';
+import 'package:asoud/core/config/env_config.dart';
 import 'dart:developer';
 
-import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/helper/secure_storage.dart';
-import 'package:asood/core/widgets/appbar/default_appbar.dart';
-import 'package:asood/core/widgets/custom_button.dart';
-import 'package:asood/core/widgets/search_box.dart';
-import 'package:asood/core/widgets/simple_bot_navbar.dart';
-import 'package:asood/features/inquiry/presentation/screens/inquiry_dashboard.dart';
-import 'package:asood/features/inquiry/presentation/screens/submit_fee_inquiry.dart';
+import 'package:asoud/core/constants/constants.dart';
+import 'package:asoud/core/helper/secure_storage.dart';
+import 'package:asoud/core/widgets/appbar/default_appbar.dart';
+import 'package:asoud/core/widgets/custom_button.dart';
+import 'package:asoud/core/widgets/search_box.dart';
+import 'package:asoud/core/widgets/simple_bot_navbar.dart';
+import 'package:asoud/features/inquiry/presentation/screens/inquiry_dashboard.dart';
+import 'package:asoud/features/inquiry/presentation/screens/submit_fee_inquiry.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -25,7 +26,7 @@ class _InquiryRequestsScreenState extends State<InquiryRequestsScreen> {
 
   void getInquiries() async {
     inquiries.clear();
-    String url = 'http://asoud.ir/api/v1/user/inquiries/';
+    String url = '${EnvConfig.baseUrl}/api/v1/user/inquiries/';
     String? token = await SecureStorage.readSecureStorage(Keys.token);
 
     var response = await http.get(
@@ -44,7 +45,7 @@ class _InquiryRequestsScreenState extends State<InquiryRequestsScreen> {
   void sendData(String send, String id) async {
     String? token = await SecureStorage.readSecureStorage(Keys.token);
 
-    String url = 'http://asoud.ir/api/v1/user/inquiries/$id/send/';
+    String url = '${EnvConfig.baseUrl}/api/v1/user/inquiries/$id/send/';
 
     Map<String, dynamic> data = {'send': send};
 
@@ -241,7 +242,7 @@ class _InquiryRequestsScreenState extends State<InquiryRequestsScreen> {
                                                           30,
                                                         ),
                                                     child: Image.network(
-                                                      'http://asoud.ir/${inquiry['images'][0]['image']}',
+                                                      '${EnvConfig.baseUrl}/${inquiry['images'][0]['image']}',
                                                       fit: BoxFit.cover,
                                                     ),
                                                   ),

@@ -1,14 +1,14 @@
-import 'package:asood/features/create_workspace/data/model/market_contact.dart';
-import 'package:asood/features/create_workspace/data/model/market_schedule.dart';
+import 'package:asoud/features/create_workspace/data/model/market_contact.dart';
+import 'package:asoud/features/create_workspace/data/model/market_schedule.dart';
 import 'package:dio/dio.dart';
 import 'package:image_picker/image_picker.dart';
 
-import 'package:asood/core/constants/endpoints.dart';
-import 'package:asood/core/http_client/api_client.dart';
-import 'package:asood/core/http_client/api_status.dart';
-import 'package:asood/core/models/theme_model.dart';
+import 'package:asoud/core/constants/endpoints.dart';
+import 'package:asoud/core/http_client/api_client.dart';
+import 'package:asoud/core/http_client/api_status.dart';
+import 'package:asoud/core/models/theme_model.dart';
 
-import 'package:asood/features/vendor/data/model/market_location_model.dart';
+import 'package:asoud/features/vendor/data/model/market_location_model.dart';
 
 class CreateMarketApiService {
   DioClient dioClient;

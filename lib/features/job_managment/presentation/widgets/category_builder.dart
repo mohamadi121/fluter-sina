@@ -1,8 +1,8 @@
-import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/http_client/api_status.dart';
-import 'package:asood/core/widgets/custom_button.dart';
-import 'package:asood/features/job_managment/data/model/category_model.dart';
-import 'package:asood/features/job_managment/presentation/bloc/jobmanagment_bloc.dart';
+import 'package:asoud/core/constants/constants.dart';
+import 'package:asoud/core/ui/ui_status.dart';
+import 'package:asoud/core/widgets/custom_button.dart';
+import 'package:asoud/features/job_managment/data/model/category_model.dart';
+import 'package:asoud/features/job_managment/presentation/bloc/jobmanagment_bloc.dart';
 import 'package:flutter/material.dart';
 
 class CategoryBuilder extends StatelessWidget {
@@ -23,30 +23,19 @@ class CategoryBuilder extends StatelessWidget {
       shrinkWrap: true,
       itemBuilder: (BuildContext context, int index) {
         CategoryModel selectedCategory = categories[index];
+        final loading = state.status.isLoading;
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: CustomButton(
-            onPress: () {
-              onItemTap(index);
-            },
-            text:
-                state.status == CWSStatus.loading
-                    ? null
-                    : selectedCategory.title!,
+            onPress: () { if (!loading) onItemTap(index); },
+            text: loading ? null : selectedCategory.title!,
             color: Colors.white,
             textColor: Colora.primaryColor,
             height: 40,
             width: 100,
-            btnWidget:
-                state.status == CWSStatus.loading
-                    ? const Center(
-                      child: SizedBox(
-                        height: 25,
-                        width: 25,
-                        child: CircularProgressIndicator(color: Colors.white),
-                      ),
-                    )
-                    : null,
+            btnWidget: loading
+                ? const Center(child: SizedBox(height: 25, width: 25, child: CircularProgressIndicator(color: Colors.white)))
+                : null,
           ),
         );
       },

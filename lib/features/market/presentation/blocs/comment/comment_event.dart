@@ -4,7 +4,13 @@ sealed class CommentEvent {
   const CommentEvent();
 }
 
-class LoadComments extends CommentEvent {
-  final int marketId;
-  const LoadComments({required this.marketId});
+class LoadCommentsEvent extends CommentEvent {
+  final String marketId;
+  const LoadCommentsEvent({required this.marketId});
+}
+
+class AddCommentEvent extends CommentEvent {
+  final String marketId;
+  final String content;
+  const AddCommentEvent({required this.marketId, required this.content});
 }

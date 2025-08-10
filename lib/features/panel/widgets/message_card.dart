@@ -1,5 +1,5 @@
-import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/router/app_routers.dart';
+import 'package:asoud/core/constants/constants.dart';
+import 'package:asoud/core/router/app_routers.dart';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';

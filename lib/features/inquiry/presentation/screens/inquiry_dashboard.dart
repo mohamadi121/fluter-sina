@@ -1,9 +1,9 @@
-import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/widgets/appbar/default_appbar.dart';
-import 'package:asood/core/widgets/simple_bot_navbar.dart';
-import 'package:asood/features/inquiry/presentation/screens/dashboard/inquiry_form.dart';
-import 'package:asood/features/inquiry/presentation/screens/dashboard/inquiry_list.dart';
-import 'package:asood/features/inquiry/presentation/screens/dashboard/inquiry_reply.dart';
+import 'package:asoud/core/constants/constants.dart';
+import 'package:asoud/core/widgets/appbar/default_appbar.dart';
+import 'package:asoud/core/widgets/simple_bot_navbar.dart';
+import 'package:asoud/features/inquiry/presentation/screens/dashboard/inquiry_form.dart';
+import 'package:asoud/features/inquiry/presentation/screens/dashboard/inquiry_list.dart';
+import 'package:asoud/features/inquiry/presentation/screens/dashboard/inquiry_reply.dart';
 import 'package:flutter/material.dart';
 
 class InquiryDashboard extends StatefulWidget {

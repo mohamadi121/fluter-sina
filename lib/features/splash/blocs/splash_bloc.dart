@@ -1,5 +1,5 @@
-import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/helper/secure_storage.dart';
+import 'package:asoud/core/constants/constants.dart';
+import 'package:asoud/core/helper/secure_storage.dart';
 import 'package:bloc/bloc.dart';
 
 part 'splash_event.dart';

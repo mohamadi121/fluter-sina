@@ -1,4 +1,4 @@
-import 'package:asood/core/constants/constants.dart';
+import 'package:asoud/core/constants/constants.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 

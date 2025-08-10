@@ -1,21 +1,21 @@
-import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/http_client/api_status.dart';
-import 'package:asood/core/widgets/appbar/default_appbar.dart';
-import 'package:asood/core/widgets/custom_textfield.dart';
-import 'package:asood/features/market/presentation/blocs/add_product/add_product_bloc.dart';
-import 'package:asood/features/market/presentation/blocs/bloc/market_bloc.dart';
-import 'package:asood/features/market/presentation/widgets/create_product/active_broadcast_widget.dart';
-import 'package:asood/features/market/presentation/widgets/create_product/category_selection_section.dart';
-import 'package:asood/features/market/presentation/widgets/create_product/discount_builder.dart';
-import 'package:asood/features/market/presentation/widgets/create_product/keyword_builder_widget.dart';
-import 'package:asood/features/market/presentation/widgets/create_product/price_widget.dart';
-import 'package:asood/features/market/presentation/widgets/create_product/product_pic_section.dart';
-import 'package:asood/features/market/presentation/widgets/create_product/product_type_widget.dart';
-import 'package:asood/features/market/presentation/widgets/create_product/publish_status_section.dart';
-import 'package:asood/features/market/presentation/widgets/create_product/select_gift_extra.dart';
-import 'package:asood/features/market/presentation/widgets/create_product/select_sell_type_section.dart';
-import 'package:asood/features/market/presentation/widgets/create_product/select_tag_section.dart';
-import 'package:asood/features/market/presentation/widgets/create_product/stock_widget.dart';
+import 'package:asoud/core/constants/constants.dart';
+import 'package:asoud/core/ui/ui_status.dart';
+import 'package:asoud/core/widgets/appbar/default_appbar.dart';
+import 'package:asoud/core/widgets/custom_textfield.dart';
+import 'package:asoud/features/market/presentation/blocs/add_product/add_product_bloc.dart';
+import 'package:asoud/features/market/presentation/blocs/bloc/market_bloc.dart';
+import 'package:asoud/features/market/presentation/widgets/create_product/active_broadcast_widget.dart';
+import 'package:asoud/features/market/presentation/widgets/create_product/category_selection_section.dart';
+import 'package:asoud/features/market/presentation/widgets/create_product/discount_builder.dart';
+import 'package:asoud/features/market/presentation/widgets/create_product/keyword_builder_widget.dart';
+import 'package:asoud/features/market/presentation/widgets/create_product/price_widget.dart';
+import 'package:asoud/features/market/presentation/widgets/create_product/product_pic_section.dart';
+import 'package:asoud/features/market/presentation/widgets/create_product/product_type_widget.dart';
+import 'package:asoud/features/market/presentation/widgets/create_product/publish_status_section.dart';
+import 'package:asoud/features/market/presentation/widgets/create_product/select_gift_extra.dart';
+import 'package:asoud/features/market/presentation/widgets/create_product/select_sell_type_section.dart';
+import 'package:asoud/features/market/presentation/widgets/create_product/select_tag_section.dart';
+import 'package:asoud/features/market/presentation/widgets/create_product/stock_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -56,7 +56,7 @@ class _CreateProductState extends State<CreateProduct> {
       child: SafeArea(
         child: BlocConsumer<AddProductBloc, AddProductState>(
           listener: (context, state) {
-            if (state.status == CWSStatus.success) {
+            if (state.status is UiSuccess) {
               context.read<MarketBloc>().add(
                 LoadTemplateEvent(marketId: widget.marketId),
               );
@@ -72,13 +72,15 @@ class _CreateProductState extends State<CreateProduct> {
                 ),
               );
             }
-            if (state.status == CWSStatus.failure) {
+            if (state.status is UiError) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
+                SnackBar(
                   backgroundColor: Colora.borderAvatar,
                   content: Text(
-                    "خطا در برقراری ارتباط",
-                    style: TextStyle(color: Colora.scaffold),
+                    (state.status as UiError).message.isNotEmpty
+                        ? (state.status as UiError).message
+                        : "خطا در برقراری ارتباط",
+                    style: const TextStyle(color: Colora.scaffold),
                   ),
                 ),
               );
@@ -241,6 +243,7 @@ class _CreateProductState extends State<CreateProduct> {
                                       ),
                                       child: MaterialButton(
                                         onPressed: () {
+                                          if (state.status.isLoading) return;
                                           if (state.productName.isEmpty ||
                                               state
                                                   .productDescription
@@ -309,7 +312,7 @@ class _CreateProductState extends State<CreateProduct> {
                                           }
                                         },
                                         child:
-                                            state.status == CWSStatus.loading
+                                            state.status.isLoading
                                                 ? const CircularProgressIndicator(
                                                   color: Colora.primaryColor,
                                                 )

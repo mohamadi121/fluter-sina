@@ -1,13 +1,13 @@
-import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/helper/snack_bar_util.dart';
-import 'package:asood/core/helper/validators.dart';
-import 'package:asood/core/http_client/api_status.dart';
-import 'package:asood/core/router/app_routers.dart';
-import 'package:asood/core/widgets/custom_button.dart';
-import 'package:asood/core/widgets/custom_textfield.dart';
-import 'package:asood/core/widgets/radio_button.dart';
-import 'package:asood/features/create_workspace/presentation/bloc/create_workspace_bloc.dart';
-import 'package:asood/features/create_workspace/presentation/widgets/simple_title.dart';
+import 'package:asoud/core/constants/constants.dart';
+import 'package:asoud/core/helper/snack_bar_util.dart';
+import 'package:asoud/core/helper/validators.dart';
+import 'package:asoud/core/router/app_routers.dart';
+import 'package:asoud/core/ui/ui_status.dart';
+import 'package:asoud/core/widgets/custom_button.dart';
+import 'package:asoud/core/widgets/custom_textfield.dart';
+import 'package:asoud/core/widgets/radio_button.dart';
+import 'package:asoud/features/create_workspace/presentation/bloc/create_workspace_bloc.dart';
+import 'package:asoud/features/create_workspace/presentation/widgets/simple_title.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -273,23 +273,13 @@ class _BasicInfoState extends State<BasicInfo>
                                       );
                                     }
                                   },
-                                  text:
-                                      BlocProvider.of<CreateWorkSpaceBloc>(
-                                                context,
-                                              ).state.status ==
-                                              CWSStatus.loading
-                                          ? null
-                                          : "ویرایش",
+                                  text: BlocProvider.of<CreateWorkSpaceBloc>(context).state.status is UiLoading ? null : "ویرایش",
                                   color: Colors.white,
                                   textColor: Colora.primaryColor,
                                   height: 40,
                                   width: 100,
-                                  btnWidget:
-                                      BlocProvider.of<CreateWorkSpaceBloc>(
-                                                context,
-                                              ).state.status ==
-                                              CWSStatus.loading
-                                          ? const Center(
+                                  btnWidget: BlocProvider.of<CreateWorkSpaceBloc>(context).state.status is UiLoading
+                                      ? const Center(
                                             child: SizedBox(
                                               height: 25,
                                               width: 25,
@@ -297,27 +287,17 @@ class _BasicInfoState extends State<BasicInfo>
                                                   CircularProgressIndicator(),
                                             ),
                                           )
-                                          : null,
+                                      : null,
                                 )
                                 : CustomButton(
                                   onPress: () => submit(),
-                                  text:
-                                      BlocProvider.of<CreateWorkSpaceBloc>(
-                                                context,
-                                              ).state.status ==
-                                              CWSStatus.loading
-                                          ? null
-                                          : "بعدی",
+                                  text: BlocProvider.of<CreateWorkSpaceBloc>(context).state.status is UiLoading ? null : "بعدی",
                                   color: Colors.white,
                                   textColor: Colora.primaryColor,
                                   height: 40,
                                   width: 100,
-                                  btnWidget:
-                                      BlocProvider.of<CreateWorkSpaceBloc>(
-                                                context,
-                                              ).state.status ==
-                                              CWSStatus.loading
-                                          ? const Center(
+                                  btnWidget: BlocProvider.of<CreateWorkSpaceBloc>(context).state.status is UiLoading
+                                      ? const Center(
                                             child: SizedBox(
                                               height: 25,
                                               width: 25,
@@ -325,7 +305,7 @@ class _BasicInfoState extends State<BasicInfo>
                                                   CircularProgressIndicator(),
                                             ),
                                           )
-                                          : null,
+                                      : null,
                                 ),
                       ),
                     ),

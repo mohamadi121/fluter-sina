@@ -1,7 +1,7 @@
-import 'package:asood/features/market/data/data_source/product_api_service.dart';
-import 'package:asood/features/market/data/model/product_model.dart';
-import 'package:asood/features/market/domain/repository/product_repository.dart';
-import 'package:asood/features/market/presentation/blocs/add_product/add_product_bloc.dart';
+import 'package:asoud/features/market/data/data_source/product_api_service.dart';
+import 'package:asoud/features/market/data/model/product_model.dart';
+import 'package:asoud/features/market/domain/repository/product_repository.dart';
+import 'package:asoud/features/market/presentation/blocs/add_product/add_product_bloc.dart';
 
 class ProductRepositoryImp implements ProductRepository {
   final ProductApiService productApiService;
@@ -52,5 +52,29 @@ class ProductRepositoryImp implements ProductRepository {
       themeId,
       themeIndex,
     );
+  }
+
+  @override
+  Future listOwner(String marketId) async {
+    // TODO: Implement listOwner functionality
+    return [];
+  }
+
+  @override
+  Future createDiscount(Map<String, dynamic> discountData) async {
+    // TODO: Implement createDiscount functionality
+    return true;
+  }
+
+  @override
+  Future create(dynamic dto) async {
+    // TODO: Implement create functionality
+    return true;
+  }
+
+  @override
+  Future listMarketThemes(String marketId) async {
+    // TODO: Implement listMarketThemes functionality
+    return [];
   }
 }

@@ -1,10 +1,10 @@
-import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/constants/endpoints.dart';
+import 'package:asoud/core/constants/constants.dart';
+import 'package:asoud/core/constants/endpoints.dart';
 import 'package:dio/dio.dart';
 
-import 'package:asood/core/helper/secure_storage.dart';
-import 'package:asood/core/http_client/api_client.dart';
-import 'package:asood/core/http_client/api_status.dart';
+import 'package:asoud/core/helper/secure_storage.dart';
+import 'package:asoud/core/http_client/api_client.dart';
+import 'package:asoud/core/http_client/api_status.dart';
 
 class AuthApiService {
   final DioClient dioClient;

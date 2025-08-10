@@ -1,14 +1,15 @@
 import 'dart:convert';
 
-import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/helper/secure_storage.dart';
-import 'package:asood/core/helper/snack_bar_util.dart';
-import 'package:asood/core/http_client/api_status.dart';
-import 'package:asood/core/router/app_routers.dart';
-import 'package:asood/features/market/data/model/theme_model_model.dart';
-import 'package:asood/features/market/presentation/blocs/add_product/add_product_bloc.dart';
-import 'package:asood/features/market/presentation/blocs/bloc/market_bloc.dart';
-import 'package:asood/features/vendor/presentation/bloc/vendor/vendor_bloc.dart';
+import 'package:asoud/core/constants/constants.dart';
+import 'package:asoud/core/helper/secure_storage.dart';
+import 'package:asoud/core/helper/snack_bar_util.dart';
+import 'package:asoud/core/ui/ui_status.dart';
+import 'package:asoud/core/router/app_routers.dart';
+import 'package:asoud/core/config/env_config.dart';
+import 'package:asoud/features/market/data/model/theme_model_model.dart';
+import 'package:asoud/features/market/presentation/blocs/add_product/add_product_bloc.dart';
+import 'package:asoud/features/market/presentation/blocs/bloc/market_bloc.dart';
+import 'package:asoud/features/vendor/presentation/bloc/vendor/vendor_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -193,7 +194,7 @@ class _MultiViewSliderScreenState extends State<MultiViewSliderScreen> {
                                 color: styleState.secondColor,
                                 child: MaterialButton(
                                   onPressed: () {
-                                    if (state.status != CWSStatus.loading) {
+                                    if (!state.status.isLoading) {
                                       bloc.add(
                                         AddTemplateEvent(
                                           marketId: bloc.state.marketId,
@@ -201,9 +202,8 @@ class _MultiViewSliderScreenState extends State<MultiViewSliderScreen> {
                                         ),
                                       );
                                     }
-                                    if (bloc.state.status ==
-                                            CWSStatus.success &&
-                                        state.status != CWSStatus.loading) {
+                                    if (bloc.state.status is UiSuccess &&
+                                        !state.status.isLoading) {
                                       showSnackBar(
                                         context,
                                         "قالب با موفقیت اضافه شد",
@@ -211,7 +211,7 @@ class _MultiViewSliderScreenState extends State<MultiViewSliderScreen> {
                                     }
                                   },
                                   child:
-                                      state.status == CWSStatus.loading
+                                      state.status.isLoading
                                           ? const Center(
                                             child: SizedBox(
                                               height: 25,
@@ -339,7 +339,7 @@ class ProductGridView extends StatefulWidget {
 
 class _ProductGridViewState extends State<ProductGridView> {
   Future<String> getProductLableById(String? id) async {
-    String url = 'http://asoud.ir/api/v1/owner/product/detail/$id/';
+    String url = '${EnvConfig.baseUrl}/api/v1/owner/product/detail/$id/';
     String? token = await SecureStorage.readSecureStorage(Keys.token);
 
     var response = await http.get(
@@ -351,7 +351,7 @@ class _ProductGridViewState extends State<ProductGridView> {
   }
 
   Future<String> getProductLablePositionById(String? id) async {
-    String url = 'http://asoud.ir/api/v1/owner/product/detail/$id/';
+    String url = '${EnvConfig.baseUrl}/api/v1/owner/product/detail/$id/';
     String? token = await SecureStorage.readSecureStorage(Keys.token);
 
     var response = await http.get(

@@ -22,8 +22,8 @@ enum PublishStatusEnum {
 }
 
 class AddProductState {
-  final CWSStatus status;
-  final CWSStatus giftStatus;
+  final UiStatus status;
+  final UiStatus giftStatus;
 
   final String productName;
   final String productDescription;
@@ -122,8 +122,8 @@ class AddProductState {
 
   factory AddProductState.initial() {
     return const AddProductState(
-      status: CWSStatus.initial,
-      giftStatus: CWSStatus.initial,
+      status: UiIdle(),
+      giftStatus: UiIdle(),
 
       productName: '',
       productDescription: '',
@@ -174,8 +174,8 @@ class AddProductState {
   }
 
   AddProductState copyWith({
-    CWSStatus? status,
-    CWSStatus? giftStatus,
+    UiStatus? status,
+    UiStatus? giftStatus,
 
     String? productName,
     String? productDescription,

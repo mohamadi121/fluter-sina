@@ -1,12 +1,13 @@
-import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/helper/snack_bar_util.dart';
-import 'package:asood/core/http_client/api_status.dart';
-import 'package:asood/core/router/app_routers.dart';
-import 'package:asood/core/widgets/appbar/default_appbar.dart';
-import 'package:asood/features/vendor/presentation/bloc/workspace/workspace_bloc.dart';
-import 'package:asood/features/vendor/presentation/widgets/dashboard_carousel.dart';
-import 'package:asood/features/vendor/presentation/widgets/item_box_with_title.dart';
-import 'package:asood/features/vendor/presentation/widgets/simple_itembox.dart';
+import 'package:asoud/core/constants/constants.dart';
+import 'package:asoud/core/config/env_config.dart';
+import 'package:asoud/core/helper/snack_bar_util.dart';
+import 'package:asoud/core/ui/ui_status.dart';
+import 'package:asoud/core/router/app_routers.dart';
+import 'package:asoud/core/widgets/appbar/default_appbar.dart';
+import 'package:asoud/features/vendor/presentation/bloc/workspace/workspace_bloc.dart';
+import 'package:asoud/features/vendor/presentation/widgets/dashboard_carousel.dart';
+import 'package:asoud/features/vendor/presentation/widgets/item_box_with_title.dart';
+import 'package:asoud/features/vendor/presentation/widgets/simple_itembox.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -630,7 +631,7 @@ class DashboardAdditionalWidget extends StatelessWidget {
                       child: ItemBoxTitle(
                         onTap: () {
                           if (index == 3) {
-                            launchUrl(Uri.parse('http://asoud.ir/'));
+                            launchUrl(Uri.parse('${EnvConfig.baseUrl}/'));
                           } else {
                             context.push(
                               dummyData["secondMenu"][index]["page"],
@@ -696,7 +697,7 @@ class DashboardServicesWidget extends StatelessWidget {
                 // if (state.status == WorkspaceStatus.success) {
                 //   _tabController.index = state.activeTabIndex;
                 // }
-                if (state.status == CWSStatus.failure) {
+                if (state.status is UiError) {
                   showSnackBar(
                     context,
                     "مشکلی در بارگذاری پیش آمده , مجدد تلاش کنید!",

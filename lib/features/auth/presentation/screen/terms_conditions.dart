@@ -1,6 +1,7 @@
 import 'dart:convert';
+import 'package:asoud/core/config/env_config.dart';
 
-import 'package:asood/core/constants/constants.dart';
+import 'package:asoud/core/constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -15,7 +16,7 @@ class _TermsAndConditionsState extends State<TermsAndConditions> {
   String terms = '';
 
   void getTerms() async {
-    String url = 'http://asoud.ir/api/v1/info/term/';
+    String url = '${EnvConfig.baseUrl}/api/v1/info/term/';
     var response = await http.get(
       Uri.parse(url),
       headers: {

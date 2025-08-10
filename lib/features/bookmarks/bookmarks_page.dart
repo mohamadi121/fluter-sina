@@ -1,11 +1,12 @@
 import 'dart:convert';
 
-import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/helper/secure_storage.dart';
-import 'package:asood/core/models/market_model.dart';
-import 'package:asood/core/widgets/appbar/default_appbar.dart';
-import 'package:asood/core/widgets/store_card.dart';
-import 'package:asood/features/vendor/presentation/bloc/workspace/workspace_bloc.dart';
+import 'package:asoud/core/constants/constants.dart';
+import 'package:asoud/core/helper/secure_storage.dart';
+import 'package:asoud/core/config/env_config.dart';
+import 'package:asoud/core/models/market_model.dart';
+import 'package:asoud/core/widgets/appbar/default_appbar.dart';
+import 'package:asoud/core/widgets/store_card.dart';
+import 'package:asoud/features/vendor/presentation/bloc/workspace/workspace_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
@@ -22,7 +23,7 @@ class _MyBookmarksState extends State<MyBookmarks> {
 
   void getUserBookMarks() async {
     bookmarks.clear();
-    String url = 'http://asoud.ir/api/v1/user/market/bookmark/';
+    String url = '${EnvConfig.baseUrl}/api/v1/user/market/bookmark/';
     String? token = await SecureStorage.readSecureStorage(Keys.token);
     var response = await http.get(
       Uri.parse(url),

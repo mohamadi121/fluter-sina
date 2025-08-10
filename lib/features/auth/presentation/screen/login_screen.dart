@@ -1,7 +1,8 @@
-import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/router/app_routers.dart';
-import 'package:asood/features/auth/presentation/blocs/auth_bloc.dart';
-import 'package:asood/features/auth/presentation/screen/terms_conditions.dart';
+import 'package:asoud/core/constants/constants.dart';
+import 'package:asoud/core/router/app_routers.dart';
+import 'package:asoud/core/ui/ui_status.dart';
+import 'package:asoud/features/auth/presentation/blocs/auth_bloc.dart';
+import 'package:asoud/features/auth/presentation/screen/terms_conditions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -54,15 +55,16 @@ class LoginScreen extends StatelessWidget {
               height: Dimensions.height * 0.1,
               child: AspectRatio(
                 aspectRatio: 1,
-                child: Assets.images.asood.image(fit: BoxFit.scaleDown),
+                child: Assets.images.asoud.image(fit:
+                BoxFit.scaleDown),
               ),
             ),
 
             BlocConsumer<AuthBloc, AuthState>(
               listener: (context, state) {
-                if (state.status == AuthStatus.success && state.termStatus) {
+                if (state.status is UiSuccess && state.termStatus) {
                   context.go(AppRoutes.otp);
-                } else if (state.status == AuthStatus.error) {
+                } else if (state.status is UiError) {
                   _showSnackBar(context, "کد ارسال نشد");
                   debugPrint(state.error);
                 }
@@ -193,7 +195,7 @@ class LoginScreen extends StatelessWidget {
                             height: Dimensions.height * 0.04,
                             alignment: Alignment.center,
                             child:
-                                state.status == AuthStatus.loading
+                                state.status.isLoading
                                     ? Transform.scale(
                                       scale: 0.6,
                                       child: const CircularProgressIndicator(

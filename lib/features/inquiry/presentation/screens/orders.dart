@@ -1,10 +1,10 @@
-import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/widgets/appbar/default_appbar.dart';
-import 'package:asood/core/widgets/custom_button.dart';
+import 'package:asoud/core/constants/constants.dart';
+import 'package:asoud/core/widgets/appbar/default_appbar.dart';
+import 'package:asoud/core/widgets/custom_button.dart';
 
-import 'package:asood/core/widgets/simple_bot_navbar.dart';
-import 'package:asood/features/inquiry/presentation/widget/inquiry_top_bar_extended.dart';
-import 'package:asood/features/inquiry/presentation/widget/product_service_inquiry_list_widget.dart';
+import 'package:asoud/core/widgets/simple_bot_navbar.dart';
+import 'package:asoud/features/inquiry/presentation/widget/inquiry_top_bar_extended.dart';
+import 'package:asoud/features/inquiry/presentation/widget/product_service_inquiry_list_widget.dart';
 
 import 'package:flutter/material.dart';
 

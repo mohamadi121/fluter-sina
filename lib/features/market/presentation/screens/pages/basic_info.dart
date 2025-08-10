@@ -1,9 +1,9 @@
-import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/helper/validators.dart';
-import 'package:asood/core/widgets/custom_button.dart';
-import 'package:asood/core/widgets/custom_textfield.dart';
-import 'package:asood/core/widgets/radio_button.dart';
-import 'package:asood/features/market/presentation/widgets/simple_title.dart';
+import 'package:asoud/core/constants/constants.dart';
+import 'package:asoud/core/helper/validators.dart';
+import 'package:asoud/core/widgets/custom_button.dart';
+import 'package:asoud/core/widgets/custom_textfield.dart';
+import 'package:asoud/core/widgets/radio_button.dart';
+import 'package:asoud/features/market/presentation/widgets/simple_title.dart';
 import 'package:flutter/material.dart';
 
 class BasicInfo extends StatefulWidget {

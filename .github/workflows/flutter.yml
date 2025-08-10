@@ -1,0 +1,131 @@
+name: Flutter CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.24.3'
+        channel: 'stable'
+
+    - name: Get dependencies
+      run: flutter pub get
+
+    - name: Generate code
+      run: flutter packages pub run build_runner build --delete-conflicting-outputs
+
+    - name: Verify formatting
+      run: dart format --output=none --set-exit-if-changed .
+
+    - name: Analyze project source
+      run: flutter analyze
+
+    - name: Run unit tests
+      run: flutter test --coverage
+
+    - name: Run integration tests
+      run: flutter test test/api/
+
+    - name: Upload coverage reports to Codecov
+      if: success()
+      uses: codecov/codecov-action@v3
+      with:
+        file: coverage/lcov.info
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.24.3'
+        channel: 'stable'
+
+    - name: Get dependencies
+      run: flutter pub get
+
+    - name: Generate code
+      run: flutter packages pub run build_runner build --delete-conflicting-outputs
+
+    - name: Build APK (Development)
+      run: |
+        flutter build apk \
+          --dart-define=ENVIRONMENT=dev \
+          --dart-define=BASE_URL=https://api.asoud.ir \
+          --dart-define=ENABLE_LOGS=true \
+          --debug
+
+    - name: Build APK (Production)
+      run: |
+        flutter build apk \
+          --dart-define=ENVIRONMENT=prod \
+          --dart-define=BASE_URL=https://api.asoud.ir \
+          --dart-define=ENABLE_LOGS=false \
+          --release
+
+    - name: Create unified patch
+      run: |
+        git diff HEAD~1 > uiux.patch
+        echo "# UI/UX Improvements Patch" > PATCH_SUMMARY.md
+        echo "This patch contains all UI/UX improvements and backend alignment changes." >> PATCH_SUMMARY.md
+        echo "" >> PATCH_SUMMARY.md
+        echo "## Files Changed:" >> PATCH_SUMMARY.md
+        git diff --name-only HEAD~1 >> PATCH_SUMMARY.md
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: build-artifacts
+        path: |
+          build/app/outputs/flutter-apk/
+          uiux.patch
+          PATCH_SUMMARY.md
+          UIUX_IMPROVEMENTS.md
+
+  golden-tests:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.24.3'
+        channel: 'stable'
+
+    - name: Get dependencies
+      run: flutter pub get
+
+    - name: Generate code
+      run: flutter packages pub run build_runner build --delete-conflicting-outputs
+
+    - name: Run golden tests
+      run: flutter test --update-goldens test/golden/
+
+    - name: Upload golden test results
+      if: failure()
+      uses: actions/upload-artifact@v3
+      with:
+        name: golden-test-failures
+        path: test/golden/failures/

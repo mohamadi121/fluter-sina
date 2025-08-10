@@ -1,9 +1,9 @@
-import 'package:asood/core/helper/snack_bar_util.dart';
+import 'package:asoud/core/helper/snack_bar_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:asood/core/constants/constants.dart';
-import 'package:asood/features/market/presentation/blocs/add_product/add_product_bloc.dart';
+import 'package:asoud/core/constants/constants.dart';
+import 'package:asoud/features/market/presentation/blocs/add_product/add_product_bloc.dart';
 
 class KeywordBuilderWidget extends StatefulWidget {
   const KeywordBuilderWidget({super.key});

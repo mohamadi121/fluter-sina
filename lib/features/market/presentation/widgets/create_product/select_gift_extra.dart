@@ -2,10 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/http_client/api_status.dart';
-import 'package:asood/core/widgets/custom_button.dart';
-import 'package:asood/features/market/presentation/blocs/add_product/add_product_bloc.dart';
+import 'package:asoud/core/constants/constants.dart';
+import 'package:asoud/core/ui/ui_status.dart';
+import 'package:asoud/core/widgets/custom_button.dart';
+import 'package:asoud/features/market/presentation/blocs/add_product/add_product_bloc.dart';
 
 class SelectGiftExtraProductWidget extends StatelessWidget {
   final String marketId;
@@ -77,12 +77,14 @@ class SelectGiftExtraProductWidget extends StatelessWidget {
         return AlertDialog(
           content: BlocBuilder<AddProductBloc, AddProductState>(
             builder: (context, state) {
-              if (state.giftStatus == CWSStatus.loading) {
+              if (state.giftStatus is UiLoading) {
                 return _loadingWidget();
-              } else if (state.giftStatus == CWSStatus.success) {
+              } else if (state.giftStatus is UiSuccess) {
                 return _productGrid(state.productList, onTap, context);
+              } else if (state.giftStatus is UiError) {
+                return _errorWidget(context, marketId, (state.giftStatus as UiError).message);
               } else {
-                return _errorWidget(context, marketId);
+                return _errorWidget(context, marketId, 'وضعیت نامشخص');
               }
             },
           ),
@@ -99,25 +101,19 @@ class SelectGiftExtraProductWidget extends StatelessWidget {
     ),
   );
 
-  Widget _errorWidget(BuildContext context, String marketId) => SizedBox(
+  Widget _errorWidget(BuildContext context, String marketId, String message) => SizedBox(
     height: Dimensions.height * 0.5,
     child: Column(
       children: [
         SizedBox(
           width: Dimensions.width * 0.7,
           height: Dimensions.height * 0.3,
-          child: const Center(
-            child: Text(
-              'خطا در برقراری اطلاعات',
-              style: TextStyle(color: Colora.primaryColor),
-            ),
+          child: Center(
+            child: Text(message, style: const TextStyle(color: Colora.primaryColor)),
           ),
         ),
         CustomButton(
-          onPress:
-              () => context.read<AddProductBloc>().add(
-                LoadProductListEvent(marketId: marketId),
-              ),
+          onPress: () => context.read<AddProductBloc>().add(LoadProductListEvent(marketId: marketId)),
           color: Colora.primaryColor,
           textColor: Colors.white,
           height: 40,

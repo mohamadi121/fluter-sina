@@ -4,6 +4,11 @@ sealed class ThemeEvent {
   const ThemeEvent();
 }
 
+//----------------- persist ------------------
+class LoadPersistedTheme extends ThemeEvent {
+  const LoadPersistedTheme();
+}
+
 //----------------- color ------------------
 class SelectTopColor extends ThemeEvent {
   final Color topColor;

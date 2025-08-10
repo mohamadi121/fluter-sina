@@ -1,4 +1,4 @@
-import 'package:asood/core/widgets/appbar/default_appbar.dart';
+import 'package:asoud/core/widgets/appbar/default_appbar.dart';
 import 'package:flutter/material.dart';
 
 class InquiryReply extends StatefulWidget {

@@ -8,7 +8,7 @@ class CreateWorkSpaceState {
   final String description;
   final String subCategory;
   final String slogan;
-  final CWSStatus status;
+  final UiStatus status;
   final String message;
   final String marketType;
   final String error;
@@ -132,7 +132,7 @@ class CreateWorkSpaceState {
       slogan: '',
       activeTabIndex: 0,
       hasWorkTime: false,
-      status: CWSStatus.initial,
+      status: const UiIdle(),
       message: '',
       marketType: 'shop',
       error: '',
@@ -173,7 +173,7 @@ class CreateWorkSpaceState {
     String? description,
     String? subCategory,
     String? slogan,
-    CWSStatus? status,
+    UiStatus? status,
     String? message,
     String? marketType,
     String? error,

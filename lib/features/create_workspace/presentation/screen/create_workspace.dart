@@ -1,11 +1,11 @@
-import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/helper/snack_bar_util.dart';
-import 'package:asood/core/http_client/api_status.dart';
-import 'package:asood/core/widgets/appbar/default_appbar.dart';
-import 'package:asood/features/create_workspace/presentation/bloc/create_workspace_bloc.dart';
-import 'package:asood/features/create_workspace/presentation/screen/tab_screens/basic_info.dart';
-import 'package:asood/features/create_workspace/presentation/screen/tab_screens/contacts_info.dart';
-import 'package:asood/features/create_workspace/presentation/screen/tab_screens/location_info.dart';
+import 'package:asoud/core/constants/constants.dart';
+import 'package:asoud/core/helper/snack_bar_util.dart';
+import 'package:asoud/core/ui/ui_status.dart';
+import 'package:asoud/core/widgets/appbar/default_appbar.dart';
+import 'package:asoud/features/create_workspace/presentation/bloc/create_workspace_bloc.dart';
+import 'package:asoud/features/create_workspace/presentation/screen/tab_screens/basic_info.dart';
+import 'package:asoud/features/create_workspace/presentation/screen/tab_screens/contacts_info.dart';
+import 'package:asoud/features/create_workspace/presentation/screen/tab_screens/location_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -78,7 +78,7 @@ class _CreateWorkSpaceScreenState extends State<CreateWorkSpaceScreen>
                   _tabController.index = state.activeTabIndex;
                 }
 
-                if (state.status == CWSStatus.failure) {
+                if (state.status is UiError) {
                   showSnackBar(context, "مشکلی پیش آمده مجددا تلاش کنید");
                 }
               },

@@ -1,8 +1,10 @@
-import 'package:asood/core/http_client/api_status.dart';
-import 'package:asood/core/models/market_model.dart';
-import 'package:asood/features/market/data/model/market_model.dart';
-import 'package:asood/features/market/domain/repository/product_repository.dart';
+import 'package:asoud/core/models/market_model.dart';
+import 'package:asoud/features/market/data/model/market_model.dart';
 import 'package:bloc/bloc.dart';
+import 'package:asoud/features/market/domain/repository/product_repository.dart';
+import 'package:asoud/core/network/app_result.dart';
+import 'package:asoud/core/models/dto/product_dto.dart';
+import 'package:asoud/core/ui/ui_status.dart';
 
 part 'market_event.dart';
 part 'market_state.dart';
@@ -10,8 +12,6 @@ part 'market_state.dart';
 class MarketBloc extends Bloc<MarketEvent, MarketState> {
   final ProductRepository productRepository;
   MarketBloc({required this.productRepository}) : super(MarketState.initial()) {
-    on<MarketEvent>((event, emit) {});
-
     on<AddTemplateEvent>(_addTemplate);
     on<ChangeTemplateEvent>(_changeTemplate);
     on<LoadTemplateEvent>(_loadTemplate);
@@ -19,69 +19,38 @@ class MarketBloc extends Bloc<MarketEvent, MarketState> {
     on<ShowTemplatesEvent>(_showTemplates);
   }
 
-  _addTemplate(AddTemplateEvent event, Emitter<MarketState> emit) async {
-    emit(state.copyWith(status: CWSStatus.loading));
-    try {
-      final res = await productRepository.createMarketTheme(
-        event.marketId,
-        event.template,
-      );
-
-      if (res is Success) {
-        /// لود تم وقتی سیو انجام شد
-        await _loadTemplate(LoadTemplateEvent(marketId: event.marketId), emit);
-        return;
-      } else {
-        emit(state.copyWith(status: CWSStatus.failure));
-      }
-    } catch (e) {
-      emit(state.copyWith(status: CWSStatus.failure));
-    } finally {
-      emit(state.copyWith(status: CWSStatus.initial));
+  Future<void> _addTemplate(AddTemplateEvent event, Emitter<MarketState> emit) async {
+    emit(state.copyWith(status: const UiLoading()));
+    final res = await productRepository.createMarketTheme(event.marketId, event.template);
+    if (res is Success<bool>) {
+      await _loadTemplate(LoadTemplateEvent(marketId: event.marketId), emit);
+    } else {
+      emit(state.copyWith(status: UiError(res.error.message)));
     }
-    emit(state.copyWith(status: CWSStatus.initial));
+    emit(state.copyWith(status: const UiIdle()));
   }
 
-  _loadTemplate(LoadTemplateEvent event, Emitter<MarketState> emit) async {
-    emit(state.copyWith(status: CWSStatus.loading));
-    try {
-      final res = await productRepository.getMarketTheme(event.marketId);
-
-      if (res is Success) {
-        final initList = res.response as List<dynamic>;
-        final templateList =
-            initList.map((e) => TemplateModel.fromJson(e)).toList();
-        print("----------------------------------------");
-        print(templateList);
-        emit(
-          state.copyWith(
-            status: CWSStatus.success,
-            templateList: templateList,
-            marketId: event.marketId,
-            showTemplates: false,
-          ),
-        );
-      } else {
-        emit(state.copyWith(status: CWSStatus.failure));
-      }
-    } catch (e) {
-      print("exeeeeeeeeeeeeeeeeeeeeeeeeee");
-      print(e.toString());
-      emit(state.copyWith(status: CWSStatus.failure));
+  Future<void> _loadTemplate(LoadTemplateEvent event, Emitter<MarketState> emit) async {
+    emit(state.copyWith(status: const UiLoading()));
+    final res = await productRepository.listMarketThemes(event.marketId);
+    if (res is Success<List<ProductThemeDto>>) {
+      final templateList = res.data.map((t) => TemplateModel.fromJson(t.toJson())).toList();
+      emit(state.copyWith(status: const UiSuccess(), templateList: templateList, marketId: event.marketId, showTemplates: false));
+    } else {
+      emit(state.copyWith(status: UiError(res.error.message)));
     }
   }
 
-  _changeTemplate(ChangeTemplateEvent event, Emitter<MarketState> emit) {
+  void _changeTemplate(ChangeTemplateEvent event, Emitter<MarketState> emit) {
     emit(state.copyWith(templateIndex: event.template));
   }
 
-  _removeTemplate(RemoveTemplateEvent event, Emitter<MarketState> emit) {
+  void _removeTemplate(RemoveTemplateEvent event, Emitter<MarketState> emit) {
     state.templateList.removeAt(event.index);
-    // print(state.templateList);
-    emit(state.copyWith(templateList: state.templateList));
+    emit(state.copyWith(templateList: List.of(state.templateList)));
   }
 
-  _showTemplates(ShowTemplatesEvent event, Emitter<MarketState> emit) {
+  void _showTemplates(ShowTemplatesEvent event, Emitter<MarketState> emit) {
     emit(state.copyWith(showTemplates: event.isShow));
   }
 }
