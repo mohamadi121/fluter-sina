@@ -15,7 +15,7 @@ class _TermsAndConditionsState extends State<TermsAndConditions> {
   String terms = '';
 
   void getTerms() async {
-    String url = 'http://asoud.ir/api/v1/info/term/';
+    String url = 'https://asoud.ir/api/v1/info/term/';
     var response = await http.get(
       Uri.parse(url),
       headers: {

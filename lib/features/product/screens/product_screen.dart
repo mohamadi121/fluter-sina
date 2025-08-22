@@ -61,7 +61,7 @@ class _ProductScreenState extends State<ProductScreen> {
   var reqProductWidget;
 
   void getProductByID(id) async {
-    String url = 'http://asoud.ir/api/v1/owner/product/detail/$id/';
+    String url = 'https://asoud.ir/api/v1/owner/product/detail/$id/';
     String? token = await SecureStorage.readSecureStorage(Keys.token);
 
     var response = await http.get(
@@ -110,7 +110,7 @@ class _ProductScreenState extends State<ProductScreen> {
   }
 
   void sendComment(String name, String email, String message) async {
-    String url = 'http://asoud.ir/api/v1/user/comment/create/';
+    String url = 'https://asoud.ir/api/v1/user/comment/create/';
 
     String? token = await SecureStorage.readSecureStorage(Keys.token);
 
@@ -146,7 +146,7 @@ class _ProductScreenState extends State<ProductScreen> {
   }
 
   void getCommentsByID(id) async {
-    String url = 'http://asoud.ir/api/v1/user/comment/comments/product/$id/';
+    String url = 'https://asoud.ir/api/v1/user/comment/comments/product/$id/';
 
     String? token = await SecureStorage.readSecureStorage(Keys.token);
     var response = await http.get(
@@ -169,7 +169,7 @@ class _ProductScreenState extends State<ProductScreen> {
   }
 
   void sendReply(parrentId, message) async {
-    String url = 'http://asoud.ir/api/v1/user/comment/create/';
+    String url = 'https://asoud.ir/api/v1/user/comment/create/';
 
     String? token = await SecureStorage.readSecureStorage(Keys.token);
 

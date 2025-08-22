@@ -59,7 +59,7 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
   // }
 
   Future<String?> nameOfProduct(id) async {
-    String url = 'http://asoud.ir/api/v1/owner/product/detail/$id/';
+    String url = 'https://asoud.ir/api/v1/owner/product/detail/$id/';
     String? token = await SecureStorage.readSecureStorage(Keys.token);
 
     var response = await http.get(
@@ -78,7 +78,7 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
   void getOrders() async {
     id = '';
 
-    String url = 'http://asoud.ir/api/v1/user/order/orders';
+    String url = 'https://asoud.ir/api/v1/user/order/orders';
     String? token = await SecureStorage.readSecureStorage(Keys.token);
 
     var response = await http.get(
@@ -99,7 +99,7 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
   }
 
   void addQuantity(String orderId, String productId, quantity) async {
-    String url = 'http://asoud.ir/api/v1/user/order/update_item/$orderId';
+    String url = 'https://asoud.ir/api/v1/user/order/update_item/$orderId';
     String? token = await SecureStorage.readSecureStorage(Keys.token);
 
     var response = await http.put(
@@ -116,7 +116,7 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
   }
 
   void removeQuantity(String orderId, String productId, quantity) async {
-    String url = 'http://asoud.ir/api/v1/user/order/update_item/$orderId';
+    String url = 'https://asoud.ir/api/v1/user/order/update_item/$orderId';
     String? token = await SecureStorage.readSecureStorage(Keys.token);
 
     var response = await http.put(
@@ -1046,7 +1046,7 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
                           // order['product']['images'] != []
                           //     ? CachedNetworkImage(
                           //       imageUrl:
-                          //           'http://asoud.ir/${order['product']['images'][0]['image']}',
+                          //           'https://asoud.ir/${order['product']['images'][0]['image']}',
                           //       fit: BoxFit.cover,
                           //     )
                           //     : Container(),

@@ -134,7 +134,7 @@ class _BusinessCardState extends State<BusinessCard> {
                                               onTap: () {
                                                 launchUrl(
                                                   Uri.parse(
-                                                    'http://asoud.ir/${widget.data["data"]["business_id"]}',
+                                                    'https://asoud.ir/${widget.data["data"]["business_id"]}',
                                                   ),
                                                 );
                                               },

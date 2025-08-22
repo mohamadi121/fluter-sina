@@ -630,7 +630,7 @@ class DashboardAdditionalWidget extends StatelessWidget {
                       child: ItemBoxTitle(
                         onTap: () {
                           if (index == 3) {
-                            launchUrl(Uri.parse('http://asoud.ir/'));
+                            launchUrl(Uri.parse('https://asoud.ir/'));
                           } else {
                             context.push(
                               dummyData["secondMenu"][index]["page"],

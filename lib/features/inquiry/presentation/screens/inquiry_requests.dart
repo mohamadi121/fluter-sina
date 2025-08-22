@@ -25,7 +25,7 @@ class _InquiryRequestsScreenState extends State<InquiryRequestsScreen> {
 
   void getInquiries() async {
     inquiries.clear();
-    String url = 'http://asoud.ir/api/v1/user/inquiries/';
+    String url = 'https://asoud.ir/api/v1/user/inquiries/';
     String? token = await SecureStorage.readSecureStorage(Keys.token);
 
     var response = await http.get(
@@ -44,7 +44,7 @@ class _InquiryRequestsScreenState extends State<InquiryRequestsScreen> {
   void sendData(String send, String id) async {
     String? token = await SecureStorage.readSecureStorage(Keys.token);
 
-    String url = 'http://asoud.ir/api/v1/user/inquiries/$id/send/';
+    String url = 'https://asoud.ir/api/v1/user/inquiries/$id/send/';
 
     Map<String, dynamic> data = {'send': send};
 
@@ -241,7 +241,7 @@ class _InquiryRequestsScreenState extends State<InquiryRequestsScreen> {
                                                           30,
                                                         ),
                                                     child: Image.network(
-                                                      'http://asoud.ir/${inquiry['images'][0]['image']}',
+                                                      'https://asoud.ir/${inquiry['images'][0]['image']}',
                                                       fit: BoxFit.cover,
                                                     ),
                                                   ),
