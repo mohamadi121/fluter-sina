@@ -2,7 +2,10 @@ class Endpoints {
   Endpoints._();
 
   static String token = 'token';
-  static String baseUrl = 'https://asoud.ir/api/v1/';
+  static const String baseUrl = String.fromEnvironment(
+    'API_BASE_URL',
+    defaultValue: 'https://asoud.ir/api/v1/',
+  );
   // static String baseUrl = 'http://5.34.201.94/api/v1/';
 
   static const Map<String, String> simpleHeader = {
@@ -14,7 +17,7 @@ class Endpoints {
   static String logout = "logout/";
 
   /// user
-  static String userAdvertise = "advertise/";
+  static String userAdvertise = "advertisements/";
   static String userContact = 'contact/';
 
   /// category
@@ -48,7 +51,7 @@ class Endpoints {
   static String ownerProductThemeList = '$baseProduct/theme/list/';
   static String ownerProductThemeUpdate = '$baseProduct/theme/update/';
   //user
-  static String productCommentById = 'user/product/comment/list/';
+  static String productCommentById = 'user/comment/comments/product';
 
   /// region
   static String countryList = 'region/country/list/';
@@ -60,5 +63,5 @@ class Endpoints {
   static String cityList = 'region/city/list/';
 
   /// inquiry
-  static String inquiry = 'region/city/list/';
+  static String inquiry = 'user/inquiries/';
 }

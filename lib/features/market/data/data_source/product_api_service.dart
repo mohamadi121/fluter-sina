@@ -25,7 +25,7 @@ class ProductApiService {
 
   //get product by id
   Future getProductById(productId) async {
-    var uri = 'product/user/detail/$productId';
+    var uri = 'owner/product/detail/$productId/';
     try {
       Response res = await dioClient.getData(uri);
       return apiStatus(res);

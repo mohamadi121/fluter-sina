@@ -22,7 +22,7 @@ class _MyBookmarksState extends State<MyBookmarks> {
 
   void getUserBookMarks() async {
     bookmarks.clear();
-    String url = 'https://asoud.ir/api/v1/user/market/bookmark/';
+    String url = '${Endpoints.baseUrl}user/market/bookmark/';
     String? token = await SecureStorage.readSecureStorage(Keys.token);
     var response = await http.get(
       Uri.parse(url),

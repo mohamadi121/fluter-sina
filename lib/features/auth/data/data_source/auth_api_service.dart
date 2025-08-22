@@ -65,14 +65,8 @@ class AuthApiService {
   // Log out user
   Future logout() async {
     try {
-      String? token = await SecureStorage.readSecureStorage(Keys.token);
-
-      Response res = await dioClient.getData(
-        Endpoints.logout,
-        headers: {'Authorization': 'Token $token'},
-      );
-
-      return apiStatus(res);
+      await SecureStorage.writeSecureStorage(Keys.token, "ND");
+      return Success(code: 200, response: {}, message: 'Logged out locally');
     } catch (e) {
       return customApiStatus();
     }

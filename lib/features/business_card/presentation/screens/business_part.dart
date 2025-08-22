@@ -18,7 +18,7 @@ class _BusinessPartState extends State<BusinessPart> {
   List<Map<String, dynamic>> dataList = [];
 
   void getVisitCard() async {
-    String url = 'https://asoud.ir/api/v1/owner/market/list/';
+    String url = '${Endpoints.baseUrl}owner/market/list/';
     String? token = await SecureStorage.readSecureStorage(Keys.token);
 
     var response = await http.get(
