@@ -18,7 +18,7 @@ class _BusinessPartState extends State<BusinessPart> {
   List<Map<String, dynamic>> dataList = [];
 
   void getVisitCard() async {
-    String url = 'http://asoud.ir/api/v1/owner/market/list/';
+    String url = '${Endpoints.baseUrl}owner/market/list/';
     String? token = await SecureStorage.readSecureStorage(Keys.token);
 
     var response = await http.get(
@@ -31,7 +31,7 @@ class _BusinessPartState extends State<BusinessPart> {
       String businessId = market['business_id'];
 
       var getVisitCard = await http.get(
-        Uri.parse('http://asoud.ir/$businessId'),
+        Uri.parse('https://asoud.ir/$businessId'),
         headers: {'Authorization': 'Token $token'},
       );
       setState(() {

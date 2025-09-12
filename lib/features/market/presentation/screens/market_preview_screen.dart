@@ -190,7 +190,7 @@ class _MarketPreviewScreenState extends State<MarketPreviewScreen> {
   bool isMarketBookmarked = false;
 
   void getUserBookMarks() async {
-    String url = 'http://asoud.ir/api/v1/user/market/bookmark/';
+    String url = '${Endpoints.baseUrl}user/market/bookmark/';
     String? token = await SecureStorage.readSecureStorage(Keys.token);
     var response = await http.get(
       Uri.parse(url),
@@ -217,7 +217,7 @@ class _MarketPreviewScreenState extends State<MarketPreviewScreen> {
     // print('sina this is market id :');
     // print(marketId);
 
-    String url = 'http://asoud.ir/api/v1/user/market/bookmark/$marketId/';
+    String url = '${Endpoints.baseUrl}user/market/bookmark/$marketId/';
     String? token = await SecureStorage.readSecureStorage(Keys.token);
 
     var response = await http.post(

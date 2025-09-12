@@ -339,7 +339,7 @@ class ProductGridView extends StatefulWidget {
 
 class _ProductGridViewState extends State<ProductGridView> {
   Future<String> getProductLableById(String? id) async {
-    String url = 'http://asoud.ir/api/v1/owner/product/detail/$id/';
+    String url = '${Endpoints.baseUrl}owner/product/detail/$id/';
     String? token = await SecureStorage.readSecureStorage(Keys.token);
 
     var response = await http.get(
@@ -351,7 +351,7 @@ class _ProductGridViewState extends State<ProductGridView> {
   }
 
   Future<String> getProductLablePositionById(String? id) async {
-    String url = 'http://asoud.ir/api/v1/owner/product/detail/$id/';
+    String url = '${Endpoints.baseUrl}owner/product/detail/$id/';
     String? token = await SecureStorage.readSecureStorage(Keys.token);
 
     var response = await http.get(

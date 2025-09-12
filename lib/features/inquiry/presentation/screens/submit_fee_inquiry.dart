@@ -48,7 +48,7 @@ class _SubmitFeeInquiryScreenState extends State<SubmitFeeInquiryScreen> {
   var imageFile;
 
   void getLastData() async {
-    String url = 'http://asoud.ir/api/v1/user/inquiries/${widget.id}/';
+    String url = '${Endpoints.baseUrl}user/inquiries/${widget.id}/';
     String? token = await SecureStorage.readSecureStorage(Keys.token);
 
     var response = await http.get(
@@ -68,13 +68,13 @@ class _SubmitFeeInquiryScreenState extends State<SubmitFeeInquiryScreen> {
       lastImage =
           data['images'].isEmpty
               ? ''
-              : 'http://asoud.ir${data['images'][0]['image']}';
+              : 'https://asoud.ir${data['images'][0]['image']}';
       send = data['send'];
     });
   }
 
   void putChanges() async {
-    String url = 'http://asoud.ir/api/v1/user/inquiries/${widget.id}/update/';
+    String url = '${Endpoints.baseUrl}user/inquiries/${widget.id}/update/';
     String? token = await SecureStorage.readSecureStorage(Keys.token);
 
     Map<String, String> data_ = {
@@ -130,8 +130,8 @@ class _SubmitFeeInquiryScreenState extends State<SubmitFeeInquiryScreen> {
     void sendData(String send) async {
       String? token = await SecureStorage.readSecureStorage(Keys.token);
 
-      String url = 'http://asoud.ir/api/v1/user/inquiries/$id/send/';
-      String imageUrl = 'http://asoud.ir/api/v1/user/inquiries/$id/image/';
+      String url = '${Endpoints.baseUrl}user/inquiries/$id/send/';
+      String imageUrl = '${Endpoints.baseUrl}user/inquiries/$id/image/';
       final request = http.MultipartRequest('POST', Uri.parse(imageUrl));
 
       Map<String, dynamic> data = {'send': send};
@@ -258,7 +258,7 @@ class _SubmitFeeInquiryScreenState extends State<SubmitFeeInquiryScreen> {
     String unit,
     int date,
   ) async {
-    String url = 'http://asoud.ir/api/v1/user/inquiries/create/';
+    String url = '${Endpoints.baseUrl}user/inquiries/create/';
 
     String? token = await SecureStorage.readSecureStorage(Keys.token);
     final request = http.MultipartRequest('POST', Uri.parse(url));

@@ -47,7 +47,7 @@ class _BankCardListScreenState extends State<BankCardListScreen> {
   int whichExpanded = -1;
 
   void getBanks() async {
-    String url = 'http://asoud.ir/api/v1/user/bank-info/list/';
+    String url = '${Endpoints.baseUrl}user/bank-info/list/';
     String? token = await SecureStorage.readSecureStorage(Keys.token);
 
     var response2 = await http.get(
@@ -63,7 +63,7 @@ class _BankCardListScreenState extends State<BankCardListScreen> {
   }
 
   void getBankCards() async {
-    String url = 'http://asoud.ir/api/v1/user/bank/info/list/';
+    String url = '${Endpoints.baseUrl}user/bank/info/list/';
     String? token = await SecureStorage.readSecureStorage(Keys.token);
 
     var response = await http.get(
@@ -92,7 +92,7 @@ class _BankCardListScreenState extends State<BankCardListScreen> {
     branchName,
     description,
   ) async {
-    String url = 'http://asoud.ir/api/v1/user/bank/info/create/';
+    String url = '${Endpoints.baseUrl}user/bank/info/create/';
     String? token = await SecureStorage.readSecureStorage(Keys.token);
 
     Map<String, dynamic> data_ = {
@@ -240,7 +240,7 @@ class _BankCardListScreenState extends State<BankCardListScreen> {
                                                       5,
                                                     ),
                                                 child: Image.network(
-                                                  'http://asoud.ir/${bank['logo']}',
+                                                  'https://asoud.ir/${bank['logo']}',
                                                   height: 30,
                                                   width: 30,
                                                   fit: BoxFit.fill,

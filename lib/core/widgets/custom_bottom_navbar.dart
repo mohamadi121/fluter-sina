@@ -340,7 +340,7 @@ void showBottomSheet(
 }
 
 void sendProductToShoppingCart(String id) async {
-  String url = 'http://asoud.ir/api/v1/user/order/add_item';
+  String url = '${Endpoints.baseUrl}user/order/add_item';
   String? token = await SecureStorage.readSecureStorage(Keys.token);
 
   var response = await http.post(
