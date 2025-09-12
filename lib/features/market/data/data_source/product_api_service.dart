@@ -5,6 +5,7 @@ import 'package:asood/core/http_client/api_status.dart';
 import 'package:asood/features/market/data/model/product_model.dart';
 import 'package:asood/features/market/presentation/blocs/add_product/add_product_bloc.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ProductApiService {
@@ -37,7 +38,9 @@ class ProductApiService {
   // create product
 
   Future createProduct(ProductModel product) async {
-    print('product image is ${product.image}');
+    if (kDebugMode) {
+      debugPrint('Creating product with image: ${product.image}');
+    }
     List<MultipartBody> images = [];
 
     // Handle multiple images
@@ -47,9 +50,10 @@ class ProductApiService {
       }
     }
     try {
-      print('sina you wanna send this product');
-      print(product.toString());
-      print(product.mainPrice.toString());
+      if (kDebugMode) {
+        debugPrint('Sending product data: ${product.toString()}');
+        debugPrint('Product main price: ${product.mainPrice}');
+      }
       Response res = await dioClient.postMultipartData(
         Endpoints.createProduct,
         product.toJson(),

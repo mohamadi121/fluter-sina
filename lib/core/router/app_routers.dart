@@ -27,6 +27,7 @@ import 'package:asood/features/store_setting_screens/color_setting_screen/color_
 import 'package:asood/features/store_setting_screens/font-txtColor_setting_screen/font_color_setting_screen.dart';
 import 'package:asood/features/store_setting_screens/takhfif_setting_screen/takhfif_screen.dart';
 import 'package:asood/features/vendor/presentation/screen/vendor_home.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -104,9 +105,9 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.createProduct,
         builder: (context, state) {
-          print("---------------");
-          print(state.extra);
-          print(state.extra.runtimeType);
+          if (kDebugMode) {
+            debugPrint("CreateProduct route - extra: ${state.extra?.runtimeType}");
+          }
           List extra = state.extra as List;
           final marketId = extra[0];
           final themeId = extra[1];

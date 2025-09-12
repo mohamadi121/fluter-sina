@@ -1,6 +1,4 @@
 import 'package:asood/features/business_card/presentation/bloc/business_bloc.dart';
-import 'package:asood/features/customer/presentation/blocs/customer/customer_bloc.dart';
-import 'package:asood/features/customer/presentation/blocs/profile/profile_bloc.dart';
 import 'package:asood/features/job_managment/data/data_source/category_api_service.dart';
 import 'package:asood/features/create_workspace/data/data_source/market_api_service.dart';
 import 'package:asood/features/create_workspace/data/data_source/region_api_services.dart';
@@ -102,7 +100,4 @@ locatorSetup() async {
     () => MarketBloc(productRepository: locator<ProductRepository>()),
   );
   locator.registerFactory(() => BusinessBloc());
-  locator.registerFactory(() => ProfileBloc());
-  locator.registerFactory(() => CustomerBloc());
-  locator.registerFactory(() => ProductBloc());
 }

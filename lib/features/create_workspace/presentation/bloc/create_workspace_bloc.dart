@@ -8,6 +8,7 @@ import 'package:asood/features/create_workspace/domain/repository/region_reposit
 import 'package:asood/features/vendor/data/model/country_model.dart';
 import 'package:asood/features/vendor/data/model/market_location_model.dart';
 import 'package:asood/features/vendor/data/model/work_hours_model.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -129,8 +130,9 @@ class CreateWorkSpaceBloc
 
     on<ChangeHasWorkTime>((event, emit) {
       emit(state.copyWith(hasWorkTime: event.hasWorkTime));
-      // ignore: avoid_print
-      print(state.hasWorkTime);
+      if (kDebugMode) {
+        debugPrint('Has work time: ${state.hasWorkTime}');
+      }
     });
 
     on<MarketContact>(_setMarketContact);

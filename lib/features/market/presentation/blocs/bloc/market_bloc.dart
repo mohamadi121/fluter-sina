@@ -49,10 +49,10 @@ class MarketBloc extends Bloc<MarketEvent, MarketState> {
 
       if (res is Success) {
         final initList = res.response as List<dynamic>;
-        final templateList =
-            initList.map((e) => TemplateModel.fromJson(e)).toList();
-        print("----------------------------------------");
-        print(templateList);
+        final templateList = initList
+            .map((e) => TemplateModel.fromJson(e as Map<String, dynamic>))
+            .toList();
+        
         emit(
           state.copyWith(
             status: CWSStatus.success,
@@ -62,12 +62,16 @@ class MarketBloc extends Bloc<MarketEvent, MarketState> {
           ),
         );
       } else {
-        emit(state.copyWith(status: CWSStatus.failure));
+        emit(state.copyWith(
+          status: CWSStatus.failure,
+          message: 'Failed to load templates',
+        ));
       }
     } catch (e) {
-      print("exeeeeeeeeeeeeeeeeeeeeeeeeee");
-      print(e.toString());
-      emit(state.copyWith(status: CWSStatus.failure));
+      emit(state.copyWith(
+        status: CWSStatus.failure,
+        message: 'Error loading templates: ${e.toString()}',
+      ));
     }
   }
 
@@ -76,9 +80,11 @@ class MarketBloc extends Bloc<MarketEvent, MarketState> {
   }
 
   _removeTemplate(RemoveTemplateEvent event, Emitter<MarketState> emit) {
-    state.templateList.removeAt(event.index);
-    // print(state.templateList);
-    emit(state.copyWith(templateList: state.templateList));
+    if (event.index >= 0 && event.index < state.templateList.length) {
+      final updatedTemplateList = List.from(state.templateList);
+      updatedTemplateList.removeAt(event.index);
+      emit(state.copyWith(templateList: updatedTemplateList));
+    }
   }
 
   _showTemplates(ShowTemplatesEvent event, Emitter<MarketState> emit) {

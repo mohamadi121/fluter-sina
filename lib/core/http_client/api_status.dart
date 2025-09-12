@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 
 class Success {
   int? code;
@@ -37,8 +38,9 @@ apiStatus(Response response) {
       );
     }
   } catch (e) {
-    print("------------------");
-    print(e.toString());
+    if (kDebugMode) {
+      debugPrint("API Status Error: $e");
+    }
     return Failure(
       code: response.statusCode ?? 500,
       errorResponse: 'خطای پردازش پاسخ سرور',

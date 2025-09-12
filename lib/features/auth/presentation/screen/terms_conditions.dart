@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:asood/core/constants/constants.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -30,7 +31,9 @@ class _TermsAndConditionsState extends State<TermsAndConditions> {
         terms = jsonDecode(response.body)['data']['content'];
       });
     }
-    print(response.body);
+    if (kDebugMode) {
+      debugPrint('Terms response: ${response.body}');
+    }
   }
 
   @override

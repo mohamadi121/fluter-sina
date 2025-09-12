@@ -8,6 +8,7 @@ import 'package:asood/features/create_workspace/presentation/widgets/row_widget_
 import 'package:asood/features/create_workspace/presentation/widgets/socialmedia_listbuilder.dart';
 import 'package:asood/features/create_workspace/presentation/widgets/socialmedia_selector.dart';
 import 'package:asood/features/create_workspace/presentation/widgets/weekday_opentime.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:asood/core/constants/constants.dart';
@@ -82,8 +83,9 @@ class _ContactsInfoState extends State<ContactsInfo>
         widget.bloc.state.marketSchedules.isEmpty) {
       isEmptySchedule = true;
     }
-    print("onsubmit ----------");
-    print(isEmptySchedule);
+    if (kDebugMode) {
+      debugPrint("onSubmit - isEmptySchedule: $isEmptySchedule");
+    }
     if (_formKey.currentState!.validate() && isEmptySchedule == false) {
       widget.bloc.add(
         MarketContact(

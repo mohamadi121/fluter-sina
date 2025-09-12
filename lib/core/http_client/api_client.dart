@@ -27,16 +27,24 @@ class DioClient {
     dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
-          String? token = await SecureStorage.readSecureStorage(Keys.token);
+          try {
+            String? token = await SecureStorage.readSecureStorage(Keys.token);
 
-          if (token != "ND" && token != null) {
-            options.headers['Authorization'] = 'Token $token';
-            debugPrint('🚀 Token being sent: $token'); // این خط جدید اضافه شده
-          }
-          if (kDebugMode) {
-            debugPrint(
-              '====> API Call: ${options.path}\nHeader: ${options.headers}',
-            );
+            if (token != null && token.isNotEmpty) {
+              options.headers['Authorization'] = 'Token $token';
+              if (kDebugMode) {
+                debugPrint('🚀 Token attached to request');
+              }
+            }
+            if (kDebugMode) {
+              debugPrint(
+                '====> API Call: ${options.path}\nHeaders: ${options.headers.keys.join(', ')}',
+              );
+            }
+          } catch (e) {
+            if (kDebugMode) {
+              debugPrint('Error reading token: $e');
+            }
           }
           return handler.next(options);
         },
@@ -49,17 +57,20 @@ class DioClient {
         },
       ),
     );
-    dio.interceptors.add(
-      LogInterceptor(
-        request: true, // نمایش اطلاعات درخواست
-        requestHeader: true, // نمایش هدرهای درخواست
-        requestBody: true, // نمایش بدنه درخواست
-        responseHeader: false, // نمایش هدرهای پاسخ
-        responseBody: true, // نمایش بدنه پاسخ
-        error: true, // نمایش ارورها
-        logPrint: (log) => print(log), // تابعی برای نمایش لاگ‌ها
-      ),
-    );
+    // Add logging interceptor only in debug mode for security
+    if (kDebugMode) {
+      dio.interceptors.add(
+        LogInterceptor(
+          request: false, // Don't log requests in production
+          requestHeader: false, // Don't log headers in production
+          requestBody: false, // Don't log request body in production
+          responseHeader: false,
+          responseBody: false, // Don't log response body in production
+          error: true, // Only log errors
+          logPrint: (log) => debugPrint(log),
+        ),
+      );
+    }
   }
 
   // Perform a GET request

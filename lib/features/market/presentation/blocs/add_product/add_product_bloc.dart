@@ -4,6 +4,7 @@ import 'package:asood/features/market/data/model/product_model.dart';
 import 'package:asood/features/market/data/model/theme_model_model.dart';
 import 'package:asood/features/market/domain/repository/product_repository.dart';
 import 'package:bloc/bloc.dart';
+import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 
 part 'add_product_event.dart';
@@ -290,7 +291,9 @@ class AddProductBloc extends Bloc<AddProductEvent, AddProductState> {
         emit(state.copyWith(status: CWSStatus.success));
       }
     } catch (e) {
-      print('Add product error: $e');
+      if (kDebugMode) {
+        debugPrint('Add product error: $e');
+      }
       emit(state.copyWith(status: CWSStatus.failure));
     } finally {
       emit(state.copyWith(status: CWSStatus.initial));
