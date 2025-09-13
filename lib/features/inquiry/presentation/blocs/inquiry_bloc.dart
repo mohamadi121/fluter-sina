@@ -4,6 +4,7 @@ import 'package:asood/core/http_client/api_status.dart';
 import 'package:asood/features/inquiry/data/model/inquiry_card_model.dart';
 import 'package:asood/features/inquiry/domain/inquiry_repository.dart';
 import 'package:bloc/bloc.dart';
+import 'package:flutter/foundation.dart';
 
 part 'inquiry_event.dart';
 part 'inquiry_state.dart';
@@ -44,7 +45,9 @@ class InquiryBloc extends Bloc<InquiryEvent, InquiryState> {
     Emitter<InquiryState> emit,
   ) async {
     emit(state.copyWith(inquiryType: event.inquiryType));
-    print('inquiry type switch: ${state.inquiryType}');
+    if (kDebugMode) {
+      debugPrint('inquiry type switch: ${state.inquiryType}');
+    }
   }
 
   _inquiryAddImage(InquiryAddImage event, Emitter<InquiryState> emit) async {

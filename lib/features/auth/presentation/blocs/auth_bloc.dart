@@ -49,10 +49,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       var res = await authRepository.verifyCode(event.phone, event.otp);
       if (res is Success) {
         var json = res.response as Map<String, dynamic>;
+        final token = json["token"] as String?;
 
-        SecureStorage.writeSecureStorage('token', json["token"]);
-
-        emit(state.copyWith(status: AuthStatus.success));
+        if (token != null && token.isNotEmpty) {
+          await SecureStorage.writeSecureStorage(Keys.token, token);
+          emit(state.copyWith(status: AuthStatus.success));
+        } else {
+          emit(state.copyWith(
+            status: AuthStatus.error,
+            error: 'Token not received from server',
+          ));
+        }
       } else if (res is Failure) {
         emit(
           state.copyWith(
@@ -62,7 +69,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         );
       }
     } catch (e) {
-      emit(state.copyWith(status: AuthStatus.error, error: e.toString()));
+      emit(state.copyWith(
+        status: AuthStatus.error, 
+        error: 'Authentication failed: ${e.toString()}'
+      ));
     }
   }
 }

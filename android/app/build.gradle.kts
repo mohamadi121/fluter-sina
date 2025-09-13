@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.asood"
+    namespace = "ir.asood.app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = "27.0.12077973"
 
@@ -20,8 +20,7 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.asood"
+        applicationId = "ir.asood.app"
         minSdk = 21
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
