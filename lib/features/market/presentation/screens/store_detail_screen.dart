@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:asood/core/constants/constants.dart';
+import 'package:asood/core/helper/secure_storage.dart';
 import 'package:asood/core/helper/snack_bar_util.dart';
 import 'package:asood/core/http_client/api_status.dart';
 import 'package:asood/core/models/location_model.dart';
@@ -1091,11 +1092,15 @@ class _StoreDetailScreenState extends State<StoreDetailScreen> {
                                 InkWell(
                                   onTap: () {},
                                   // padding: const EdgeInsets.all(0),
-                                  child: Icon(
-                                    Iconsax.edit5,
-                                    // Icons.edit,
-                                    color: state.fontColor,
-                                    size: Dimensions.width * 0.055,
+                                  child: Transform(
+                                    alignment: Alignment.center,
+                                    transform: Matrix4.identity()..scale(-1.0, 1.0, 1.0),
+                                    child: Icon(
+                                      Icons.help_outline,
+                                      // Icons.edit,
+                                      color: state.fontColor,
+                                      size: Dimensions.width * 0.055,
+                                    ),
                                   ),
                                 ),
 
@@ -1105,7 +1110,7 @@ class _StoreDetailScreenState extends State<StoreDetailScreen> {
                                     // print("pressed");
                                   },
                                   child: Icon(
-                                    Iconsax.save_2,
+                                    Icons.favorite_border,
                                     // Icons.save,
                                     color: state.fontColor,
                                     size: Dimensions.width * 0.055,
@@ -1116,7 +1121,7 @@ class _StoreDetailScreenState extends State<StoreDetailScreen> {
                                 InkWell(
                                   onTap: () {},
                                   child: Icon(
-                                    Iconsax.bookmark,
+                                    Icons.question_answer,
                                     // Icons.bookmark,
                                     color: state.fontColor,
                                     size: Dimensions.width * 0.055,
@@ -1131,7 +1136,7 @@ class _StoreDetailScreenState extends State<StoreDetailScreen> {
                                     );
                                   },
                                   child: Icon(
-                                    Iconsax.share5,
+                                    Icons.remove_red_eye,
                                     // Icons.share,
                                     color: state.fontColor,
                                     size: Dimensions.width * 0.055,
@@ -1142,7 +1147,7 @@ class _StoreDetailScreenState extends State<StoreDetailScreen> {
                                 InkWell(
                                   onTap: () {},
                                   child: Icon(
-                                    Iconsax.document_upload5,
+                                    Icons.bookmark,
                                     // Icons.upload_file_outlined,
                                     color: state.fontColor,
                                     size: Dimensions.width * 0.055,
@@ -1153,7 +1158,18 @@ class _StoreDetailScreenState extends State<StoreDetailScreen> {
                                 InkWell(
                                   onTap: () {},
                                   child: Icon(
-                                    Iconsax.receipt5,
+                                    Icons.share,
+                                    // Icons.list_alt,
+                                    color: state.fontColor,
+                                    size: Dimensions.width * 0.055,
+                                  ),
+                                ),
+                                InkWell(
+                                  onTap: () async{
+                                    // Token
+                                  },
+                                  child: Icon(
+                                    Icons.report,
                                     // Icons.list_alt,
                                     color: state.fontColor,
                                     size: Dimensions.width * 0.055,

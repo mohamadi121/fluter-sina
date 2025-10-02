@@ -53,7 +53,6 @@ class _CreateWorkSpaceScreenState extends State<CreateWorkSpaceScreen>
       bloc.add(ChangeWorkspaceTabView(activeTabIndex: index - 1));
     } else if (index == 0) {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
-        // context.pushReplacement(AppRoutes.vendorHome);
         context.pop();
       });
     }
@@ -83,33 +82,41 @@ class _CreateWorkSpaceScreenState extends State<CreateWorkSpaceScreen>
                 }
               },
               builder: (context, state) {
-                return Stack(
-                  children: [
-                    SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          // Appbar Space
-                          const SizedBox(height: 100),
-                          _buildTabBar(state),
-                          SizedBox(height: 10),
-                          SizedBox(
-                            height: Dimensions.height * 0.795,
-                            child: TabBarView(
-                              controller: _tabController,
-                              physics: const NeverScrollableScrollPhysics(),
+                return NestedScrollView(
+                  headerSliverBuilder: (context, innerBoxIsScrolled) {
+                    return [
+                      // AppBar ثابت
+                      SliverToBoxAdapter(
+                        child: const NewAppBar(title: 'ثبت دفتر کار'),
+                      ),
+
+                      SliverPersistentHeader(
+                        pinned: true, // این باعث می‌شود تب‌ها ثابت بمانند
+                        floating: false,
+                        delegate: _StickyTabBarDelegate(
+                          child: Container(
+                            color: Colors.white, // پس‌زمینه سفید برای تب‌ها
+                            child: Column(
                               children: [
-                                BasicInfo(),
-                                ContactsInfo(bloc: bloc),
-                                LocationInfo(bloc: bloc),
+                                const SizedBox(height: 20),
+                                _buildTabBar(state),
+                                const SizedBox(height: 10),
                               ],
                             ),
                           ),
-                        ],
+                        ),
                       ),
-                    ),
-                    const NewAppBar(title: 'ثبت دفتر کار'),
-                    SizedBox(height: 100),
-                  ],
+                    ];
+                  },
+                  body: TabBarView(
+                    controller: _tabController,
+                    physics: const NeverScrollableScrollPhysics(),
+                    children: [
+                      _buildScrollableTabContent(BasicInfo()),
+                      _buildScrollableTabContent(ContactsInfo(bloc: bloc)),
+                      _buildScrollableTabContent(LocationInfo(bloc: bloc)),
+                    ],
+                  ),
                 );
               },
             ),
@@ -119,12 +126,22 @@ class _CreateWorkSpaceScreenState extends State<CreateWorkSpaceScreen>
     );
   }
 
+  // تابع برای ساخت محتوای قابل اسکرول هر تب
+  Widget _buildScrollableTabContent(Widget child) {
+    return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
+      child: child,
+    );
+  }
+
   Widget _buildTabBar(CreateWorkSpaceState state) {
     return IgnorePointer(
       ignoring: true,
       child: TabBar(
         controller: _tabController,
         indicatorColor: Colors.transparent,
+        indicator: const BoxDecoration(),
+        dividerColor: Colors.transparent,
         tabs: [
           _buildTab(state, 'مشخصات پایه', 0),
           _buildTab(state, 'مشخصات ارتباطی', 1),
@@ -140,10 +157,10 @@ class _CreateWorkSpaceScreenState extends State<CreateWorkSpaceScreen>
     final textColor = isActive ? Colors.white : Colora.primaryColor;
 
     return Padding(
-      padding: EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.only(bottom: 9),
       child: Container(
-        height: Dimensions.height * 0.1,
-        width: Dimensions.width * 0.3,
+        height: Dimensions.height * 0.04,
+        width: Dimensions.width * 1,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           color: tabColor,
@@ -151,26 +168,41 @@ class _CreateWorkSpaceScreenState extends State<CreateWorkSpaceScreen>
         ),
         child: Center(
           child: FittedBox(
-            child: Text(label, style: TextStyle(color: textColor)),
+            child: Text(
+              label,
+              style: TextStyle(
+                color: textColor,
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+              ),
+              textAlign: TextAlign.center,
+            ),
           ),
         ),
       ),
     );
+  }
+}
 
-    // return Container(
-    //   width: Dimensions.width * 0.3,
-    //   padding: const EdgeInsets.symmetric(vertical: 10.0),
-    //   margin: const EdgeInsets.symmetric(vertical: 10.0),
-    //   decoration: BoxDecoration(
-    //     color: tabColor,
-    //     borderRadius: BorderRadius.circular(50),
-    //     border: Border.all(color: Colora.primaryColor, width: 2),
-    //   ),
-    //   child: Center(
-    //     child: FittedBox(
-    //       child: Text(label, style: TextStyle(color: textColor)),
-    //     ),
-    //   ),
-    // );
+// کلاس Delegate برای تب‌های Sticky
+class _StickyTabBarDelegate extends SliverPersistentHeaderDelegate {
+  final Widget child;
+
+  _StickyTabBarDelegate({required this.child});
+
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return child;
+  }
+
+  @override
+  double get maxExtent => 80; // ارتفاع تب‌ها + padding
+
+  @override
+  double get minExtent => 80; // ارتفاع تب‌ها + padding
+
+  @override
+  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) {
+    return true;
   }
 }

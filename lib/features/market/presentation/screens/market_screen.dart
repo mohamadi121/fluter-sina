@@ -155,7 +155,7 @@ class _MarketsScreenState extends State<MarketsScreen>
                                           return SizedBox(
                                             height: Dimensions.height * 0.2,
                                             child: Padding(
-                                              padding: EdgeInsetsGeometry.all(
+                                              padding: EdgeInsets.all(
                                                 8,
                                               ),
                                               child: Align(
