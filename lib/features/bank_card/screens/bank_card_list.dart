@@ -10,6 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
+import '../../../core/constants/endpoints.dart';
+
 class BankCardListScreen extends StatefulWidget {
   const BankCardListScreen({super.key});
 
@@ -190,7 +192,7 @@ class _BankCardListScreenState extends State<BankCardListScreen> {
                               ),
                             ),
                             Padding(
-                              padding: EdgeInsetsGeometry.only(
+                              padding: EdgeInsets.only(
                                 top: Dimensions.height * 0.05,
                               ),
                               child: SizedBox(
@@ -236,7 +238,7 @@ class _BankCardListScreenState extends State<BankCardListScreen> {
                                               SizedBox(width: 30),
                                               ClipRRect(
                                                 borderRadius:
-                                                    BorderRadiusGeometry.circular(
+                                                    BorderRadius.circular(
                                                       5,
                                                     ),
                                                 child: Image.network(
@@ -613,7 +615,7 @@ class _BankCardListScreenState extends State<BankCardListScreen> {
               ? Column(
                 children: [
                   Padding(
-                    padding: EdgeInsetsGeometry.only(
+                    padding: EdgeInsets.only(
                       left: 20,
                       right: 20,
                       top: Dimensions.height * 0.05,
@@ -644,7 +646,7 @@ class _BankCardListScreenState extends State<BankCardListScreen> {
                 ),
               )
               : Padding(
-                padding: EdgeInsetsGeometry.only(
+                padding: EdgeInsets.only(
                   left: 20,
                   right: 20,
                   top: Dimensions.height * 0.05,

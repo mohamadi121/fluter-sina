@@ -26,6 +26,8 @@ import 'package:http/http.dart' as http;
 import 'package:iconsax/iconsax.dart';
 import 'package:shimmer/shimmer.dart';
 
+import '../../../../core/constants/endpoints.dart';
+
 class MarketPreviewScreen extends StatefulWidget {
   const MarketPreviewScreen({super.key, required this.market});
   final MarketModel market;

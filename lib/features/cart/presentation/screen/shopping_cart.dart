@@ -8,6 +8,8 @@ import 'package:asood/core/widgets/simple_bot_navbar.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import '../../../../core/constants/endpoints.dart';
+
 class ShoppingCartPage extends StatefulWidget {
   const ShoppingCartPage({super.key});
 

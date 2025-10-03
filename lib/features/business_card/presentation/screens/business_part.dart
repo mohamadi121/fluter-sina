@@ -7,6 +7,8 @@ import 'package:asood/features/business_card/presentation/screens/without_market
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import '../../../../core/constants/endpoints.dart';
+
 class BusinessPart extends StatefulWidget {
   const BusinessPart({super.key});
 

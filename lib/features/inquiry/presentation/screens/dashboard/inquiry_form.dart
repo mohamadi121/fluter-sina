@@ -31,7 +31,7 @@ class _InquiryFormState extends State<InquiryForm> {
             ),
             SizedBox(height: Dimensions.height * 0.05),
             Padding(
-              padding: EdgeInsetsGeometry.symmetric(
+              padding: EdgeInsets.symmetric(
                 horizontal: Dimensions.width * 0.05,
               ),
               child: Row(
@@ -58,7 +58,7 @@ class _InquiryFormState extends State<InquiryForm> {
             ),
             SizedBox(height: Dimensions.width * 0.05),
             Padding(
-              padding: EdgeInsetsGeometry.symmetric(
+              padding: EdgeInsets.symmetric(
                 horizontal: Dimensions.width * 0.05,
               ),
               child: Row(

@@ -17,6 +17,8 @@ import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:iconsax/iconsax.dart';
 
+import '../../../core/constants/endpoints.dart';
+
 class ProductScreen extends StatefulWidget {
   final ThemeProductModel productDetails;
   const ProductScreen({super.key, required this.productDetails});
@@ -881,7 +883,7 @@ class _ProductScreenState extends State<ProductScreen> {
                                                                               ''
                                                                           ? Container()
                                                                           : ClipRRect(
-                                                                            borderRadius: BorderRadiusGeometry.circular(
+                                                                            borderRadius: BorderRadius.circular(
                                                                               10,
                                                                             ),
                                                                             child: CachedNetworkImage(
@@ -1127,7 +1129,7 @@ class _ProductScreenState extends State<ProductScreen> {
                                                                               ''
                                                                           ? Container()
                                                                           : ClipRRect(
-                                                                            borderRadius: BorderRadiusGeometry.circular(
+                                                                            borderRadius: BorderRadius.circular(
                                                                               10,
                                                                             ),
                                                                             child: CachedNetworkImage(

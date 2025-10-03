@@ -16,6 +16,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 
+import '../../../../core/constants/endpoints.dart';
+
 class MultiViewSliderScreen extends StatefulWidget {
   const MultiViewSliderScreen({super.key});
 
@@ -495,7 +497,7 @@ class _ProductGridViewState extends State<ProductGridView> {
                       future: getProductLableById(product?.id),
                       builder: (context, asyncSnapshot) {
                         return Padding(
-                          padding: EdgeInsetsGeometry.all(8),
+                          padding: EdgeInsets.all(8),
                           child: FutureBuilder(
                             future: getProductLablePositionById(product?.id),
                             builder: (context, positionSnapshot) {

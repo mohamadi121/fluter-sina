@@ -11,6 +11,8 @@ import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:iconsax/iconsax.dart';
 
+import '../constants/endpoints.dart';
+
 class CustomBottomNavigationBar extends StatefulWidget {
   final String? marketId;
   final bool? userMode;

@@ -13,6 +13,8 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 
+import '../../../../core/constants/endpoints.dart';
+
 class SubmitFeeInquiryScreen extends StatefulWidget {
   final bool isEdit;
   final String id;
@@ -551,7 +553,7 @@ class _SubmitFeeInquiryScreenState extends State<SubmitFeeInquiryScreen> {
                         ? lastImage == ''
                             ? Container()
                             : ClipRRect(
-                              borderRadius: BorderRadiusGeometry.circular(30),
+                              borderRadius: BorderRadius.circular(30),
                               child: Image.network(
                                 lastImage,
                                 height: Dimensions.height * 0.1,
@@ -561,7 +563,7 @@ class _SubmitFeeInquiryScreenState extends State<SubmitFeeInquiryScreen> {
                             )
                         : imageFile != null
                         ? ClipRRect(
-                          borderRadius: BorderRadiusGeometry.circular(30),
+                          borderRadius: BorderRadius.circular(30),
                           child: Image.file(
                             File(imageFile.path),
                             height: Dimensions.height * 0.1,

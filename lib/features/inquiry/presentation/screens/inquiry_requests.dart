@@ -12,6 +12,8 @@ import 'package:asood/features/inquiry/presentation/screens/submit_fee_inquiry.d
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import '../../../../core/constants/endpoints.dart';
+
 class InquiryRequestsScreen extends StatefulWidget {
   const InquiryRequestsScreen({super.key});
 
@@ -237,7 +239,7 @@ class _InquiryRequestsScreenState extends State<InquiryRequestsScreen> {
                                                   ? Container()
                                                   : ClipRRect(
                                                     borderRadius:
-                                                        BorderRadiusGeometry.circular(
+                                                        BorderRadius.circular(
                                                           30,
                                                         ),
                                                     child: Image.network(

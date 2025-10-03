@@ -4,6 +4,8 @@ import 'package:asood/core/constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import '../../../../core/constants/endpoints.dart';
+
 class TermsAndConditions extends StatefulWidget {
   const TermsAndConditions({super.key});
 
