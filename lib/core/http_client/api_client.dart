@@ -31,11 +31,14 @@ class DioClient {
 
           if (token != "ND" && token != null) {
             options.headers['Authorization'] = 'Token $token';
-            debugPrint('🚀 Token being sent: $token'); // این خط جدید اضافه شده
           }
           if (kDebugMode) {
+            final sanitizedHeaders = Map<String, dynamic>.from(options.headers);
+            if (sanitizedHeaders.containsKey('Authorization')) {
+              sanitizedHeaders['Authorization'] = '***REDACTED***';
+            }
             debugPrint(
-              '====> API Call: ${options.path}\nHeader: ${options.headers}',
+              '====> API Call: ${options.path}\nHeaders: $sanitizedHeaders',
             );
           }
           return handler.next(options);
@@ -49,17 +52,25 @@ class DioClient {
         },
       ),
     );
-    dio.interceptors.add(
-      LogInterceptor(
-        request: true, // نمایش اطلاعات درخواست
-        requestHeader: true, // نمایش هدرهای درخواست
-        requestBody: true, // نمایش بدنه درخواست
-        responseHeader: false, // نمایش هدرهای پاسخ
-        responseBody: true, // نمایش بدنه پاسخ
-        error: true, // نمایش ارورها
-        logPrint: (log) => print(log), // تابعی برای نمایش لاگ‌ها
-      ),
-    );
+    if (kDebugMode) {
+      dio.interceptors.add(
+        LogInterceptor(
+          request: true,
+          requestHeader: false, // Disabled to prevent token exposure
+          requestBody: true,
+          responseHeader: false,
+          responseBody: true,
+          error: true,
+          logPrint: (log) {
+            // Sanitize any potential sensitive data
+            final sanitizedLog = log.toString()
+                .replaceAll(RegExp(r'Token\s+[A-Za-z0-9]+'), 'Token ***REDACTED***')
+                .replaceAll(RegExp(r'Bearer\s+[A-Za-z0-9]+'), 'Bearer ***REDACTED***');
+            debugPrint('HTTP: $sanitizedLog');
+          },
+        ),
+      );
+    }
   }
 
   // Perform a GET request

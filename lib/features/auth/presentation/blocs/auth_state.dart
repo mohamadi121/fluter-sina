@@ -1,40 +1,48 @@
 part of 'auth_bloc.dart';
 
-enum AuthStatus { initial, loading, success, error }
-
-class AuthState {
+class AuthState extends BaseBlocState<String> {
   final String phoneNumber;
-  final AuthStatus status;
   final bool termStatus;
-  final String error;
 
   const AuthState({
     this.phoneNumber = '',
-    required this.status,
-    required this.termStatus,
-    this.error = '',
+    this.termStatus = false,
+    super.status = StateStatus.initial,
+    super.error,
+    super.data,
   });
 
   factory AuthState.initial() {
     return const AuthState(
-      status: AuthStatus.initial,
-      termStatus: false,
-      error: '',
       phoneNumber: '',
+      termStatus: false,
+      status: StateStatus.initial,
     );
   }
 
+  @override
   AuthState copyWith({
-    AuthStatus? status,
-    bool? termStatus,
-    String? error,
     String? phoneNumber,
+    bool? termStatus,
+    StateStatus? status,
+    String? error,
+    String? data,
   }) {
     return AuthState(
-      status: status ?? this.status,
-      termStatus: termStatus ?? this.termStatus,
-      error: error ?? this.error,
       phoneNumber: phoneNumber ?? this.phoneNumber,
+      termStatus: termStatus ?? this.termStatus,
+      status: status ?? this.status,
+      error: error ?? this.error,
+      data: data ?? this.data,
     );
   }
+
+  @override
+  List<Object?> get props => [
+    phoneNumber,
+    termStatus,
+    status,
+    error,
+    data,
+  ];
 }

@@ -1,10 +1,10 @@
 import 'package:asood/core/models/comment_model.dart';
-import 'package:bloc/bloc.dart';
+import 'package:asood/core/architecture/base_bloc.dart';
 
 part 'comment_event.dart';
 part 'comment_state.dart';
 
-class CommentBloc extends Bloc<CommentEvent, CommentState> {
+class CommentBloc extends BaseBloc<CommentEvent, CommentState> {
   CommentBloc() : super(CommentState.initial()) {
     on<CommentEvent>((event, emit) {});
 

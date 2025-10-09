@@ -49,7 +49,7 @@ class _BankCardListScreenState extends State<BankCardListScreen> {
   int whichExpanded = -1;
 
   void getBanks() async {
-    String url = '${Endpoints.baseUrl}user/bank-info/list/';
+    String url = '${Endpoints.baseUrl}${Endpoints.bankInfoList}';
     String? token = await SecureStorage.readSecureStorage(Keys.token);
 
     var response2 = await http.get(
@@ -65,7 +65,7 @@ class _BankCardListScreenState extends State<BankCardListScreen> {
   }
 
   void getBankCards() async {
-    String url = '${Endpoints.baseUrl}user/bank/info/list/';
+    String url = '${Endpoints.baseUrl}${Endpoints.userBankInfoList}';
     String? token = await SecureStorage.readSecureStorage(Keys.token);
 
     var response = await http.get(
@@ -94,7 +94,7 @@ class _BankCardListScreenState extends State<BankCardListScreen> {
     branchName,
     description,
   ) async {
-    String url = '${Endpoints.baseUrl}user/bank/info/create/';
+    String url = '${Endpoints.baseUrl}${Endpoints.createBankInfo}';
     String? token = await SecureStorage.readSecureStorage(Keys.token);
 
     Map<String, dynamic> data_ = {

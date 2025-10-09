@@ -1,0 +1,8 @@
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "id": "123",
+    "mobile_number": "09123456789",
+    "name": "تست کاربر"
+  }
+}

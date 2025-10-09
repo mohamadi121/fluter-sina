@@ -1,7 +1,9 @@
+import 'package:asood/core/architecture/result.dart';
+
 abstract class CategoryRepository {
-  Future<dynamic> getCategoryList() async {}
+  Future<Result<List<dynamic>>> getCategoryList();
 
-  Future<dynamic> getMainSubCategoryList(String categoryId) async {}
+  Future<Result<List<dynamic>>> getMainSubCategoryList(String categoryId);
 
-  Future<dynamic> getSubCategoryList(String subCategoryId) async {}
+  Future<Result<List<dynamic>>> getSubCategoryList(String subCategoryId);
 }

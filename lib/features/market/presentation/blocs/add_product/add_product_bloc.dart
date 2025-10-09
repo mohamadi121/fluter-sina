@@ -3,13 +3,13 @@ import 'package:asood/core/http_client/api_status.dart';
 import 'package:asood/features/market/data/model/product_model.dart';
 import 'package:asood/features/market/data/model/theme_model_model.dart';
 import 'package:asood/features/market/domain/repository/product_repository.dart';
-import 'package:bloc/bloc.dart';
+import 'package:asood/core/architecture/base_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
 part 'add_product_event.dart';
 part 'add_product_state.dart';
 
-class AddProductBloc extends Bloc<AddProductEvent, AddProductState> {
+class AddProductBloc extends BaseBloc<AddProductEvent, AddProductState> {
   final ProductRepository productRepository;
   AddProductBloc(this.productRepository) : super(AddProductState.initial()) {
     on<ResetDataEvent>((event, emit) => emit(AddProductState.initial()));

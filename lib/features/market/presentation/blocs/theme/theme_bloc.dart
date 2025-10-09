@@ -1,11 +1,11 @@
 import 'dart:ui';
 
-import 'package:bloc/bloc.dart';
+import 'package:asood/core/architecture/base_bloc.dart';
 
 part 'theme_event.dart';
 part 'theme_state.dart';
 
-class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
+class ThemeBloc extends BaseBloc<ThemeEvent, ThemeState> {
   ThemeBloc() : super(ThemeState.initial()) {
     // on<ThemeEvent>((event, emit) {});
     on<SelectTopColor>(_selectTopColor);

@@ -1,5 +1,5 @@
 import 'package:asood/core/http_client/api_status.dart';
-import 'package:bloc/bloc.dart';
+import 'package:asood/core/architecture/base_bloc.dart';
 
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
@@ -7,7 +7,7 @@ import 'package:latlong2/latlong.dart';
 part 'business_event.dart';
 part 'business_state.dart';
 
-class BusinessBloc extends Bloc<BusinessEvent, BusinessState> {
+class BusinessBloc extends BaseBloc<BusinessEvent, BusinessState> {
   BusinessBloc() : super(BusinessState.initial()) {
     on<DetermineCurrentPosition>(_onDetermineCurrentPosition);
     on<UpdateSelectedLocation>(_onUpdateSelectedLocation);

@@ -2,12 +2,12 @@ import 'package:asood/core/http_client/api_status.dart';
 import 'package:asood/core/models/market_model.dart';
 import 'package:asood/features/market/data/model/market_model.dart';
 import 'package:asood/features/market/domain/repository/product_repository.dart';
-import 'package:bloc/bloc.dart';
+import 'package:asood/core/architecture/base_bloc.dart';
 
 part 'market_event.dart';
 part 'market_state.dart';
 
-class MarketBloc extends Bloc<MarketEvent, MarketState> {
+class MarketBloc extends BaseBloc<MarketEvent, MarketState> {
   final ProductRepository productRepository;
   MarketBloc({required this.productRepository}) : super(MarketState.initial()) {
     on<MarketEvent>((event, emit) {});

@@ -1,15 +1,22 @@
-import 'package:asood/core/http_client/api_status.dart';
+import 'package:asood/core/architecture/bloc_state.dart';
 import 'package:asood/features/job_managment/data/model/category_model.dart';
-import 'package:asood/features/job_managment/domain/repository/category_repository.dart';
+import 'package:asood/features/job_managment\domain\usecases\category_usecases.dart';
+import 'package:asood/core\domain\usecase.dart';
 import 'package:bloc/bloc.dart';
 
 part 'jobmanagment_event.dart';
 part 'jobmanagment_state.dart';
 
 class JobmanagmentBloc extends Bloc<JobmanagmentEvent, JobmanagmentState> {
-  CategoryRepository categoryRepository;
-  JobmanagmentBloc(this.categoryRepository)
-    : super(JobmanagmentState.initial()) {
+  final GetCategoryListUseCase getCategoryListUseCase;
+  final GetMainSubCategoryListUseCase getMainSubCategoryListUseCase;
+  final GetSubCategoryListUseCase getSubCategoryListUseCase;
+  
+  JobmanagmentBloc({
+    required this.getCategoryListUseCase,
+    required this.getMainSubCategoryListUseCase,
+    required this.getSubCategoryListUseCase,
+  }) : super(JobmanagmentState.initial()) {
     on<ResetJobManagmentBloc>((event, emit) {
       emit(JobmanagmentState.initial());
     });
@@ -34,20 +41,28 @@ class JobmanagmentBloc extends Bloc<JobmanagmentEvent, JobmanagmentState> {
   }
   //list of category
   _getCategory(LoadCategory event, Emitter<JobmanagmentState> emit) async {
-    emit(state.copyWith(status: CWSStatus.loading, activeTabIndex: 0));
-    try {
-      final res = await categoryRepository.getCategoryList();
-
-      if (res is Success) {
-        final initList = res.response as List;
-        final categoryList =
-            initList.map((e) => CategoryModel.fromJson(e)).toList();
-        emit(
-          state.copyWith(status: CWSStatus.success, categoryList: categoryList),
-        );
-      } else {
-        emit(state.copyWith(status: CWSStatus.failure));
-      }
+    emit(state.copyWith(status: StateStatus.loading, activeTabIndex: 0));
+    
+    final result = await getCategoryListUseCase(NoParams());
+    
+    result.fold(
+      (failure) {
+        emit(state.copyWith(
+          status: StateStatus.error,
+          error: failure.message,
+        ));
+      },
+      (categoryListData) {
+        final categoryList = categoryListData
+            .map((e) => CategoryModel.fromJson(e))
+            .toList();
+        emit(state.copyWith(
+          status: StateStatus.success,
+          categoryList: categoryList,
+        ));
+      },
+    );
+  }
     } catch (e) {
       emit(state.copyWith(status: CWSStatus.failure));
     }

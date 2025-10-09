@@ -1,9 +1,7 @@
 part of 'jobmanagment_bloc.dart';
 
-class JobmanagmentState {
+class JobmanagmentState extends BaseBlocState<List<CategoryModel>> {
   final int activeTabIndex;
-  final CWSStatus status;
-  final String error;
   final String activeCategoryId;
   final List<CategoryModel> categoryList;
   final List<CategoryModel> mainSubCategoryList;
@@ -12,35 +10,33 @@ class JobmanagmentState {
   final String selectedCategoryName;
 
   const JobmanagmentState({
-    required this.status,
-    required this.error,
-    required this.activeTabIndex,
-
-    required this.selectedCategoryName,
-    required this.activeCategoryId,
-    required this.categoryList,
-    required this.mainSubCategoryList,
-    required this.activeSubCategoryIndex,
-    required this.subCategoryList,
+    this.activeTabIndex = 0,
+    this.activeCategoryId = "",
+    this.categoryList = const [],
+    this.mainSubCategoryList = const [],
+    this.activeSubCategoryIndex = "",
+    this.subCategoryList = const [],
+    this.selectedCategoryName = "",
+    super.status = StateStatus.initial,
+    super.error,
+    super.data,
   });
 
   factory JobmanagmentState.initial() {
-    return JobmanagmentState(
-      status: CWSStatus.initial,
-      error: "",
+    return const JobmanagmentState(
       activeTabIndex: 0,
-      selectedCategoryName: "",
       activeCategoryId: "",
-      categoryList: const [],
-      mainSubCategoryList: const [],
+      categoryList: [],
+      mainSubCategoryList: [],
       activeSubCategoryIndex: "",
-      subCategoryList: const [],
+      subCategoryList: [],
+      selectedCategoryName: "",
+      status: StateStatus.initial,
     );
   }
 
+  @override
   JobmanagmentState copyWith({
-    CWSStatus? status,
-    String? error,
     int? activeTabIndex,
     String? activeCategoryId,
     List<CategoryModel>? categoryList,
@@ -48,19 +44,35 @@ class JobmanagmentState {
     String? activeSubCategoryIndex,
     List<CategoryModel>? subCategoryList,
     String? selectedCategoryName,
+    StateStatus? status,
+    String? error,
+    List<CategoryModel>? data,
   }) {
     return JobmanagmentState(
-      status: status ?? this.status,
-      error: error ?? this.error,
       activeTabIndex: activeTabIndex ?? this.activeTabIndex,
-      selectedCategoryName: selectedCategoryName ?? this.selectedCategoryName,
-
       activeCategoryId: activeCategoryId ?? this.activeCategoryId,
       categoryList: categoryList ?? this.categoryList,
       mainSubCategoryList: mainSubCategoryList ?? this.mainSubCategoryList,
-      activeSubCategoryIndex:
-          activeSubCategoryIndex ?? this.activeSubCategoryIndex,
+      activeSubCategoryIndex: activeSubCategoryIndex ?? this.activeSubCategoryIndex,
       subCategoryList: subCategoryList ?? this.subCategoryList,
+      selectedCategoryName: selectedCategoryName ?? this.selectedCategoryName,
+      status: status ?? this.status,
+      error: error ?? this.error,
+      data: data ?? this.data,
     );
   }
+
+  @override
+  List<Object?> get props => [
+    activeTabIndex,
+    activeCategoryId,
+    categoryList,
+    mainSubCategoryList,
+    activeSubCategoryIndex,
+    subCategoryList,
+    selectedCategoryName,
+    status,
+    error,
+    data,
+  ];
 }

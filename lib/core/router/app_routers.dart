@@ -1,53 +1,199 @@
-import 'package:asood/core/models/market_model.dart';
-import 'package:asood/features/auth/presentation/screen/login_screen.dart';
-import 'package:asood/features/auth/presentation/screen/otp_screen.dart';
-import 'package:asood/features/bank_card/screens/bank_card_list.dart';
-import 'package:asood/features/bank_card/screens/finance_part.dart';
-import 'package:asood/features/bookmarks/bookmarks_page.dart';
-import 'package:asood/features/business_card/presentation/screens/business_part.dart';
-import 'package:asood/features/cart/presentation/screen/shopping_cart.dart';
-import 'package:asood/features/chat/screens/chat_list.dart';
-import 'package:asood/features/create_workspace/presentation/screen/create_workspace.dart';
-import 'package:asood/features/customer/presentation/screens/customer_dashboard_screen.dart';
-import 'package:asood/features/inquiry/presentation/screens/inquiry_requests.dart';
-import 'package:asood/features/inquiry/presentation/screens/main_inquiry.dart';
-import 'package:asood/features/job_managment/presentation/bloc/jobmanagment_bloc.dart';
-import 'package:asood/features/job_managment/presentation/screen/job_managment.dart';
-import 'package:asood/features/market/presentation/screens/market_preview_screen.dart';
-import 'package:asood/features/market/presentation/screens/market_screen.dart';
-import 'package:asood/features/market/presentation/screens/pages/product/create_product.dart';
-// import 'package:asood/features/market/presentation/screens/pages/product/product_detail.dart';
-import 'package:asood/features/market/presentation/screens/store_detail_screen.dart';
-import 'package:asood/features/market/presentation/screens/store_info.dart';
-import 'package:asood/features/panel/screens/panel_config_screen.dart';
-import 'package:asood/features/panel/screens/panel_inbox_screen.dart';
-import 'package:asood/features/product/screens/product_screen.dart';
-import 'package:asood/features/splash/screens/splash.dart';
-import 'package:asood/features/store_setting_screens/color_setting_screen/color_setting_screen.dart';
-import 'package:asood/features/store_setting_screens/font-txtColor_setting_screen/font_color_setting_screen.dart';
-import 'package:asood/features/store_setting_screens/takhfif_setting_screen/takhfif_screen.dart';
-import 'package:asood/features/vendor/presentation/screen/vendor_home.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-part './app_routes.dart';
+// Core imports
+import '../di/service_locator.dart';
+import '../constants/app_routes.dart';
+import 'route_guards.dart';
+import 'route_transitions.dart';
+import 'smart_home_shell.dart';
+import 'error_pages.dart';
 
+// Auth imports
+import '../../features/auth/presentation/screens/enhanced_login_screen.dart';
+import '../../features/auth/presentation/screens/enhanced_otp_screen.dart';
+import '../../features/auth/presentation/blocs/auth_bloc.dart';
+
+// Dashboard imports  
+import '../../features/splash/screens/splash_screen.dart';
+import '../../features/dashboard/presentation/screens/smart_home_dashboard_screen.dart';
+import '../../features/devices/presentation/screens/device_management_screen.dart';
+import '../../features/dashboard/presentation/screens/environmental_control_screen.dart';
+import '../../features/dashboard/presentation/screens/performance_dashboard_screen.dart';
+
+// Profile and Settings (placeholders)
+import '../../features/profile/screens/profile_screen.dart';
+import '../../features/settings/screens/settings_screen.dart';
+
+// Testing
+import '../testing/api_configuration_test_screen.dart';
+
+// Services
+import '../../features/auth/services/security_service.dart';
+
+/// Modern GoRouter Configuration for Smart Home App
 class AppRouter {
+  static final SecurityService _security = SecurityService();
+  
   static final GoRouter router = GoRouter(
     initialLocation: AppRoutes.splash,
+    redirect: _handleRedirection,
     routes: [
+      // Splash Route
       GoRoute(
         path: AppRoutes.splash,
+        name: 'splash',
         builder: (context, state) => const SplashScreen(),
       ),
+
+      // Authentication Routes
       GoRoute(
         path: AppRoutes.login,
-        builder: (context, state) => LoginScreen(),
+        name: 'login',
+        pageBuilder: (context, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: BlocProvider(
+            create: (context) => ServiceLocator.get<AuthBloc>(),
+            child: const EnhancedLoginScreen(),
+          ),
+          transitionsBuilder: AppRouteTransitions.slideFromBottom,
+        ),
       ),
+
       GoRoute(
         path: AppRoutes.otp,
-        builder: (context, state) => const OtpScreen(),
+        name: 'otp',
+        pageBuilder: (context, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: BlocProvider(
+            create: (context) => ServiceLocator.get<AuthBloc>(),
+            child: EnhancedOtpScreen(
+              phoneNumber: state.extra as String? ?? '',
+            ),
+          ),
+          transitionsBuilder: AppRouteTransitions.slideFromRight,
+        ),
       ),
+
+      // Main App Shell
+      ShellRoute(
+        builder: (context, state, child) => SmartHomeShell(child: child),
+        routes: [
+          // Dashboard Routes
+          GoRoute(
+            path: AppRoutes.dashboard,
+            name: 'dashboard',
+            pageBuilder: (context, state) => CustomTransitionPage(
+              key: state.pageKey,
+              child: const SmartHomeDashboardScreen(),
+              transitionsBuilder: AppRouteTransitions.fadeIn,
+            ),
+            routes: [
+              // Device Management
+              GoRoute(
+                path: '/devices',
+                name: 'device-management',
+                pageBuilder: (context, state) => CustomTransitionPage(
+                  key: state.pageKey,
+                  child: const DeviceManagementScreen(),
+                  transitionsBuilder: AppRouteTransitions.slideFromRight,
+                ),
+              ),
+
+              // Environmental Controls
+              GoRoute(
+                path: '/environment',
+                name: 'environmental-control',
+                pageBuilder: (context, state) => CustomTransitionPage(
+                  key: state.pageKey,
+                  child: const EnvironmentalControlScreen(),
+                  transitionsBuilder: AppRouteTransitions.slideFromRight,
+                ),
+              ),
+
+              // Performance Dashboard
+              GoRoute(
+                path: '/performance',
+                name: 'performance-dashboard',
+                pageBuilder: (context, state) => CustomTransitionPage(
+                  key: state.pageKey,
+                  child: const PerformanceDashboardScreen(),
+                  transitionsBuilder: AppRouteTransitions.slideFromRight,
+                ),
+              ),
+
+              // API Configuration Test
+              GoRoute(
+                path: '/api-test',
+                name: 'api-configuration-test',
+                pageBuilder: (context, state) => CustomTransitionPage(
+                  key: state.pageKey,
+                  child: const ApiConfigurationTestScreen(),
+                  transitionsBuilder: AppRouteTransitions.slideFromRight,
+                ),
+              ),
+            ],
+          ),
+
+          // Profile Routes
+          GoRoute(
+            path: AppRoutes.profile,
+            name: 'profile',
+            pageBuilder: (context, state) => CustomTransitionPage(
+              key: state.pageKey,
+              child: const ProfileScreen(),
+              transitionsBuilder: AppRouteTransitions.slideFromRight,
+            ),
+          ),
+
+          // Settings Routes
+          GoRoute(
+            path: AppRoutes.settings,
+            name: 'settings',
+            pageBuilder: (context, state) => CustomTransitionPage(
+              key: state.pageKey,
+              child: const SettingsScreen(),
+              transitionsBuilder: AppRouteTransitions.slideFromRight,
+            ),
+          ),
+        ],
+      ),
+    ],
+    errorBuilder: (context, state) => SmartHomeErrorPage(
+      error: state.error,
+      routeName: state.matchedLocation,
+    ),
+  );
+
+  /// Handle global redirection logic
+  static String? _handleRedirection(BuildContext context, GoRouterState state) {
+    final isAuthenticated = _security.isAuthenticated;
+    final currentLocation = state.matchedLocation;
+
+    // Skip redirect for splash screen
+    if (currentLocation == AppRoutes.splash) {
+      return null;
+    }
+
+    // Redirect to login if not authenticated
+    if (!isAuthenticated && !_isAuthRoute(currentLocation)) {
+      return AppRoutes.login;
+    }
+
+    // Redirect to dashboard if authenticated and on auth routes
+    if (isAuthenticated && _isAuthRoute(currentLocation)) {
+      return AppRoutes.dashboard;
+    }
+
+    return null;
+  }
+
+  /// Check if route is authentication related
+  static bool _isAuthRoute(String route) {
+    return route == AppRoutes.login || route == AppRoutes.otp;
+  }
+}
       GoRoute(
         path: AppRoutes.vendorHome,
         builder: (context, state) {

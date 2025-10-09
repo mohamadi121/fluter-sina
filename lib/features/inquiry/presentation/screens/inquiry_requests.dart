@@ -27,7 +27,7 @@ class _InquiryRequestsScreenState extends State<InquiryRequestsScreen> {
 
   void getInquiries() async {
     inquiries.clear();
-    String url = '${Endpoints.baseUrl}user/inquiries/';
+    String url = '${Endpoints.baseUrl}${Endpoints.inquiry}';
     String? token = await SecureStorage.readSecureStorage(Keys.token);
 
     var response = await http.get(

@@ -63,7 +63,7 @@ class _ProductScreenState extends State<ProductScreen> {
   var reqProductWidget;
 
   void getProductByID(id) async {
-    String url = '${Endpoints.baseUrl}owner/product/detail/$id/';
+    String url = '${Endpoints.baseUrl}${Endpoints.ownerProductDetail}$id/';
     String? token = await SecureStorage.readSecureStorage(Keys.token);
 
     var response = await http.get(
@@ -112,7 +112,7 @@ class _ProductScreenState extends State<ProductScreen> {
   }
 
   void sendComment(String name, String email, String message) async {
-    String url = '${Endpoints.baseUrl}user/comment/create/';
+    String url = '${Endpoints.baseUrl}${Endpoints.userCommentCreate}';
 
     String? token = await SecureStorage.readSecureStorage(Keys.token);
 
