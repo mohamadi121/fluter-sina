@@ -23,27 +23,69 @@ class DioClient {
       ),
     );
 
-    // Add an interceptor to attach token to requests
     dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
-          String? token = await SecureStorage.readSecureStorage(Keys.token);
-
-          if (token != "ND" && token != null) {
-            options.headers['Authorization'] = 'Token $token';
-            debugPrint('🚀 Token being sent: $token'); // این خط جدید اضافه شده
+          final token = await SecureStorage.readSecureStorage(Keys.token);
+          if (token != null && token != "ND") {
+            options.headers['Authorization'] = 'Bearer $token';
           }
           if (kDebugMode) {
-            debugPrint(
-              '====> API Call: ${options.path}\nHeader: ${options.headers}',
-            );
+            debugPrint('API Request: ${options.method} ${options.path}');
           }
           return handler.next(options);
         },
-
-        onError: (error, handler) {
-          if (kDebugMode) {
-            debugPrint('====> API Error: ${error.message}');
+        onError: (error, handler) async {
+          if (error.response?.statusCode == 401) {
+            try {
+              final refreshToken = await SecureStorage.readSecureStorage('jwt_refresh');
+              if (refreshToken != null && refreshToken != "ND") {
+                try {
+                  final refreshDio = Dio(BaseOptions(
+                    baseUrl: appBaseUrl,
+                    headers: {'Content-Type': 'application/json; charset=utf-8'},
+                  ));
+                  
+                  final refreshResponse = await refreshDio.post(
+                    'user/jwt/refresh/',
+                    data: {'refresh': refreshToken},
+                  );
+                  
+                  if (refreshResponse.statusCode == 200 && 
+                      refreshResponse.data['success'] == true) {
+                    final jwt = refreshResponse.data['data'];
+                    final newAccessToken = jwt['access'];
+                    final newRefreshToken = jwt['refresh'];
+                    
+                    await SecureStorage.writeSecureStorage(Keys.token, newAccessToken);
+                    await SecureStorage.writeSecureStorage('jwt_refresh', newRefreshToken);
+                    
+                    error.requestOptions.headers['Authorization'] = 'Bearer $newAccessToken';
+                    final opts = Options(
+                      method: error.requestOptions.method,
+                      headers: error.requestOptions.headers,
+                    );
+                    final cloneReq = await dio.request(
+                      error.requestOptions.path,
+                      options: opts,
+                      data: error.requestOptions.data,
+                      queryParameters: error.requestOptions.queryParameters,
+                    );
+                    return handler.resolve(cloneReq);
+                  }
+                } catch (refreshError) {
+                  if (kDebugMode) {
+                    debugPrint('Token refresh failed: $refreshError');
+                  }
+                  await SecureStorage.writeSecureStorage(Keys.token, "ND");
+                  await SecureStorage.deleteSecureStorage('jwt_refresh');
+                }
+              }
+            } catch (e) {
+              if (kDebugMode) {
+                debugPrint('Error in token refresh handler: $e');
+              }
+            }
           }
           return handler.next(error);
         },
@@ -51,13 +93,12 @@ class DioClient {
     );
     dio.interceptors.add(
       LogInterceptor(
-        request: true, // نمایش اطلاعات درخواست
-        requestHeader: true, // نمایش هدرهای درخواست
-        requestBody: true, // نمایش بدنه درخواست
-        responseHeader: false, // نمایش هدرهای پاسخ
-        responseBody: true, // نمایش بدنه پاسخ
-        error: true, // نمایش ارورها
-        logPrint: (log) => print(log), // تابعی برای نمایش لاگ‌ها
+        request: true,
+        requestHeader: true,
+        requestBody: true,
+        responseHeader: false,
+        responseBody: true,
+        error: true,
       ),
     );
   }

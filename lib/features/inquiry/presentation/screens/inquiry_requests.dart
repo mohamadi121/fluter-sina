@@ -32,7 +32,7 @@ class _InquiryRequestsScreenState extends State<InquiryRequestsScreen> {
 
     var response = await http.get(
       Uri.parse(url),
-      headers: {'Authorization': 'Token $token'},
+      headers: {'Authorization': 'Bearer $token'},
     );
 
     for (var i in jsonDecode(response.body)['data']) {
@@ -54,7 +54,7 @@ class _InquiryRequestsScreenState extends State<InquiryRequestsScreen> {
       Uri.parse(url),
       headers: {
         'Accept': 'application/json',
-        'Authorization': 'Token $token',
+        'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
       },
       body: jsonEncode(data),

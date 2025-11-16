@@ -20,6 +20,7 @@ class CreateMarketRepositoryImp implements CreateMarketRepository {
     String description,
     String subCategory,
     String slogan,
+    String? nationalCode,
   ) async {
     return await marketApiService.createMarketBase(
       type,
@@ -28,6 +29,7 @@ class CreateMarketRepositoryImp implements CreateMarketRepository {
       description,
       subCategory,
       slogan,
+      nationalCode,
     );
   }
 

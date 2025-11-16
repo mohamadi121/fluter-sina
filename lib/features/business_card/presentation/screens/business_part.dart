@@ -25,7 +25,7 @@ class _BusinessPartState extends State<BusinessPart> {
 
     var response = await http.get(
       Uri.parse(url),
-      headers: {'Authorization': 'Token $token'},
+      headers: {'Authorization': 'Bearer $token'},
     );
     dataList.clear();
 
@@ -34,7 +34,7 @@ class _BusinessPartState extends State<BusinessPart> {
 
       var getVisitCard = await http.get(
         Uri.parse('https://asoud.ir/$businessId'),
-        headers: {'Authorization': 'Token $token'},
+        headers: {'Authorization': 'Bearer $token'},
       );
       setState(() {
         dataList.add(jsonDecode(getVisitCard.body));

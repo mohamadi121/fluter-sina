@@ -13,6 +13,7 @@ abstract class CreateMarketRepository {
     String description,
     String subCategory,
     String slogan,
+    String? nationalCode,
   );
 
   Future<dynamic> createMarketContact(MarketContactModel marketContact);

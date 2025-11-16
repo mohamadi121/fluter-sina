@@ -100,6 +100,7 @@ class CreateWorkSpaceBloc
           event.description,
           event.subCategory,
           event.slogan,
+          event.idCode.isNotEmpty ? event.idCode : null,
         );
 
         if (res is Success) {

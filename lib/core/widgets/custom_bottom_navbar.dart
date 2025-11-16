@@ -348,7 +348,7 @@ void sendProductToShoppingCart(String id) async {
   var response = await http.post(
     Uri.parse(url),
     body: {"product_id": id, "quantity": "1"},
-    headers: {'Authorization': 'Token $token'},
+    headers: {'Authorization': 'Bearer $token'},
   );
 
   // SharedPreferences sharedPreferences = await SharedPreferences.getInstance();

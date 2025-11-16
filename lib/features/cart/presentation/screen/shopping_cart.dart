@@ -66,7 +66,7 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
 
     var response = await http.get(
       Uri.parse(url),
-      headers: {'Authorization': 'Token $token'},
+      headers: {'Authorization': 'Bearer $token'},
     );
 
     log('sina this is your id: $id');
@@ -85,7 +85,7 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
 
     var response = await http.get(
       Uri.parse(url),
-      headers: {'Authorization': 'Token $token'},
+      headers: {'Authorization': 'Bearer $token'},
     );
 
     orders.clear();
@@ -107,7 +107,7 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
     var response = await http.put(
       Uri.parse(url),
       body: {"product": productId, "quantity": (quantity + 1).toString()},
-      headers: {'Authorization': 'Token $token'},
+      headers: {'Authorization': 'Bearer $token'},
     );
 
     setState(() {
@@ -124,7 +124,7 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
     var response = await http.put(
       Uri.parse(url),
       body: {"product": productId, "quantity": (quantity - 1).toString()},
-      headers: {'Authorization': 'Token $token'},
+      headers: {'Authorization': 'Bearer $token'},
     );
 
     setState(() {
