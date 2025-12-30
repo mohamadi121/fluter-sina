@@ -30,7 +30,7 @@ class _MyBookmarksState extends State<MyBookmarks> {
       Uri.parse(url),
       headers: {
         'Content-Type': 'application/json; charset=utf-8',
-        'Authorization': 'Token $token',
+        'Authorization': 'Bearer $token',
       },
     );
 

@@ -198,7 +198,7 @@ class _MarketPreviewScreenState extends State<MarketPreviewScreen> {
       Uri.parse(url),
       headers: {
         'Content-Type': 'application/json; charset=utf-8',
-        'Authorization': 'Token $token',
+        'Authorization': 'Bearer $token',
       },
     );
 
@@ -226,7 +226,7 @@ class _MarketPreviewScreenState extends State<MarketPreviewScreen> {
       Uri.parse(url),
       headers: {
         'Content-Type': 'application/json; charset=utf-8',
-        'Authorization': 'Token $token',
+        'Authorization': 'Bearer $token',
       },
     );
     if (jsonDecode(response.body)['message'] ==

@@ -54,7 +54,7 @@ class _BankCardListScreenState extends State<BankCardListScreen> {
 
     var response2 = await http.get(
       Uri.parse(url),
-      headers: {'Authorization': 'Token $token'},
+      headers: {'Authorization': 'Bearer $token'},
     );
 
     log(jsonDecode(response2.body)['data'][0]['name'].toString());
@@ -70,7 +70,7 @@ class _BankCardListScreenState extends State<BankCardListScreen> {
 
     var response = await http.get(
       Uri.parse(url),
-      headers: {'Authorization': 'Token $token'},
+      headers: {'Authorization': 'Bearer $token'},
     );
     bankCards.clear();
 
@@ -113,7 +113,7 @@ class _BankCardListScreenState extends State<BankCardListScreen> {
       Uri.parse(url),
       headers: {
         'Accept': 'application/json',
-        'Authorization': 'Token $token',
+        'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
       },
       body: data,

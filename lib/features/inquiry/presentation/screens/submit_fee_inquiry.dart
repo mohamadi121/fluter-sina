@@ -55,7 +55,7 @@ class _SubmitFeeInquiryScreenState extends State<SubmitFeeInquiryScreen> {
 
     var response = await http.get(
       Uri.parse(url),
-      headers: {'Authorization': 'Token $token'},
+      headers: {'Authorization': 'Bearer $token'},
     );
 
     var data = jsonDecode(response.body)['data'];
@@ -89,7 +89,7 @@ class _SubmitFeeInquiryScreenState extends State<SubmitFeeInquiryScreen> {
     };
     var response = await http.put(
       Uri.parse(url),
-      headers: {'Authorization': 'Token $token'},
+      headers: {'Authorization': 'Bearer $token'},
       body: {
         "type": type.toString(),
         "name": name,
@@ -142,7 +142,7 @@ class _SubmitFeeInquiryScreenState extends State<SubmitFeeInquiryScreen> {
         Uri.parse(url),
         headers: {
           'Accept': 'application/json',
-          'Authorization': 'Token $token',
+          'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
         },
         body: jsonEncode(data),
@@ -150,7 +150,7 @@ class _SubmitFeeInquiryScreenState extends State<SubmitFeeInquiryScreen> {
 
       request.headers.addAll({
         'Accept': 'application/json',
-        'Authorization': 'Token $token',
+        'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
       });
 
@@ -289,7 +289,7 @@ class _SubmitFeeInquiryScreenState extends State<SubmitFeeInquiryScreen> {
 
       // request.headers.addAll({
       //   'Accept': 'application/json',
-      //   'Authorization': 'Token $token',
+      //   'Authorization': 'Bearer $token',
       //   'Content-Type': 'application/json',
       // });
 
@@ -307,7 +307,7 @@ class _SubmitFeeInquiryScreenState extends State<SubmitFeeInquiryScreen> {
         Uri.parse(url),
         headers: {
           'Accept': 'application/json',
-          'Authorization': 'Token $token',
+          'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
         },
         body: data,

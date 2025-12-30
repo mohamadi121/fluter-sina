@@ -346,7 +346,7 @@ class _ProductGridViewState extends State<ProductGridView> {
 
     var response = await http.get(
       Uri.parse(url),
-      headers: {'Authorization': 'Token $token'},
+      headers: {'Authorization': 'Bearer $token'},
     );
 
     return jsonDecode(response.body)['data']['tag'];
@@ -358,7 +358,7 @@ class _ProductGridViewState extends State<ProductGridView> {
 
     var response = await http.get(
       Uri.parse(url),
-      headers: {'Authorization': 'Token $token'},
+      headers: {'Authorization': 'Bearer $token'},
     );
 
     return jsonDecode(response.body)['data']['tag_position'];

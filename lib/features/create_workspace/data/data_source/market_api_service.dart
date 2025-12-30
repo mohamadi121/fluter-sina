@@ -22,6 +22,7 @@ class CreateMarketApiService {
     String description,
     String subCategory,
     String slogan,
+    String? nationalCode,
   ) async {
     var body = {
       "type": type,
@@ -30,6 +31,8 @@ class CreateMarketApiService {
       "description": description,
       "sub_category": subCategory,
       "slogan": slogan,
+      "national_code": nationalCode ?? "",
+      "payment_gateway_type": "asoud",
     };
     try {
       Response res = await dioClient.postData(

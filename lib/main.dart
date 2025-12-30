@@ -11,6 +11,9 @@ import 'package:asood/features/market/presentation/blocs/theme/theme_bloc.dart';
 import 'package:asood/features/splash/blocs/splash_bloc.dart';
 import 'package:asood/features/vendor/presentation/bloc/vendor/vendor_bloc.dart';
 import 'package:asood/features/vendor/presentation/bloc/workspace/workspace_bloc.dart';
+import 'package:asood/features/cart/presentation/bloc/cart_bloc.dart';
+import 'package:asood/features/wallet/presentation/bloc/wallet_bloc.dart';
+import 'package:asood/features/payment/presentation/bloc/payment_bloc.dart';
 import 'package:asood/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -58,6 +61,9 @@ class Asood extends StatelessWidget {
           BlocProvider(create: (context) => locator<CommentBloc>()),
           BlocProvider(create: (context) => locator<MarketBloc>()),
           BlocProvider(create: (context) => locator<BusinessBloc>()),
+          BlocProvider(create: (context) => locator<CartBloc>()),
+          BlocProvider(create: (context) => locator<WalletBloc>()),
+          BlocProvider(create: (context) => locator<PaymentBloc>()),
         ],
         child: MaterialApp.router(
           builder: (context, child) {

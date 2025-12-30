@@ -10,7 +10,6 @@ class AuthApiService {
   final DioClient dioClient;
   AuthApiService({required this.dioClient});
 
-  // Send verification code to user
   Future userAuth(String number) async {
     var body = {"mobile_number": number};
 
@@ -26,23 +25,33 @@ class AuthApiService {
     }
   }
 
-  // Verify user SMS code
   Future verifyUser(String number, String code) async {
-    var body = {"mobile_number": number, 'pin': code};
+    final body = {"mobile_number": number, 'pin': code};
 
     try {
-      Response res = await dioClient.postData(
+      final res = await dioClient.postData(
         Endpoints.loginVerify,
         body,
         headers: Endpoints.simpleHeader,
       );
+      
+      if (res.data['data']?['jwt']?['access'] != null) {
+        final jwtAccess = res.data['data']['jwt']['access'];
+        await SecureStorage.writeSecureStorage(Keys.token, jwtAccess);
+        
+        if (res.data['data']['jwt']?['refresh'] != null) {
+          await SecureStorage.writeSecureStorage('jwt_refresh', res.data['data']['jwt']['refresh']);
+        }
+      } else if (res.data['data']?['token'] != null) {
+        await SecureStorage.writeSecureStorage(Keys.token, res.data['data']['token']);
+      }
+      
       return apiStatus(res);
     } catch (e) {
       return customApiStatus();
     }
   }
 
-  // Get user advertisements
   Future getAdvertises() async {
     try {
       Response res = await dioClient.getData(Endpoints.userAdvertise);
@@ -52,7 +61,6 @@ class AuthApiService {
     }
   }
 
-  // Get user contacts
   Future getContacts() async {
     try {
       Response res = await dioClient.getData(Endpoints.userContact);
@@ -62,11 +70,41 @@ class AuthApiService {
     }
   }
 
-  // Log out user
   Future logout() async {
     try {
+      final refreshToken = await SecureStorage.readSecureStorage('jwt_refresh');
+      final accessToken = await SecureStorage.readSecureStorage(Keys.token);
+      
+      if ((refreshToken != null && refreshToken != "ND") || 
+          (accessToken != null && accessToken != "ND")) {
+        try {
+          final logoutData = refreshToken != null && refreshToken != "ND" 
+              ? {'refresh': refreshToken} 
+              : {};
+          
+          final headers = accessToken != null && accessToken != "ND"
+              ? {
+                  ...Endpoints.simpleHeader,
+                  'Authorization': 'Bearer $accessToken',
+                }
+              : Endpoints.simpleHeader;
+          
+          await dioClient.postData(
+            Endpoints.jwtLogout,
+            logoutData,
+            headers: headers,
+          );
+        } catch (e) {
+          if (kDebugMode) {
+            debugPrint('Logout API error: $e');
+          }
+        }
+      }
+      
+      await SecureStorage.deleteSecureStorage('jwt_refresh');
       await SecureStorage.writeSecureStorage(Keys.token, "ND");
-      return Success(code: 200, response: {}, message: 'Logged out locally');
+      
+      return Success(code: 200, response: {}, message: 'Logged out successfully');
     } catch (e) {
       return customApiStatus();
     }

@@ -68,7 +68,7 @@ class _ProductScreenState extends State<ProductScreen> {
 
     var response = await http.get(
       Uri.parse(url),
-      headers: {'Authorization': 'Token $token'},
+      headers: {'Authorization': 'Bearer $token'},
     );
 
     var data = jsonDecode(response.body)['data'];
@@ -128,7 +128,7 @@ class _ProductScreenState extends State<ProductScreen> {
       Uri.parse(url),
       headers: {
         'Accept': 'application/json',
-        'Authorization': 'Token $token',
+        'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
       },
       body: data,
@@ -153,7 +153,7 @@ class _ProductScreenState extends State<ProductScreen> {
     String? token = await SecureStorage.readSecureStorage(Keys.token);
     var response = await http.get(
       Uri.parse(url),
-      headers: {'Authorization': 'Token $token'},
+      headers: {'Authorization': 'Bearer $token'},
     );
 
     comments.clear();
@@ -188,7 +188,7 @@ class _ProductScreenState extends State<ProductScreen> {
       Uri.parse(url),
       headers: {
         'Accept': 'application/json',
-        'Authorization': 'Token $token',
+        'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
       },
       body: data,
