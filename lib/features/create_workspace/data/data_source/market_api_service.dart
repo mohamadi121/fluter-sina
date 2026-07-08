@@ -41,7 +41,7 @@ class CreateMarketApiService {
       );
       return apiStatus(res);
     } catch (e) {
-      return customApiStatus();
+      return apiFailure(e);
     }
   }
 
@@ -66,7 +66,7 @@ class CreateMarketApiService {
       );
       return apiStatus(res);
     } catch (e) {
-      return customApiStatus();
+      return apiFailure(e);
     }
   }
 
@@ -88,7 +88,7 @@ class CreateMarketApiService {
       );
       return apiStatus(res);
     } catch (e) {
-      return customApiStatus();
+      return apiFailure(e);
     }
   }
 
@@ -99,7 +99,7 @@ class CreateMarketApiService {
 
       return apiStatus(res);
     } catch (e) {
-      return customApiStatus();
+      return apiFailure(e);
     }
   }
 
@@ -111,7 +111,7 @@ class CreateMarketApiService {
       );
       return apiStatus(res);
     } catch (e) {
-      return customApiStatus();
+      return apiFailure(e);
     }
   }
 
@@ -123,7 +123,7 @@ class CreateMarketApiService {
       );
       return apiStatus(res);
     } catch (e) {
-      return customApiStatus();
+      return apiFailure(e);
     }
   }
 
@@ -138,7 +138,7 @@ class CreateMarketApiService {
       );
       return apiStatus(res);
     } catch (e) {
-      return customApiStatus();
+      return apiFailure(e);
     }
   }
 
@@ -150,7 +150,7 @@ class CreateMarketApiService {
       );
       return apiStatus(res);
     } catch (e) {
-      return customApiStatus();
+      return apiFailure(e);
     }
   }
 
@@ -165,7 +165,7 @@ class CreateMarketApiService {
       );
       return apiStatus(res);
     } catch (e) {
-      return customApiStatus();
+      return apiFailure(e);
     }
   }
 
@@ -177,7 +177,7 @@ class CreateMarketApiService {
       );
       return apiStatus(res);
     } catch (e) {
-      return customApiStatus();
+      return apiFailure(e);
     }
   }
 
@@ -190,7 +190,7 @@ class CreateMarketApiService {
 
       return apiStatus(res);
     } catch (e) {
-      return customApiStatus();
+      return apiFailure(e);
     }
   }
 
@@ -205,7 +205,7 @@ class CreateMarketApiService {
       );
       return apiStatus(res);
     } catch (e) {
-      return customApiStatus();
+      return apiFailure(e);
     }
   }
 
@@ -220,7 +220,7 @@ class CreateMarketApiService {
       );
       return apiStatus(res);
     } catch (e) {
-      return customApiStatus();
+      return apiFailure(e);
     }
   }
 
@@ -233,7 +233,7 @@ class CreateMarketApiService {
       );
       return apiStatus(res);
     } catch (e) {
-      return customApiStatus();
+      return apiFailure(e);
     }
   }
 
@@ -245,7 +245,7 @@ class CreateMarketApiService {
       );
       return apiStatus(res);
     } catch (e) {
-      return customApiStatus();
+      return apiFailure(e);
     }
   }
 
@@ -266,7 +266,7 @@ class CreateMarketApiService {
       );
       return apiStatus(res);
     } catch (e) {
-      return customApiStatus();
+      return apiFailure(e);
     }
   }
 
@@ -278,7 +278,7 @@ class CreateMarketApiService {
       );
       return apiStatus(res);
     } catch (e) {
-      return customApiStatus();
+      return apiFailure(e);
     }
   }
 
@@ -291,7 +291,7 @@ class CreateMarketApiService {
       );
       return apiStatus(res);
     } catch (e) {
-      return customApiStatus();
+      return apiFailure(e);
     }
   }
 }

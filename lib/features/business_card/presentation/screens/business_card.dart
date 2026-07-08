@@ -56,7 +56,6 @@ class _BusinessCardState extends State<BusinessCard> {
   //     }
   //   });
 
-  //   print(data.toString());
   // }
 
   @override

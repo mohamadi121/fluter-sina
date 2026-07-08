@@ -1,6 +1,8 @@
-import 'dart:developer';
-
 import 'package:dio/dio.dart';
+
+import 'package:asood/core/logging/app_logger.dart';
+
+import 'error_response.dart';
 
 class Success {
   int? code;
@@ -10,45 +12,109 @@ class Success {
   Success({this.code, this.response, this.message});
 }
 
-class Failure {
-  int? code;
-  Object? errorResponse;
-
-  Failure({this.code, this.errorResponse});
+enum FailureKind {
+  network,
+  unauthorized,
+  forbidden,
+  notFound,
+  validation,
+  server,
+  parsing,
+  unknown,
 }
 
-// Handles API responses using Dio
-apiStatus(Response response) {
+class Failure {
+  final int? code;
+  final Object? errorResponse;
+  final FailureKind kind;
+
+  Failure({this.code, this.errorResponse, this.kind = FailureKind.unknown});
+
+  bool get isAuthError => kind == FailureKind.unauthorized;
+
+  String get message => errorResponse?.toString() ?? 'خطای نامشخص';
+}
+
+/// Maps a 2xx backend envelope `{success, code, data, message}` /
+/// `{success, code, error: {code, detail}}` to Success/Failure.
+dynamic apiStatus(Response response) {
   try {
-    var res = response.data;
+    final res = response.data;
 
     if (res['success'] == true) {
-      log("__________new data in api status___________");
-      log(res.toString());
       return Success(
         code: res['code'],
         response: res['data'],
         message: res['message'],
       );
-    } else {
-      return Failure(
-        code: res['code'],
-        errorResponse: res['error']?['detail'] ?? 'خطای نامشخص!',
-      );
     }
-  } catch (e) {
-    print("------------------");
-    print(e.toString());
+    return Failure(
+      code: res['code'],
+      errorResponse: res['error']?['detail'] ?? 'خطای نامشخص',
+      kind: FailureKind.validation,
+    );
+  } catch (e, st) {
+    AppLogger.error(
+      'api',
+      'unexpected response shape from ${response.requestOptions.path}',
+      e,
+      st,
+    );
     return Failure(
       code: response.statusCode ?? 500,
       errorResponse: 'خطای پردازش پاسخ سرور',
+      kind: FailureKind.parsing,
     );
   }
 }
 
-// Handles API errors in case of network failure or other issues
-customApiStatus() {
-  return Failure(code: 301, errorResponse: 'عدم برقراری ارتباط با سرور');
+/// Maps a thrown error (usually DioException on non-2xx or network trouble)
+/// to a typed Failure, preserving the backend's error detail when present.
+Failure apiFailure(Object error) {
+  if (error is! DioException) {
+    AppLogger.error('api', 'non-dio error escaped a data source', error);
+    return Failure(errorResponse: 'خطای غیرمنتظره', kind: FailureKind.unknown);
+  }
+
+  final response = error.response;
+  if (response == null) {
+    return Failure(
+      code: null,
+      errorResponse: 'عدم برقراری ارتباط با سرور',
+      kind: FailureKind.network,
+    );
+  }
+
+  final status = response.statusCode ?? 500;
+  final detail = _envelopeDetail(response.data) ?? handleHttpError(status);
+
+  return Failure(
+    code: status,
+    errorResponse: detail,
+    kind: _kindForStatus(status),
+  );
+}
+
+String? _envelopeDetail(dynamic data) {
+  if (data is! Map) {
+    return null;
+  }
+  final error = data['error'];
+  if (error is Map && error['detail'] != null) {
+    return error['detail'].toString();
+  }
+  if (data['detail'] != null) {
+    return data['detail'].toString();
+  }
+  return null;
+}
+
+FailureKind _kindForStatus(int status) {
+  if (status == 401) return FailureKind.unauthorized;
+  if (status == 403) return FailureKind.forbidden;
+  if (status == 404) return FailureKind.notFound;
+  if (status >= 400 && status < 500) return FailureKind.validation;
+  return FailureKind.server;
 }
 
 enum CWSStatus { initial, loading, success, failure }

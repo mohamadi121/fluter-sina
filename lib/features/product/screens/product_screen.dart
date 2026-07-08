@@ -73,7 +73,6 @@ class _ProductScreenState extends State<ProductScreen> {
 
     var data = jsonDecode(response.body)['data'];
 
-    print(data);
     setState(() {
       name = data['name'].toString();
       description = data['description'].toString();
@@ -135,7 +134,6 @@ class _ProductScreenState extends State<ProductScreen> {
     );
 
     if (response.statusCode == 201) {
-      print('sina');
       setState(() {
         getProductByID(widget.productDetails.id.toString());
         getCommentsByID(widget.productDetails.id.toString());
@@ -393,7 +391,6 @@ class _ProductScreenState extends State<ProductScreen> {
                                         //edit
                                         InkWell(
                                           onTap: () {
-                                            // print("pressed");
                                           },
                                           // padding: const EdgeInsets.all(0),
                                           child: Icon(
@@ -407,7 +404,6 @@ class _ProductScreenState extends State<ProductScreen> {
                                         //save
                                         InkWell(
                                           onTap: () {
-                                            // print("pressed");
                                           },
                                           child: Icon(
                                             Iconsax.save_2,

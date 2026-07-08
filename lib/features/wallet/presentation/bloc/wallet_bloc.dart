@@ -26,14 +26,12 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       final result = await walletApiService.getBalance();
       if (result is Success) {
         final data = result.response;
-        WalletModel wallet;
-        
-        if (data is Map && data.containsKey('success')) {
-          wallet = WalletModel.fromJson(data['data'] ?? data);
-        } else {
-          wallet = WalletModel.fromJson(data);
+        if (data is! Map) {
+          emit(const WalletError(message: 'پاسخ نامعتبر کیف پول'));
+          return;
         }
-        
+        final wallet =
+            WalletModel.fromJson(Map<String, dynamic>.from(data));
         emit(WalletLoaded(wallet: wallet));
       } else if (result is Failure) {
         emit(WalletError(message: result.errorResponse?.toString() ?? 'Failed to load wallet'));

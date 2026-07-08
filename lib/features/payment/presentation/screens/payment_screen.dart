@@ -4,7 +4,6 @@ import 'package:intl/intl.dart';
 import 'package:asood/core/constants/constants.dart';
 import 'package:asood/core/widgets/appbar/default_appbar.dart';
 import 'package:asood/features/payment/presentation/bloc/payment_bloc.dart';
-import 'package:asood/features/payment/domain/models/payment_model.dart';
 
 class PaymentScreen extends StatelessWidget {
   final double amount;

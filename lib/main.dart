@@ -1,4 +1,5 @@
 import 'package:asood/core/constants/constants.dart';
+import 'package:asood/core/logging/app_bloc_observer.dart';
 import 'package:asood/core/router/app_routers.dart';
 import 'package:asood/features/auth/presentation/blocs/auth_bloc.dart';
 import 'package:asood/features/business_card/presentation/bloc/business_bloc.dart';
@@ -23,9 +24,11 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  Bloc.observer = const AppBlocObserver();
+
   await locatorSetup();
 
-  runApp(Asood());
+  runApp(const Asood());
 }
 
 class Asood extends StatelessWidget {

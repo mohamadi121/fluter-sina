@@ -14,7 +14,7 @@ class RegionApiServices {
 
       return apiStatus(res);
     } catch (e) {
-      return customApiStatus();
+      return apiFailure(e);
     }
   }
 
@@ -25,7 +25,7 @@ class RegionApiServices {
       );
       return apiStatus(res);
     } catch (e) {
-      return customApiStatus();
+      return apiFailure(e);
     }
   }
 
@@ -36,7 +36,7 @@ class RegionApiServices {
       );
       return apiStatus(res);
     } catch (e) {
-      return customApiStatus();
+      return apiFailure(e);
     }
   }
 }

@@ -1,5 +1,6 @@
 import 'package:asood/core/helper/enum_changer.dart';
 import 'package:asood/core/http_client/api_status.dart';
+import 'package:asood/core/logging/app_logger.dart';
 import 'package:asood/features/market/data/model/product_model.dart';
 import 'package:asood/features/market/data/model/theme_model_model.dart';
 import 'package:asood/features/market/domain/repository/product_repository.dart';
@@ -289,8 +290,8 @@ class AddProductBloc extends Bloc<AddProductEvent, AddProductState> {
 
         emit(state.copyWith(status: CWSStatus.success));
       }
-    } catch (e) {
-      print('Add product error: $e');
+    } catch (e, st) {
+      AppLogger.error('add_product', 'add product failed', e, st);
       emit(state.copyWith(status: CWSStatus.failure));
     } finally {
       emit(state.copyWith(status: CWSStatus.initial));

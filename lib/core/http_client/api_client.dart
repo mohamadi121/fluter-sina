@@ -4,16 +4,20 @@ import 'package:image_picker/image_picker.dart';
 
 import 'package:asood/core/constants/constants.dart';
 import 'package:asood/core/helper/secure_storage.dart';
+import 'package:asood/core/logging/app_logger.dart';
 
-import 'error_response.dart';
-
+/// HTTP client for the Asoud backend.
+///
+/// The backend uses DRF TokenAuthentication: `Authorization: Token <key>`.
+/// There is no JWT and no refresh endpoint — a 401 means the token is gone
+/// or revoked, so the stored token is wiped and the error propagates for the
+/// auth layer to route the user back to login.
 class DioClient {
   final String appBaseUrl;
   final int timeoutInSeconds = 30;
   late Dio dio;
 
   DioClient({required this.appBaseUrl}) {
-    // Initialize Dio with base options
     dio = Dio(
       BaseOptions(
         baseUrl: appBaseUrl,
@@ -27,300 +31,138 @@ class DioClient {
       InterceptorsWrapper(
         onRequest: (options, handler) async {
           final token = await SecureStorage.readSecureStorage(Keys.token);
-          if (token != null && token != "ND") {
-            options.headers['Authorization'] = 'Bearer $token';
+          if (token != null && token != 'ND') {
+            options.headers['Authorization'] = 'Token $token';
           }
-          if (kDebugMode) {
-            debugPrint('API Request: ${options.method} ${options.path}');
-          }
+          options.extra['startTime'] = DateTime.now();
           return handler.next(options);
         },
+        onResponse: (response, handler) {
+          _logResponse(response.requestOptions, response.statusCode);
+          return handler.next(response);
+        },
         onError: (error, handler) async {
+          _logResponse(
+            error.requestOptions,
+            error.response?.statusCode,
+            error: error,
+          );
           if (error.response?.statusCode == 401) {
-            try {
-              final refreshToken = await SecureStorage.readSecureStorage('jwt_refresh');
-              if (refreshToken != null && refreshToken != "ND") {
-                try {
-                  final refreshDio = Dio(BaseOptions(
-                    baseUrl: appBaseUrl,
-                    headers: {'Content-Type': 'application/json; charset=utf-8'},
-                  ));
-                  
-                  final refreshResponse = await refreshDio.post(
-                    'user/jwt/refresh/',
-                    data: {'refresh': refreshToken},
-                  );
-                  
-                  if (refreshResponse.statusCode == 200 && 
-                      refreshResponse.data['success'] == true) {
-                    final jwt = refreshResponse.data['data'];
-                    final newAccessToken = jwt['access'];
-                    final newRefreshToken = jwt['refresh'];
-                    
-                    await SecureStorage.writeSecureStorage(Keys.token, newAccessToken);
-                    await SecureStorage.writeSecureStorage('jwt_refresh', newRefreshToken);
-                    
-                    error.requestOptions.headers['Authorization'] = 'Bearer $newAccessToken';
-                    final opts = Options(
-                      method: error.requestOptions.method,
-                      headers: error.requestOptions.headers,
-                    );
-                    final cloneReq = await dio.request(
-                      error.requestOptions.path,
-                      options: opts,
-                      data: error.requestOptions.data,
-                      queryParameters: error.requestOptions.queryParameters,
-                    );
-                    return handler.resolve(cloneReq);
-                  }
-                } catch (refreshError) {
-                  if (kDebugMode) {
-                    debugPrint('Token refresh failed: $refreshError');
-                  }
-                  await SecureStorage.writeSecureStorage(Keys.token, "ND");
-                  await SecureStorage.deleteSecureStorage('jwt_refresh');
-                }
-              }
-            } catch (e) {
-              if (kDebugMode) {
-                debugPrint('Error in token refresh handler: $e');
-              }
-            }
+            await SecureStorage.deleteSecureStorage(Keys.token);
           }
           return handler.next(error);
         },
       ),
     );
-    dio.interceptors.add(
-      LogInterceptor(
-        request: true,
-        requestHeader: true,
-        requestBody: true,
-        responseHeader: false,
-        responseBody: true,
-        error: true,
-      ),
-    );
   }
 
-  // Perform a GET request
+  void _logResponse(
+    RequestOptions request,
+    int? statusCode, {
+    DioException? error,
+  }) {
+    final start = request.extra['startTime'] as DateTime?;
+    final elapsed =
+        start == null
+            ? ''
+            : ' ${DateTime.now().difference(start).inMilliseconds}ms';
+    final line =
+        '${request.method} ${request.path} -> ${statusCode ?? 'no response'}$elapsed';
+
+    if (error == null) {
+      AppLogger.info('http', line);
+    } else {
+      AppLogger.warning('http', line, error.error ?? error.message);
+    }
+    if (kDebugMode && error?.response?.data != null) {
+      AppLogger.debug('http', 'body: ${error!.response!.data}');
+    }
+  }
+
   Future<Response> getData(
     String uri, {
     Map<String, dynamic>? queryParameters,
     Map<String, dynamic>? headers,
-  }) async {
-    try {
-      Response response = await dio.get(
-        uri,
-        queryParameters: queryParameters,
-        options: Options(headers: headers),
-      );
-      return _handleResponse(response, uri);
-    } on DioException catch (e) {
-      return _handleDioException(e, uri);
-    }
+  }) {
+    return dio.get(
+      uri,
+      queryParameters: queryParameters,
+      options: Options(headers: headers),
+    );
   }
 
-  // Perform a POST request
   Future<Response> postData(
     String uri,
     dynamic data, {
     Map<String, dynamic>? headers,
-  }) async {
-    try {
-      if (kDebugMode) {
-        debugPrint('====> API Body: $data');
-      }
-      Response response = await dio.post(
-        uri,
-        data: data,
-        options: Options(headers: headers),
-      );
-      return _handleResponse(response, uri);
-    } on DioException catch (e) {
-      return _handleDioException(e, uri);
-    }
+  }) {
+    return dio.post(uri, data: data, options: Options(headers: headers));
   }
 
-  // Perform a POST request with multipart data (e.g., file upload)
   Future<Response> postMultipartData(
     String uri,
     Map<String, dynamic> data,
     List<MultipartBody> multipartBody, {
     Map<String, dynamic>? headers,
   }) async {
-    try {
-      FormData formData = FormData();
-      // Add text fields
-      data.forEach((key, value) {
-        formData.fields.add(MapEntry(key, value.toString()));
-      });
-      // Add files
-      for (MultipartBody multipart in multipartBody) {
-        if (multipart.file != null) {
-          String fileName = multipart.file!.name;
-          formData.files.add(
-            MapEntry(
-              multipart.key,
-              await MultipartFile.fromFile(
-                multipart.file!.path,
-                filename: fileName,
-              ),
-            ),
-          );
-        }
-      }
-      if (kDebugMode) {
-        debugPrint(
-          '====> API Multipart POST: $uri with data: $data and ${multipartBody.length} file(s)',
-        );
-      }
-      Response response = await dio.post(
-        uri,
-        data: formData,
-        options: Options(headers: headers),
-      );
-      return _handleResponse(response, uri);
-    } on DioException catch (e) {
-      return _handleDioException(e, uri);
-    }
+    final formData = await _buildFormData(data, multipartBody);
+    return dio.post(uri, data: formData, options: Options(headers: headers));
   }
 
-  // Perform a PATCH request with multipart data (e.g., file update)
   Future<Response> patchMultipartData(
     String uri,
     Map<String, String> data,
     List<MultipartBody> multipartBody, {
     Map<String, dynamic>? headers,
   }) async {
-    try {
-      FormData formData = FormData();
-      // Add text fields
-      data.forEach((key, value) {
-        formData.fields.add(MapEntry(key, value));
-      });
-      // Add files
-      for (MultipartBody multipart in multipartBody) {
-        if (multipart.file != null) {
-          String fileName = multipart.file!.name;
-          formData.files.add(
-            MapEntry(
-              multipart.key,
-              await MultipartFile.fromFile(
-                multipart.file!.path,
-                filename: fileName,
-              ),
-            ),
-          );
-        }
-      }
-      if (kDebugMode) {
-        debugPrint(
-          '====> API Multipart PATCH: $uri with data: $data and ${multipartBody.length} file(s)',
-        );
-      }
-      Response response = await dio.patch(
-        uri,
-        data: formData,
-        options: Options(headers: headers),
-      );
-      return _handleResponse(response, uri);
-    } on DioException catch (e) {
-      return _handleDioException(e, uri);
-    }
+    final formData = await _buildFormData(data, multipartBody);
+    return dio.patch(uri, data: formData, options: Options(headers: headers));
   }
 
-  // Perform a PUT request
   Future<Response> putData(
     String uri,
     dynamic data, {
     Map<String, dynamic>? headers,
-  }) async {
-    try {
-      Response response = await dio.put(
-        uri,
-        data: data,
-        options: Options(headers: headers),
-      );
-      return _handleResponse(response, uri);
-    } on DioException catch (e) {
-      return _handleDioException(e, uri);
-    }
+  }) {
+    return dio.put(uri, data: data, options: Options(headers: headers));
   }
 
-  // Perform a PATCH request
   Future<Response> patchData(
     String uri,
     dynamic data, {
     Map<String, dynamic>? headers,
-  }) async {
-    try {
-      Response response = await dio.patch(
-        uri,
-        data: data,
-        options: Options(headers: headers),
-      );
-      return _handleResponse(response, uri);
-    } on DioException catch (e) {
-      return _handleDioException(e, uri);
-    }
+  }) {
+    return dio.patch(uri, data: data, options: Options(headers: headers));
   }
 
-  // Perform a DELETE request
-  Future<Response> deleteData(
-    String uri, {
-    Map<String, dynamic>? headers,
-  }) async {
-    try {
-      Response response = await dio.delete(
-        uri,
-        options: Options(headers: headers),
-      );
-      return _handleResponse(response, uri);
-    } on DioException catch (e) {
-      return _handleDioException(e, uri);
-    }
+  Future<Response> deleteData(String uri, {Map<String, dynamic>? headers}) {
+    return dio.delete(uri, options: Options(headers: headers));
   }
 
-  // Handle API responses (success or failure)
-  Response _handleResponse(Response response, String uri) {
-    if (kDebugMode) {
-      debugPrint(
-        '====> API Response: [${response.statusCode}] $uri\n${response.data}',
+  Future<FormData> _buildFormData(
+    Map<String, dynamic> data,
+    List<MultipartBody> multipartBody,
+  ) async {
+    final formData = FormData();
+    data.forEach((key, value) {
+      formData.fields.add(MapEntry(key, value.toString()));
+    });
+    for (final multipart in multipartBody) {
+      final file = multipart.file;
+      if (file == null) {
+        continue;
+      }
+      formData.files.add(
+        MapEntry(
+          multipart.key,
+          await MultipartFile.fromFile(file.path, filename: file.name),
+        ),
       );
     }
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      return response;
-    } else {
-      // Convert HTTP error code to readable message
-      String errorMessage = handleHttpError(response.statusCode!);
-      throw DioException(
-        requestOptions: response.requestOptions,
-        response: response,
-        error: errorMessage,
-      );
-    }
-  }
-
-  // Handle Dio errors (network or server-related issues)
-  Response _handleDioException(DioException error, String uri) {
-    if (kDebugMode) {
-      debugPrint('====> Error on $uri: ${error.message}');
-    }
-    // Provide an appropriate error message
-    String errorMessage =
-        error.response != null
-            ? handleHttpError(error.response!.statusCode!)
-            : 'Unable to connect to the server';
-    throw DioException(
-      requestOptions: error.requestOptions,
-      error: errorMessage,
-      response: error.response,
-    );
+    return formData;
   }
 }
 
-// Model for handling multipart file uploads
 class MultipartBody {
   final String key;
   final XFile? file;

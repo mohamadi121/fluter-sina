@@ -12,7 +12,7 @@ class CategoryApiService {
       Response res = await dioClient.getData(Endpoints.categoryGroupList);
       return apiStatus(res);
     } catch (e) {
-      return customApiStatus();
+      return apiFailure(e);
     }
   }
 
@@ -24,7 +24,7 @@ class CategoryApiService {
 
       return apiStatus(res);
     } catch (e) {
-      return customApiStatus();
+      return apiFailure(e);
     }
   }
 
@@ -36,7 +36,7 @@ class CategoryApiService {
 
       return apiStatus(res);
     } catch (e) {
-      return customApiStatus();
+      return apiFailure(e);
     }
   }
 }

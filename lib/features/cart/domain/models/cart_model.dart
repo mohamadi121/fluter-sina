@@ -68,16 +68,25 @@ class CartItemModel {
     this.totalPrice,
   });
 
+  static String? _firstImageUrl(dynamic product) {
+    final images = product is Map ? product['images'] : null;
+    if (images is! List || images.isEmpty) {
+      return null;
+    }
+    final first = images.first;
+    if (first is Map) {
+      return first['image']?.toString();
+    }
+    return first?.toString();
+  }
+
   factory CartItemModel.fromJson(Map<String, dynamic> json) {
     return CartItemModel(
       id: json['id']?.toString() ?? '',
       productId: json['product']?['id']?.toString(),
       productName: json['product']?['name']?.toString() ??
           json['product_name']?.toString(),
-      productImage: json['product']?['images'] != null &&
-              (json['product']?['images'] as List).isNotEmpty
-          ? json['product']?['images']?[0]?['image']?.toString()
-          : null,
+      productImage: _firstImageUrl(json['product']),
       affiliateId: json['affiliate']?['id']?.toString(),
       affiliateName: json['affiliate']?['name']?.toString() ??
           json['affiliate_name']?.toString(),

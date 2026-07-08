@@ -1,6 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:asood/core/http_client/api_client.dart';
 import 'package:asood/core/http_client/api_status.dart';
 import 'package:asood/features/cart/data/data_source/cart_api_service.dart';
 import 'package:asood/features/cart/domain/models/cart_model.dart';
@@ -26,14 +25,11 @@ class CartBloc extends Bloc<CartEvent, CartState> {
       final result = await cartApiService.getCart();
       if (result is Success) {
         final data = result.response;
-        CartModel cart;
-        
-        if (data is Map && data.containsKey('success')) {
-          cart = CartModel.fromJson(data['data'] ?? data);
-        } else {
-          cart = CartModel.fromJson(data);
+        if (data is! Map) {
+          emit(CartError(message: 'پاسخ نامعتبر سبد خرید'));
+          return;
         }
-        
+        final cart = CartModel.fromJson(Map<String, dynamic>.from(data));
         emit(CartLoaded(cart: cart));
       } else if (result is Failure) {
         emit(CartError(message: result.errorResponse?.toString() ?? 'Failed to load cart'));

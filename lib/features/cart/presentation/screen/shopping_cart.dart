@@ -41,8 +41,6 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
   //   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
   //   List<String>? getData = sharedPreferences.getStringList("shopping_cart");
 
-  //   print('sina this is your get data :');
-  //   print(getData.toString());
 
   //   if (getData != null && getData != []) {
   //     setState(() {

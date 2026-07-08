@@ -14,13 +14,9 @@ class Endpoints {
 
   static String loginCreate = "user/pin/create/";
   static String loginVerify = 'user/pin/verify/';
-  static String jwtRefresh = 'user/jwt/refresh/';
-  static String jwtLogout = 'user/jwt/logout/';
-  static String logout = "logout/";
 
   /// user
   static String userAdvertise = "advertisements/";
-  static String userContact = 'contact/';
 
   /// category
   static String categoryGroupList = 'category/group/list/';

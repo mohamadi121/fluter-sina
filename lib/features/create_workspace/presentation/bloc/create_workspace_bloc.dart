@@ -1,5 +1,6 @@
 import 'package:asood/core/constants/constants.dart';
 import 'package:asood/core/http_client/api_status.dart';
+import 'package:asood/core/logging/app_logger.dart';
 import 'package:asood/features/create_workspace/data/model/market_contact.dart';
 import 'package:asood/features/create_workspace/data/model/market_schedule.dart';
 import 'package:asood/features/create_workspace/data/model/marketbase_model.dart';
@@ -130,8 +131,6 @@ class CreateWorkSpaceBloc
 
     on<ChangeHasWorkTime>((event, emit) {
       emit(state.copyWith(hasWorkTime: event.hasWorkTime));
-      // ignore: avoid_print
-      print(state.hasWorkTime);
     });
 
     on<MarketContact>(_setMarketContact);
@@ -247,31 +246,33 @@ class CreateWorkSpaceBloc
           ),
         );
       }
-    } catch (e) {}
+    } catch (e, st) {
+      AppLogger.error('create_workspace', 'createMarketLocation failed', e, st);
+      emit(
+        state.copyWith(
+          status: CWSStatus.failure,
+          error: 'ثبت موقعیت فروشگاه ناموفق بود',
+        ),
+      );
+    }
   }
 
+  // FAKE (pre-existing): the three handlers below emit success without any
+  // backend call. Real pricing/discount/payment wiring lands in batch 2 —
+  // tracked in ARCHITECTURE_MAP.md §3.
   _calPrice(CalPrice event, Emitter<CreateWorkSpaceState> emit) async {
-    emit(state.copyWith(status: CWSStatus.loading));
-    try {
-      final res = Success();
-      emit(state.copyWith(status: CWSStatus.success));
-    } catch (e) {}
+    AppLogger.warning('create_workspace', 'calPrice is a stub — no backend call');
+    emit(state.copyWith(status: CWSStatus.success));
   }
 
   _setDiscount(SetDiscount event, Emitter<CreateWorkSpaceState> emit) async {
-    emit(state.copyWith(status: CWSStatus.loading));
-    try {
-      final res = Success();
-      emit(state.copyWith(status: CWSStatus.success));
-    } catch (e) {}
+    AppLogger.warning('create_workspace', 'setDiscount is a stub — no backend call');
+    emit(state.copyWith(status: CWSStatus.success));
   }
 
   _payPrice(PayPrice event, Emitter<CreateWorkSpaceState> emit) async {
-    emit(state.copyWith(status: CWSStatus.loading));
-    try {
-      final res = Success();
-      emit(state.copyWith(status: CWSStatus.success));
-    } catch (e) {}
+    AppLogger.warning('create_workspace', 'payPrice is a stub — no backend call');
+    emit(state.copyWith(status: CWSStatus.success));
   }
 
   //--------------- Region ----------

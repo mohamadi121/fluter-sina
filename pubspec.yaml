@@ -54,6 +54,8 @@ dependencies:
 
 
 dev_dependencies:
+  flutter_test:
+    sdk: flutter
   build_runner: any
   flutter_lints: ^5.0.0
   analyzer: ^6.4.1

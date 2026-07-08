@@ -34,7 +34,7 @@ class InquiryAPIService {
       Response res = await dioClient.postData(uri, body);
       return apiStatus(res);
     } catch (e) {
-      return customApiStatus();
+      return apiFailure(e);
     }
   }
 }

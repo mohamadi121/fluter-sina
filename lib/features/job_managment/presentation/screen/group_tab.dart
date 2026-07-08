@@ -46,7 +46,6 @@ class _GroupTabState extends State<GroupTab> {
   //     isInProcess = true;
   //   } else {
   //     isInProcess = false;
-  //     print('object');
   //   }
   // }
 

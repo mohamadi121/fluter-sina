@@ -27,17 +27,10 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
       final result = await paymentApiService.createPayment(event.data);
       if (result is Success) {
         final data = result.response;
-        PaymentModel? payment;
-        
-        if (data is Map && data.containsKey('success')) {
-          final paymentData = data['data'] ?? data;
-          if (paymentData is Map) {
-            payment = PaymentModel.fromJson(paymentData);
-          }
-        } else if (data is Map) {
-          payment = PaymentModel.fromJson(data);
-        }
-        
+        final payment = data is Map
+            ? PaymentModel.fromJson(Map<String, dynamic>.from(data))
+            : null;
+
         emit(PaymentCreated(payment: payment));
       } else if (result is Failure) {
         emit(PaymentError(message: result.errorResponse?.toString() ?? 'Failed to create payment'));
@@ -56,15 +49,9 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
       final result = await paymentApiService.redirectToPayment(event.data);
       if (result is Success) {
         final data = result.response;
-        String? redirectUrl;
-        
-        if (data is Map && data.containsKey('success')) {
-          redirectUrl = data['data']?['redirect_url']?.toString() ??
-              data['redirect_url']?.toString();
-        } else if (data is Map) {
-          redirectUrl = data['redirect_url']?.toString();
-        }
-        
+        final redirectUrl =
+            data is Map ? data['redirect_url']?.toString() : null;
+
         emit(PaymentRedirectReady(redirectUrl: redirectUrl));
       } else if (result is Failure) {
         emit(PaymentError(message: result.errorResponse?.toString() ?? 'Failed to redirect'));
@@ -83,17 +70,10 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
       final result = await paymentApiService.verifyPayment(event.data);
       if (result is Success) {
         final data = result.response;
-        PaymentModel? payment;
-        
-        if (data is Map && data.containsKey('success')) {
-          final paymentData = data['data'] ?? data;
-          if (paymentData is Map) {
-            payment = PaymentModel.fromJson(paymentData);
-          }
-        } else if (data is Map) {
-          payment = PaymentModel.fromJson(data);
-        }
-        
+        final payment = data is Map
+            ? PaymentModel.fromJson(Map<String, dynamic>.from(data))
+            : null;
+
         emit(PaymentVerified(payment: payment));
       } else if (result is Failure) {
         emit(PaymentError(message: result.errorResponse?.toString() ?? 'Payment verification failed'));
@@ -112,21 +92,13 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
       final result = await paymentApiService.getPayments();
       if (result is Success) {
         final data = result.response;
-        List<PaymentModel> payments = [];
-        
-        if (data is Map && data.containsKey('success')) {
-          final items = data['data'] ?? [];
-          if (items is List) {
-            payments = items
-                .map((item) => PaymentModel.fromJson(item))
-                .toList();
-          }
-        } else if (data is List) {
-          payments = data
-              .map((item) => PaymentModel.fromJson(item))
-              .toList();
-        }
-        
+        final payments = data is List
+            ? data
+                .map((item) =>
+                    PaymentModel.fromJson(Map<String, dynamic>.from(item)))
+                .toList()
+            : <PaymentModel>[];
+
         emit(PaymentsLoaded(payments: payments));
       } else if (result is Failure) {
         emit(PaymentError(message: result.errorResponse?.toString() ?? 'Failed to load payments'));
@@ -145,17 +117,10 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
       final result = await paymentApiService.getPaymentDetail(event.paymentId);
       if (result is Success) {
         final data = result.response;
-        PaymentModel? payment;
-        
-        if (data is Map && data.containsKey('success')) {
-          final paymentData = data['data'] ?? data;
-          if (paymentData is Map) {
-            payment = PaymentModel.fromJson(paymentData);
-          }
-        } else if (data is Map) {
-          payment = PaymentModel.fromJson(data);
-        }
-        
+        final payment = data is Map
+            ? PaymentModel.fromJson(Map<String, dynamic>.from(data))
+            : null;
+
         emit(PaymentDetailLoaded(payment: payment));
       } else if (result is Failure) {
         emit(PaymentError(message: result.errorResponse?.toString() ?? 'Failed to load payment detail'));

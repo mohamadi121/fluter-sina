@@ -1,27 +1,30 @@
-import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/constants/endpoints.dart';
 import 'package:dio/dio.dart';
 
+import 'package:asood/core/constants/constants.dart';
+import 'package:asood/core/constants/endpoints.dart';
 import 'package:asood/core/helper/secure_storage.dart';
 import 'package:asood/core/http_client/api_client.dart';
 import 'package:asood/core/http_client/api_status.dart';
 
+/// Auth against the backend's pin flow (DRF TokenAuthentication).
+/// `pin/verify/` returns `data: {token: <key>}`; there is no refresh token
+/// and no server-side logout endpoint, so logout is purely local.
 class AuthApiService {
   final DioClient dioClient;
   AuthApiService({required this.dioClient});
 
   Future userAuth(String number) async {
-    var body = {"mobile_number": number};
+    final body = {"mobile_number": number};
 
     try {
-      Response res = await dioClient.postData(
+      final Response res = await dioClient.postData(
         Endpoints.loginCreate,
         body,
         headers: Endpoints.simpleHeader,
       );
       return apiStatus(res);
     } catch (e) {
-      return customApiStatus();
+      return apiFailure(e);
     }
   }
 
@@ -34,79 +37,36 @@ class AuthApiService {
         body,
         headers: Endpoints.simpleHeader,
       );
-      
-      if (res.data['data']?['jwt']?['access'] != null) {
-        final jwtAccess = res.data['data']['jwt']['access'];
-        await SecureStorage.writeSecureStorage(Keys.token, jwtAccess);
-        
-        if (res.data['data']['jwt']?['refresh'] != null) {
-          await SecureStorage.writeSecureStorage('jwt_refresh', res.data['data']['jwt']['refresh']);
+
+      final result = apiStatus(res);
+      if (result is Success) {
+        final token = (result.response as Map?)?['token'];
+        if (token == null) {
+          return Failure(
+            code: res.statusCode,
+            errorResponse: 'پاسخ ورود فاقد توکن است',
+            kind: FailureKind.parsing,
+          );
         }
-      } else if (res.data['data']?['token'] != null) {
-        await SecureStorage.writeSecureStorage(Keys.token, res.data['data']['token']);
+        await SecureStorage.writeSecureStorage(Keys.token, token.toString());
       }
-      
-      return apiStatus(res);
+      return result;
     } catch (e) {
-      return customApiStatus();
+      return apiFailure(e);
     }
   }
 
   Future getAdvertises() async {
     try {
-      Response res = await dioClient.getData(Endpoints.userAdvertise);
+      final Response res = await dioClient.getData(Endpoints.userAdvertise);
       return apiStatus(res);
     } catch (e) {
-      return customApiStatus();
-    }
-  }
-
-  Future getContacts() async {
-    try {
-      Response res = await dioClient.getData(Endpoints.userContact);
-      return apiStatus(res);
-    } catch (e) {
-      return customApiStatus();
+      return apiFailure(e);
     }
   }
 
   Future logout() async {
-    try {
-      final refreshToken = await SecureStorage.readSecureStorage('jwt_refresh');
-      final accessToken = await SecureStorage.readSecureStorage(Keys.token);
-      
-      if ((refreshToken != null && refreshToken != "ND") || 
-          (accessToken != null && accessToken != "ND")) {
-        try {
-          final logoutData = refreshToken != null && refreshToken != "ND" 
-              ? {'refresh': refreshToken} 
-              : {};
-          
-          final headers = accessToken != null && accessToken != "ND"
-              ? {
-                  ...Endpoints.simpleHeader,
-                  'Authorization': 'Bearer $accessToken',
-                }
-              : Endpoints.simpleHeader;
-          
-          await dioClient.postData(
-            Endpoints.jwtLogout,
-            logoutData,
-            headers: headers,
-          );
-        } catch (e) {
-          if (kDebugMode) {
-            debugPrint('Logout API error: $e');
-          }
-        }
-      }
-      
-      await SecureStorage.deleteSecureStorage('jwt_refresh');
-      await SecureStorage.writeSecureStorage(Keys.token, "ND");
-      
-      return Success(code: 200, response: {}, message: 'Logged out successfully');
-    } catch (e) {
-      return customApiStatus();
-    }
+    await SecureStorage.deleteSecureStorage(Keys.token);
+    return Success(code: 200, response: {}, message: 'Logged out');
   }
 }

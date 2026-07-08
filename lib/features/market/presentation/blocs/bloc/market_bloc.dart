@@ -1,5 +1,5 @@
 import 'package:asood/core/http_client/api_status.dart';
-import 'package:asood/core/models/market_model.dart';
+import 'package:asood/core/logging/app_logger.dart';
 import 'package:asood/features/market/data/model/market_model.dart';
 import 'package:asood/features/market/domain/repository/product_repository.dart';
 import 'package:bloc/bloc.dart';
@@ -51,8 +51,6 @@ class MarketBloc extends Bloc<MarketEvent, MarketState> {
         final initList = res.response as List<dynamic>;
         final templateList =
             initList.map((e) => TemplateModel.fromJson(e)).toList();
-        print("----------------------------------------");
-        print(templateList);
         emit(
           state.copyWith(
             status: CWSStatus.success,
@@ -64,9 +62,8 @@ class MarketBloc extends Bloc<MarketEvent, MarketState> {
       } else {
         emit(state.copyWith(status: CWSStatus.failure));
       }
-    } catch (e) {
-      print("exeeeeeeeeeeeeeeeeeeeeeeeeee");
-      print(e.toString());
+    } catch (e, st) {
+      AppLogger.error('market', 'loadTemplate failed', e, st);
       emit(state.copyWith(status: CWSStatus.failure));
     }
   }
@@ -77,7 +74,6 @@ class MarketBloc extends Bloc<MarketEvent, MarketState> {
 
   _removeTemplate(RemoveTemplateEvent event, Emitter<MarketState> emit) {
     state.templateList.removeAt(event.index);
-    // print(state.templateList);
     emit(state.copyWith(templateList: state.templateList));
   }
 

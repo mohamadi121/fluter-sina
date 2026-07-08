@@ -104,9 +104,6 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.createProduct,
         builder: (context, state) {
-          print("---------------");
-          print(state.extra);
-          print(state.extra.runtimeType);
           List extra = state.extra as List;
           final marketId = extra[0];
           final themeId = extra[1];

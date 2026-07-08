@@ -202,9 +202,6 @@ class _MarketPreviewScreenState extends State<MarketPreviewScreen> {
       },
     );
 
-    print('sina this is your last response : : : : : ');
-    // print(jsonDecode(response.body).toString());
-    // print(jsonDecode(response.body)['data']);
 
     for (var bmark in jsonDecode(response.body)['data']) {
       if (bmark['id'] == widget.market.id) {
@@ -216,8 +213,6 @@ class _MarketPreviewScreenState extends State<MarketPreviewScreen> {
   }
 
   void bookmarkMarket(String marketId) async {
-    // print('sina this is market id :');
-    // print(marketId);
 
     String url = '${Endpoints.baseUrl}user/market/bookmark/$marketId/';
     String? token = await SecureStorage.readSecureStorage(Keys.token);
@@ -696,7 +691,6 @@ class _MarketPreviewScreenState extends State<MarketPreviewScreen> {
                                 //edit
                                 InkWell(
                                   onTap: () {
-                                    // print("pressed");
                                   },
                                   // padding: const EdgeInsets.all(0),
                                   child: Icon(
@@ -710,7 +704,6 @@ class _MarketPreviewScreenState extends State<MarketPreviewScreen> {
                                 //save
                                 InkWell(
                                   onTap: () {
-                                    // print("pressed");
                                   },
                                   child: Icon(
                                     Iconsax.save_2,

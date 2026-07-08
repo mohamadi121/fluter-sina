@@ -17,7 +17,6 @@ class BusinessList extends StatefulWidget {
 class _BusinessListState extends State<BusinessList> {
   @override
   Widget build(BuildContext context) {
-    print(widget.data.toString());
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: DefaultAppBar(title: 'کارت ویزیت ها'),

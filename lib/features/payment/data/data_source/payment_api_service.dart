@@ -1,6 +1,5 @@
 import 'package:asood/core/http_client/api_client.dart';
 import 'package:asood/core/http_client/api_status.dart';
-import 'package:dio/dio.dart';
 
 class PaymentApiService {
   final DioClient dioClient;
@@ -12,7 +11,7 @@ class PaymentApiService {
       final res = await dioClient.postData('user/payments/create/', data);
       return apiStatus(res);
     } catch (e) {
-      return customApiStatus();
+      return apiFailure(e);
     }
   }
   
@@ -21,7 +20,7 @@ class PaymentApiService {
       final res = await dioClient.postData('user/payments/pay', data);
       return apiStatus(res);
     } catch (e) {
-      return customApiStatus();
+      return apiFailure(e);
     }
   }
   
@@ -30,7 +29,7 @@ class PaymentApiService {
       final res = await dioClient.postData('user/payments/verify/', data);
       return apiStatus(res);
     } catch (e) {
-      return customApiStatus();
+      return apiFailure(e);
     }
   }
   
@@ -39,7 +38,7 @@ class PaymentApiService {
       final res = await dioClient.getData('user/payments/');
       return apiStatus(res);
     } catch (e) {
-      return customApiStatus();
+      return apiFailure(e);
     }
   }
   
@@ -48,7 +47,7 @@ class PaymentApiService {
       final res = await dioClient.getData('user/payments/$paymentId/');
       return apiStatus(res);
     } catch (e) {
-      return customApiStatus();
+      return apiFailure(e);
     }
   }
 }

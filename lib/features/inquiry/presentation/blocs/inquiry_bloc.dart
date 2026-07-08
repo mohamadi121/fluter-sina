@@ -44,7 +44,6 @@ class InquiryBloc extends Bloc<InquiryEvent, InquiryState> {
     Emitter<InquiryState> emit,
   ) async {
     emit(state.copyWith(inquiryType: event.inquiryType));
-    print('inquiry type switch: ${state.inquiryType}');
   }
 
   _inquiryAddImage(InquiryAddImage event, Emitter<InquiryState> emit) async {

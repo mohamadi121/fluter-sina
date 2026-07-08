@@ -19,7 +19,7 @@ class ProductApiService {
       );
       return apiStatus(res);
     } catch (e) {
-      return customApiStatus();
+      return apiFailure(e);
     }
   }
 
@@ -30,14 +30,13 @@ class ProductApiService {
       Response res = await dioClient.getData(uri);
       return apiStatus(res);
     } catch (e) {
-      return customApiStatus();
+      return apiFailure(e);
     }
   }
 
   // create product
 
   Future createProduct(ProductModel product) async {
-    print('product image is ${product.image}');
     List<MultipartBody> images = [];
 
     // Handle multiple images
@@ -47,9 +46,6 @@ class ProductApiService {
       }
     }
     try {
-      print('sina you wanna send this product');
-      print(product.toString());
-      print(product.mainPrice.toString());
       Response res = await dioClient.postMultipartData(
         Endpoints.createProduct,
         product.toJson(),
@@ -58,7 +54,7 @@ class ProductApiService {
 
       return apiStatus(res);
     } catch (e) {
-      return customApiStatus();
+      return apiFailure(e);
     }
   }
 
@@ -70,7 +66,7 @@ class ProductApiService {
       );
       return apiStatus(res);
     } catch (e) {
-      return customApiStatus();
+      return apiFailure(e);
     }
   }
 
@@ -91,7 +87,7 @@ class ProductApiService {
           });
       return apiStatus(res);
     } catch (e) {
-      return customApiStatus();
+      return apiFailure(e);
     }
   }
 
@@ -104,7 +100,7 @@ class ProductApiService {
 
       return apiStatus(res);
     } catch (e) {
-      return customApiStatus();
+      return apiFailure(e);
     }
   }
 
@@ -115,7 +111,7 @@ class ProductApiService {
       );
       return apiStatus(res);
     } catch (e) {
-      return customApiStatus();
+      return apiFailure(e);
     }
   }
 
@@ -131,7 +127,7 @@ class ProductApiService {
       );
       return apiStatus(res);
     } catch (e) {
-      return customApiStatus();
+      return apiFailure(e);
     }
   }
 }

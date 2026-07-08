@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/helper/secure_storage.dart';
 import 'package:asood/core/helper/snack_bar_util.dart';
 import 'package:asood/core/http_client/api_status.dart';
 import 'package:asood/core/models/location_model.dart';
@@ -1107,7 +1106,6 @@ class _StoreDetailScreenState extends State<StoreDetailScreen> {
                                 //save
                                 InkWell(
                                   onTap: () {
-                                    // print("pressed");
                                   },
                                   child: Icon(
                                     Icons.favorite_border,

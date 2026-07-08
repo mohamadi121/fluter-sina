@@ -1,10 +1,9 @@
-import 'dart:convert';
+import 'package:flutter/material.dart';
 
 import 'package:asood/core/constants/constants.dart';
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-
-import '../../../../core/constants/endpoints.dart';
+import 'package:asood/core/http_client/api_client.dart';
+import 'package:asood/core/http_client/api_status.dart';
+import 'package:asood/locator.dart';
 
 class TermsAndConditions extends StatefulWidget {
   const TermsAndConditions({super.key});
@@ -14,31 +13,35 @@ class TermsAndConditions extends StatefulWidget {
 }
 
 class _TermsAndConditionsState extends State<TermsAndConditions> {
-  String terms = '';
+  String? terms;
+  String? error;
 
-  void getTerms() async {
-    String url = '${Endpoints.baseUrl}info/term/';
-    var response = await http.get(
-      Uri.parse(url),
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8',
-        'Authorization': 'Token 735ec7ebd6c0f1c63af1f076f8ef2c7970819375',
-      },
-    );
-    if (response.statusCode == 200) {
-      setState(() {
-        // terms = response.body;
-        // terms = jsonDecode(response.body)[0]['ter'];
-        terms = jsonDecode(response.body)['data']['content'];
-      });
+  Future<void> getTerms() async {
+    try {
+      final res = await locator<DioClient>().getData('info/term/');
+      final result = apiStatus(res);
+      if (!mounted) {
+        return;
+      }
+      if (result is Success) {
+        setState(() {
+          terms = ((result.response as Map?)?['content'] ?? '').toString();
+        });
+      } else {
+        setState(() => error = (result as Failure).message);
+      }
+    } catch (e) {
+      if (!mounted) {
+        return;
+      }
+      setState(() => error = apiFailure(e).message);
     }
-    print(response.body);
   }
 
   @override
   void initState() {
-    getTerms();
     super.initState();
+    getTerms();
   }
 
   @override
@@ -58,13 +61,13 @@ class _TermsAndConditionsState extends State<TermsAndConditions> {
                       child: InkWell(
                         borderRadius: BorderRadius.circular(8),
                         onTap: () => Navigator.of(context).pop(),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
+                        child: const Padding(
+                          padding: EdgeInsets.all(8.0),
                           child: Icon(Icons.arrow_back_ios_new_rounded),
                         ),
                       ),
                     ),
-                    Center(
+                    const Center(
                       child: Text(
                         'توافق نامه کاربری',
                         style: TextStyle(fontWeight: FontWeight.bold),
@@ -76,7 +79,7 @@ class _TermsAndConditionsState extends State<TermsAndConditions> {
               Center(
                 child: SizedBox(
                   width: Dimensions.width * 0.8,
-                  child: Text(terms),
+                  child: _buildBody(),
                 ),
               ),
             ],
@@ -84,5 +87,21 @@ class _TermsAndConditionsState extends State<TermsAndConditions> {
         ),
       ),
     );
+  }
+
+  Widget _buildBody() {
+    if (error != null) {
+      return Padding(
+        padding: const EdgeInsets.all(16),
+        child: Text(error!, textAlign: TextAlign.center),
+      );
+    }
+    if (terms == null) {
+      return const Padding(
+        padding: EdgeInsets.all(16),
+        child: Center(child: CircularProgressIndicator()),
+      );
+    }
+    return Text(terms!);
   }
 }
