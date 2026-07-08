@@ -50,7 +50,7 @@ dynamic apiStatus(Response response) {
     }
     return Failure(
       code: res['code'],
-      errorResponse: res['error']?['detail'] ?? 'خطای نامشخص',
+      errorResponse: _envelopeDetail(res) ?? 'خطای نامشخص',
       kind: FailureKind.validation,
     );
   } catch (e, st) {
@@ -95,6 +95,12 @@ Failure apiFailure(Object error) {
   );
 }
 
+/// Extracts a human-readable error detail from any of the backend's error
+/// shapes:
+/// - hand-built ApiResponse: `error: {code, detail}` or `error: "<string>"`
+/// - DRF exception handler (apps/core/exception_handler.py):
+///   `{error: true, message, details, original_error}`
+/// - plain DRF: `{detail: ...}`
 String? _envelopeDetail(dynamic data) {
   if (data is! Map) {
     return null;
@@ -102,6 +108,15 @@ String? _envelopeDetail(dynamic data) {
   final error = data['error'];
   if (error is Map && error['detail'] != null) {
     return error['detail'].toString();
+  }
+  if (error is String && error.isNotEmpty) {
+    return error;
+  }
+  if (error == true) {
+    final detail = data['message'] ?? data['details'];
+    if (detail != null) {
+      return detail.toString();
+    }
   }
   if (data['detail'] != null) {
     return data['detail'].toString();

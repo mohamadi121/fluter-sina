@@ -1,4 +1,5 @@
 import 'package:asood/core/http_client/api_status.dart';
+import 'package:asood/core/logging/app_logger.dart';
 import 'package:asood/core/models/market_model.dart';
 import 'package:asood/features/create_workspace/domain/repository/create_market_repository.dart';
 import 'package:bloc/bloc.dart';
@@ -71,113 +72,60 @@ class WorkspaceBloc extends Bloc<WorkspaceEvent, WorkspaceState> {
     emit(state.copyWith(selectedMarket: event.marketId));
   }
 
+  // FAKE (pre-existing): handlers below emit success without any backend
+  // call. Real wiring lands in batch 2 — tracked in ARCHITECTURE_MAP.md §3.
   _getProducts(GetProducts event, Emitter<WorkspaceState> emit) {
-    emit(state.copyWith(status: CWSStatus.loading));
-    try {
-      final res = Success();
-      emit(state.copyWith(status: CWSStatus.success));
-    } catch (e) {
-      emit(state.copyWith(status: CWSStatus.failure));
-    }
+    AppLogger.warning('workspace', 'stub handler — no backend call (batch 2)');
+    emit(state.copyWith(status: CWSStatus.success));
   }
 
   _contactUs(ContactUs event, Emitter<WorkspaceState> emit) {
-    emit(state.copyWith(status: CWSStatus.loading));
-    try {
-      final res = Success();
-      emit(state.copyWith(status: CWSStatus.success));
-    } catch (e) {
-      emit(state.copyWith(status: CWSStatus.failure));
-    }
+    AppLogger.warning('workspace', 'stub handler — no backend call (batch 2)');
+    emit(state.copyWith(status: CWSStatus.success));
   }
 
   _getComments(GetComments event, Emitter<WorkspaceState> emit) {
-    emit(state.copyWith(status: CWSStatus.loading));
-    try {
-      final res = Success();
-      emit(state.copyWith(status: CWSStatus.success));
-    } catch (e) {
-      emit(state.copyWith(status: CWSStatus.failure));
-    }
+    AppLogger.warning('workspace', 'stub handler — no backend call (batch 2)');
+    emit(state.copyWith(status: CWSStatus.success));
   }
 
   _getSpecialProducts(GetSpecialProducts event, Emitter<WorkspaceState> emit) {
-    emit(state.copyWith(status: CWSStatus.loading));
-    try {
-      final res = Success();
-      emit(state.copyWith(status: CWSStatus.success));
-    } catch (e) {
-      emit(state.copyWith(status: CWSStatus.failure));
-    }
+    AppLogger.warning('workspace', 'stub handler — no backend call (batch 2)');
+    emit(state.copyWith(status: CWSStatus.success));
   }
 
   _getDiscounts(GetDiscounts event, Emitter<WorkspaceState> emit) {
-    emit(state.copyWith(status: CWSStatus.loading));
-    try {
-      final res = Success();
-      emit(state.copyWith(status: CWSStatus.success));
-    } catch (e) {
-      emit(state.copyWith(status: CWSStatus.failure));
-    }
+    AppLogger.warning('workspace', 'stub handler — no backend call (batch 2)');
+    emit(state.copyWith(status: CWSStatus.success));
   }
 
   _deleteDiscount(DeleteDiscount event, Emitter<WorkspaceState> emit) {
-    emit(state.copyWith(status: CWSStatus.loading));
-    try {
-      final res = Success();
-      emit(state.copyWith(status: CWSStatus.success));
-    } catch (e) {
-      emit(state.copyWith(status: CWSStatus.failure));
-    }
+    AppLogger.warning('workspace', 'stub handler — no backend call (batch 2)');
+    emit(state.copyWith(status: CWSStatus.success));
   }
 
   _createDiscount(CreateDiscount event, Emitter<WorkspaceState> emit) {
-    emit(state.copyWith(status: CWSStatus.loading));
-    try {
-      final res = Success();
-      emit(state.copyWith(status: CWSStatus.success));
-    } catch (e) {
-      emit(state.copyWith(status: CWSStatus.failure));
-    }
+    AppLogger.warning('workspace', 'stub handler — no backend call (batch 2)');
+    emit(state.copyWith(status: CWSStatus.success));
   }
 
   _changeColorAndFont(ChangeColorAndFont event, Emitter<WorkspaceState> emit) {
-    emit(state.copyWith(status: CWSStatus.loading));
-    try {
-      final res = Success();
-      emit(state.copyWith(status: CWSStatus.success));
-    } catch (e) {
-      emit(state.copyWith(status: CWSStatus.failure));
-    }
+    AppLogger.warning('workspace', 'stub handler — no backend call (batch 2)');
+    emit(state.copyWith(status: CWSStatus.success));
   }
 
   _editeWorkSpaceInfo(EditeWorkSpaceInfo event, Emitter<WorkspaceState> emit) {
-    emit(state.copyWith(status: CWSStatus.loading));
-    try {
-      final res = Success();
-      emit(state.copyWith(status: CWSStatus.success));
-    } catch (e) {
-      emit(state.copyWith(status: CWSStatus.failure));
-    }
+    AppLogger.warning('workspace', 'stub handler — no backend call (batch 2)');
+    emit(state.copyWith(status: CWSStatus.success));
   }
 
   _changeProductTheme(ChangeProductTheme event, Emitter<WorkspaceState> emit) {
-    emit(state.copyWith(status: CWSStatus.loading));
-    try {
-      final res = Success();
-      emit(state.copyWith(status: CWSStatus.success));
-    } catch (e) {
-      emit(state.copyWith(status: CWSStatus.failure));
-    }
+    AppLogger.warning('workspace', 'stub handler — no backend call (batch 2)');
+    emit(state.copyWith(status: CWSStatus.success));
   }
 
   _changeThemeColors(ChangeThemeColors event, Emitter<WorkspaceState> emit) {
-    emit(state.copyWith(status: CWSStatus.loading));
-    try {
-      final res = Success();
-      emit(state.copyWith(status: CWSStatus.success));
-    } catch (e) {
-      emit(state.copyWith(status: CWSStatus.failure));
-    }
+    AppLogger.warning('workspace', 'stub handler — no backend call (batch 2)');
+    emit(state.copyWith(status: CWSStatus.success));
   }
 }

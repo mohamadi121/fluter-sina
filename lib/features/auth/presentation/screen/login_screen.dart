@@ -60,11 +60,13 @@ class LoginScreen extends StatelessWidget {
 
             BlocConsumer<AuthBloc, AuthState>(
               listener: (context, state) {
-                if (state.status == AuthStatus.success && state.termStatus) {
+                if (state.status == AuthStatus.otpSent) {
                   context.go(AppRoutes.otp);
                 } else if (state.status == AuthStatus.error) {
-                  _showSnackBar(context, "کد ارسال نشد");
-                  debugPrint(state.error);
+                  _showSnackBar(
+                    context,
+                    state.error.isNotEmpty ? state.error : "کد ارسال نشد",
+                  );
                 }
               },
               builder: (context, state) {
@@ -173,9 +175,6 @@ class LoginScreen extends StatelessWidget {
                               showCountryFlag: true,
                               autovalidateMode: AutovalidateMode.disabled,
                               dropdownIconPosition: IconPosition.trailing,
-                              onChanged: (phone) {
-                                debugPrint(phone.completeNumber);
-                              },
                             ),
                           ),
                         ),
@@ -193,7 +192,7 @@ class LoginScreen extends StatelessWidget {
                             height: Dimensions.height * 0.04,
                             alignment: Alignment.center,
                             child:
-                                state.status == AuthStatus.loading
+                                state.status == AuthStatus.sendingOtp
                                     ? Transform.scale(
                                       scale: 0.6,
                                       child: const CircularProgressIndicator(

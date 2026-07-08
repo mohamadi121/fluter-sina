@@ -1,3 +1,4 @@
+import 'package:asood/core/auth/auth_session.dart';
 import 'package:asood/core/constants/constants.dart';
 import 'package:asood/core/logging/app_bloc_observer.dart';
 import 'package:asood/core/router/app_routers.dart';
@@ -27,6 +28,7 @@ void main() async {
   Bloc.observer = const AppBlocObserver();
 
   await locatorSetup();
+  await locator<AuthSession>().hydrate();
 
   runApp(const Asood());
 }

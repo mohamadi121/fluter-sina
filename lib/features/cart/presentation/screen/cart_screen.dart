@@ -151,8 +151,6 @@ class _CartScreenContent extends StatelessWidget {
   }
 
   Widget _buildCartContent(BuildContext context, CartModel cart) {
-    final formatter = NumberFormat('#,###');
-    
     return Stack(
       children: [
         SingleChildScrollView(

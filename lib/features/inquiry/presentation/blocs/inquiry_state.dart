@@ -89,7 +89,6 @@ class InquiryState {
     );
   }
 
-  @override
   List<Object> get props {
     return [
       status,
@@ -109,6 +108,5 @@ class InquiryState {
     ];
   }
 
-  @override
   bool get stringify => true;
 }

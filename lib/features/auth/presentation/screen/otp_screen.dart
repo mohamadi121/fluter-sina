@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:asood/core/constants/constants.dart';
 import 'package:asood/core/router/app_routers.dart';
 import 'package:asood/features/auth/presentation/blocs/auth_bloc.dart';
@@ -7,8 +9,58 @@ import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 
-class OtpScreen extends StatelessWidget {
+class OtpScreen extends StatefulWidget {
   const OtpScreen({super.key});
+
+  @override
+  State<OtpScreen> createState() => _OtpScreenState();
+}
+
+class _OtpScreenState extends State<OtpScreen> {
+  // Backend pins expire after 2 minutes (PinVerifyAPIView).
+  static const int _resendSeconds = 120;
+
+  String _enteredCode = '';
+  int _secondsLeft = _resendSeconds;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _startCountdown();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  void _startCountdown() {
+    _timer?.cancel();
+    setState(() => _secondsLeft = _resendSeconds);
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_secondsLeft <= 1) {
+        timer.cancel();
+      }
+      setState(() => _secondsLeft = _secondsLeft > 0 ? _secondsLeft - 1 : 0);
+    });
+  }
+
+  void _verify(BuildContext context, String phoneNumber) {
+    if (_enteredCode.length < 4) {
+      _showToast('کد تایید را کامل وارد کنید');
+      return;
+    }
+    context.read<AuthBloc>().add(
+      VerifyOtp(phone: phoneNumber, otp: _enteredCode),
+    );
+  }
+
+  void _resend(BuildContext context, String phoneNumber) {
+    context.read<AuthBloc>().add(SendOtp(phone: phoneNumber));
+    _startCountdown();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +78,7 @@ class OtpScreen extends StatelessWidget {
               width: MediaQuery.of(context).size.width,
               child: BlocConsumer<AuthBloc, AuthState>(
                 listener: (context, state) {
-                  if (state.status == AuthStatus.success) {
+                  if (state.status == AuthStatus.authenticated) {
                     context.go(AppRoutes.vendorHome);
                   } else if (state.status == AuthStatus.error) {
                     _showToast(
@@ -46,6 +98,8 @@ class OtpScreen extends StatelessWidget {
                       _buildOtpField(context, phoneNumber),
                       const SizedBox(height: 20),
                       _buildSubmitButton(state, context, phoneNumber),
+                      const SizedBox(height: 12),
+                      _buildResendSection(context, phoneNumber),
                       const Spacer(),
                       _buildFooter(),
                     ],
@@ -75,10 +129,6 @@ class OtpScreen extends StatelessWidget {
             ),
           ),
         ),
-        // Text(
-        //   'آسود',
-        //   style: TextStyle(fontSize: 55.0, color: Colors.blue.shade900),
-        // ),
         Container(width: 150.0, height: 2, color: Colors.blue.shade900),
         const SizedBox(height: 20),
         Image.asset(
@@ -124,9 +174,8 @@ class OtpScreen extends StatelessWidget {
           textStyle: const TextStyle(color: Colora.scaffold),
           showFieldAsBox: false,
           onSubmit: (String verificationCode) {
-            context.read<AuthBloc>().add(
-              VerifyOtp(phone: phoneNumber, otp: verificationCode),
-            );
+            _enteredCode = verificationCode;
+            _verify(context, phoneNumber);
           },
         ),
       ),
@@ -142,13 +191,12 @@ class OtpScreen extends StatelessWidget {
       style: ButtonStyle(
         backgroundColor: WidgetStateProperty.all<Color>(Colora.primaryColor),
       ),
-      onPressed: () {
-        _showToast(
-          'کد تایید را وارد کنید',
-        ); // در اینجا نیازی به بررسی مقدار OTP نیست چون در `_buildOtpField` ارسال شده است.
-      },
+      onPressed:
+          state.status == AuthStatus.verifying
+              ? null
+              : () => _verify(context, phoneNumber),
       child:
-          (state.status == AuthStatus.loading)
+          (state.status == AuthStatus.verifying)
               ? const SizedBox(
                 width: 20,
                 height: 20,
@@ -158,12 +206,30 @@ class OtpScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildResendSection(BuildContext context, String phoneNumber) {
+    if (_secondsLeft > 0) {
+      final minutes = (_secondsLeft ~/ 60).toString().padLeft(2, '0');
+      final seconds = (_secondsLeft % 60).toString().padLeft(2, '0');
+      return Text(
+        'ارسال مجدد کد تا $minutes:$seconds',
+        style: const TextStyle(color: Colora.lightBlue, fontSize: 13),
+      );
+    }
+    return TextButton(
+      onPressed: () => _resend(context, phoneNumber),
+      child: const Text(
+        'ارسال مجدد کد',
+        style: TextStyle(color: Colora.lightBlue, fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+
   Widget _buildFooter() {
     return CustomPaint(
       painter: CCurvedPainter(),
-      child: SizedBox(
+      child: const SizedBox(
         height: 100,
-        child: const Column(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Center(

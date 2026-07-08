@@ -31,6 +31,8 @@ import 'package:asood/features/payment/data/data_source/payment_api_service.dart
 import 'package:asood/features/payment/presentation/bloc/payment_bloc.dart';
 import 'package:get_it/get_it.dart';
 
+import 'package:asood/core/auth/auth_session.dart';
+import 'package:asood/core/auth/token_storage.dart';
 import 'package:asood/core/constants/endpoints.dart';
 import 'package:asood/core/http_client/api_client.dart';
 import 'package:asood/features/auth/data/data_source/auth_api_service.dart';
@@ -42,9 +44,18 @@ import 'package:asood/features/splash/blocs/splash_bloc.dart';
 GetIt locator = GetIt.instance;
 
 locatorSetup() async {
+  /// Auth session (single owner of the token)
+  locator.registerLazySingleton<TokenStorage>(() => const SecureTokenStorage());
+  locator.registerLazySingleton<AuthSession>(
+    () => AuthSession(locator<TokenStorage>()),
+  );
+
   /// Dio client
   locator.registerLazySingleton<DioClient>(
-    () => DioClient(appBaseUrl: Endpoints.baseUrl),
+    () => DioClient(
+      appBaseUrl: Endpoints.baseUrl,
+      authSession: locator<AuthSession>(),
+    ),
   );
 
   /// Api Services
@@ -91,10 +102,13 @@ locatorSetup() async {
   );
 
   /// BLOCs
-  locator.registerFactory(() => SplashBloc());
+  locator.registerFactory(() => SplashBloc(locator<AuthSession>()));
 
   locator.registerFactory(
-    () => AuthBloc(authRepository: locator<AuthRepository>()),
+    () => AuthBloc(
+      authRepository: locator<AuthRepository>(),
+      authSession: locator<AuthSession>(),
+    ),
   );
 
   locator.registerFactory(

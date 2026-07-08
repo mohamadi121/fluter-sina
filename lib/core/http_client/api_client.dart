@@ -2,22 +2,22 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 
-import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/helper/secure_storage.dart';
+import 'package:asood/core/auth/auth_session.dart';
 import 'package:asood/core/logging/app_logger.dart';
 
 /// HTTP client for the Asoud backend.
 ///
 /// The backend uses DRF TokenAuthentication: `Authorization: Token <key>`.
 /// There is no JWT and no refresh endpoint — a 401 means the token is gone
-/// or revoked, so the stored token is wiped and the error propagates for the
-/// auth layer to route the user back to login.
+/// or revoked, so the session is cleared and the error propagates; the
+/// router redirects to login when the session empties.
 class DioClient {
   final String appBaseUrl;
+  final AuthSession authSession;
   final int timeoutInSeconds = 30;
   late Dio dio;
 
-  DioClient({required this.appBaseUrl}) {
+  DioClient({required this.appBaseUrl, required this.authSession}) {
     dio = Dio(
       BaseOptions(
         baseUrl: appBaseUrl,
@@ -29,9 +29,9 @@ class DioClient {
 
     dio.interceptors.add(
       InterceptorsWrapper(
-        onRequest: (options, handler) async {
-          final token = await SecureStorage.readSecureStorage(Keys.token);
-          if (token != null && token != 'ND') {
+        onRequest: (options, handler) {
+          final token = authSession.token;
+          if (token != null) {
             options.headers['Authorization'] = 'Token $token';
           }
           options.extra['startTime'] = DateTime.now();
@@ -48,7 +48,7 @@ class DioClient {
             error: error,
           );
           if (error.response?.statusCode == 401) {
-            await SecureStorage.deleteSecureStorage(Keys.token);
+            await authSession.clear();
           }
           return handler.next(error);
         },

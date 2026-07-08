@@ -345,7 +345,7 @@ void sendProductToShoppingCart(String id) async {
   String url = '${Endpoints.baseUrl}user/order/add_item';
   String? token = await SecureStorage.readSecureStorage(Keys.token);
 
-  var response = await http.post(
+  await http.post(
     Uri.parse(url),
     body: {"product_id": id, "quantity": "1"},
     headers: {'Authorization': 'Bearer $token'},

@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:ui';
 
 import 'package:asood/core/http_client/api_status.dart';
@@ -74,7 +73,6 @@ class VendorBloc extends Bloc<VendorEvent, VendorState> {
     emit(state.copyWith(id: event.id, status: CWSStatus.loading));
     var res = await marketRepository.deleteMarketLogo(event.id);
     if (res is Success) {
-      var json = jsonDecode(res.response.toString());
       emit(state.copyWith(status: CWSStatus.success));
     } else {
       emit(
@@ -101,7 +99,6 @@ class VendorBloc extends Bloc<VendorEvent, VendorState> {
       event.id,
     );
     if (res is Success) {
-      var json = jsonDecode(res.response.toString());
       emit(state.copyWith(status: CWSStatus.success));
     } else {
       emit(

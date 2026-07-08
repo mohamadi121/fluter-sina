@@ -1,4 +1,6 @@
+import 'package:asood/core/auth/auth_session.dart';
 import 'package:asood/core/models/market_model.dart';
+import 'package:asood/locator.dart';
 import 'package:asood/features/auth/presentation/screen/login_screen.dart';
 import 'package:asood/features/auth/presentation/screen/otp_screen.dart';
 import 'package:asood/features/bank_card/screens/bank_card_list.dart';
@@ -22,6 +24,7 @@ import 'package:asood/features/market/presentation/screens/store_info.dart';
 import 'package:asood/features/panel/screens/panel_config_screen.dart';
 import 'package:asood/features/panel/screens/panel_inbox_screen.dart';
 import 'package:asood/features/product/screens/product_screen.dart';
+import 'package:asood/features/profile/screens/profile.dart';
 import 'package:asood/features/splash/screens/splash.dart';
 import 'package:asood/features/store_setting_screens/color_setting_screen/color_setting_screen.dart';
 import 'package:asood/features/store_setting_screens/font-txtColor_setting_screen/font_color_setting_screen.dart';
@@ -33,8 +36,32 @@ import 'package:go_router/go_router.dart';
 part './app_routes.dart';
 
 class AppRouter {
+  // Routes reachable without a token (splash decides, login/otp acquire one).
+  static const Set<String> _publicPaths = {
+    AppRoutes.splash,
+    AppRoutes.login,
+    AppRoutes.otp,
+  };
+
   static final GoRouter router = GoRouter(
     initialLocation: AppRoutes.splash,
+    refreshListenable: locator<AuthSession>(),
+    redirect: (context, state) {
+      final session = locator<AuthSession>();
+      if (!session.isHydrated) {
+        return null;
+      }
+
+      final path = state.matchedLocation;
+      if (!session.isAuthenticated && !_publicPaths.contains(path)) {
+        return AppRoutes.login;
+      }
+      if (session.isAuthenticated &&
+          (path == AppRoutes.login || path == AppRoutes.otp)) {
+        return AppRoutes.vendorHome;
+      }
+      return null;
+    },
     routes: [
       GoRoute(
         path: AppRoutes.splash,
@@ -173,6 +200,10 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.bookmarks,
         builder: (context, state) => MyBookmarks(),
+      ),
+      GoRoute(
+        path: AppRoutes.vendorProfile,
+        builder: (context, state) => const VendorProfileScreen(),
       ),
     ],
   );

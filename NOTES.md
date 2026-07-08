@@ -1,5 +1,20 @@
 # NOTES.md — working decisions & discovered mismatches
 
+## AuthSession is the single owner of the token
+`lib/core/auth/auth_session.dart` (ChangeNotifier) is the only component
+allowed to touch token storage. DioClient reads it synchronously, GoRouter
+uses it as refreshListenable for the auth guard, AuthBloc/SplashBloc consume
+it. On any 401 the session clears itself and the router redirects to login —
+never re-implement per-screen token reads (`SecureStorage.readSecureStorage`)
+in new code; the legacy helper remains only for `market_id`.
+
+## Backend has TWO error envelope shapes — handle both
+Hand-built `ApiResponse`: `{success, code, error: {code, detail} | "<string>"}`.
+DRF-raised exceptions go through `apps/core/exception_handler.py`:
+`{error: true, code, message, details, original_error}` (401/429/serializer
+400s). `_envelopeDetail` in api_status.dart handles all shapes — keep it that
+way when touching error handling.
+
 ## Auth: backend is DRF Token, not JWT — align frontend, not backend
 Backend (`config/settings/base.py:387`) uses `TokenAuthentication`; pin/verify
 returns `data.token`. Frontend was written against an imagined JWT contract

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/helper/secure_storage.dart';
 import 'package:asood/core/router/app_routers.dart';
+import 'package:asood/features/auth/presentation/blocs/auth_bloc.dart';
 
 class ProfileMenuDialog extends StatelessWidget {
   const ProfileMenuDialog({super.key});
@@ -38,16 +40,16 @@ class ProfileMenuDialog extends StatelessWidget {
             context,
             label: 'خروج از حساب کاربری',
             onTap: () {
-              SecureStorage.deleteSecureStorage(Keys.token);
-              context.go(AppRoutes.login);
+              // Router redirects to login automatically once the
+              // session empties (refreshListenable).
+              context.read<AuthBloc>().add(Logout());
+              Navigator.of(context).pop();
             },
           ),
           _buildMenuItem(
             context,
             label: 'خروج از برنامه',
-            onTap: () {
-              // TODO: Handle app exit
-            },
+            onTap: () => SystemNavigator.pop(),
           ),
         ],
       ),

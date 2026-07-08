@@ -112,5 +112,40 @@ void main() {
 
       expect(failure.kind, FailureKind.unknown);
     });
+
+    test('DRF exception-handler envelope (error: true) surfaces message', () {
+      final failure = apiFailure(
+        _dioError(
+          response: _response({
+            'error': true,
+            'timestamp': 'x',
+            'path': '/api/v1/user/pin/verify/',
+            'method': 'POST',
+            'code': 'AUTHENTICATION_FAILED',
+            'message': 'Authentication credentials were not provided.',
+            'details': 'Authentication credentials were not provided.',
+          }, 401),
+        ),
+      );
+
+      expect(failure.kind, FailureKind.unauthorized);
+      expect(
+        failure.errorResponse,
+        'Authentication credentials were not provided.',
+      );
+    });
+
+    test('string-valued error field is used as the detail', () {
+      final result = apiStatus(
+        _response({
+          'success': false,
+          'code': 404,
+          'error': 'No Term Found',
+        }, 200),
+      );
+
+      expect(result, isA<Failure>());
+      expect((result as Failure).errorResponse, 'No Term Found');
+    });
   });
 }

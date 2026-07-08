@@ -212,7 +212,7 @@ logic + app exit (`profile_menu_widget.dart:34,49`), product-details navigation
 | # | Batch | Scope | Status |
 |---|-------|-------|--------|
 | 0 | Foundation: build health + logging + API core | flutter analyze clean-up, structured logging, DioClient auth fix (C1–C4), error taxonomy in `api_status.dart` | DONE (2026-07-08) |
-| 1 | Auth flow end-to-end | login/OTP/splash/token storage/logout + tests | PENDING |
+| 1 | Auth flow end-to-end | AuthSession single-owner token, router auth guard (redirect + refreshListenable), AuthBloc explicit statuses, real OTP submit/resend/countdown, real logout, DRF-exception envelope mapping, analyzer 0 err/0 warn | DONE (2026-07-08) |
 | 2 | Owner: market/workspace | create_workspace + vendor + market detail/update + schedules + comment fix | PENDING |
 | 3 | Owner: products | product CRUD, detail, ship, themes, discounts (owner) | PENDING |
 | 4 | Buyer: browsing | market public list, product search, store/product detail (user side), bookmarks (real) | PENDING |

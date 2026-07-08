@@ -79,14 +79,6 @@ class _SubmitFeeInquiryScreenState extends State<SubmitFeeInquiryScreen> {
     String url = '${Endpoints.baseUrl}user/inquiries/${widget.id}/update/';
     String? token = await SecureStorage.readSecureStorage(Keys.token);
 
-    Map<String, String> data_ = {
-      "type": type.toString(),
-      "name": name,
-      "technical_detail": description,
-      // "expiry": DateTime(now.year, now.month, now.day + date).toString(),
-      "amount": amount == "" ? "0" : amount,
-      "unit": unit == "" ? "0" : unit,
-    };
     var response = await http.put(
       Uri.parse(url),
       headers: {'Authorization': 'Bearer $token'},

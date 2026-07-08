@@ -59,7 +59,6 @@ class WorkspaceState {
     );
   }
 
-  @override
   List<Object> get props => [
     status,
     storesList,

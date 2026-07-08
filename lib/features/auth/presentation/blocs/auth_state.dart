@@ -1,6 +1,13 @@
 part of 'auth_bloc.dart';
 
-enum AuthStatus { initial, loading, success, error }
+enum AuthStatus {
+  initial,
+  sendingOtp,
+  otpSent,
+  verifying,
+  authenticated,
+  error,
+}
 
 class AuthState {
   final String phoneNumber;
@@ -23,6 +30,9 @@ class AuthState {
       phoneNumber: '',
     );
   }
+
+  bool get isBusy =>
+      status == AuthStatus.sendingOtp || status == AuthStatus.verifying;
 
   AuthState copyWith({
     AuthStatus? status,

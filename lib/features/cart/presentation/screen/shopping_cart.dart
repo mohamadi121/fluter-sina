@@ -102,7 +102,7 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
     String url = '${Endpoints.baseUrl}user/order/update_item/$orderId';
     String? token = await SecureStorage.readSecureStorage(Keys.token);
 
-    var response = await http.put(
+    await http.put(
       Uri.parse(url),
       body: {"product": productId, "quantity": (quantity + 1).toString()},
       headers: {'Authorization': 'Bearer $token'},
@@ -119,7 +119,7 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
     String url = '${Endpoints.baseUrl}user/order/update_item/$orderId';
     String? token = await SecureStorage.readSecureStorage(Keys.token);
 
-    var response = await http.put(
+    await http.put(
       Uri.parse(url),
       body: {"product": productId, "quantity": (quantity - 1).toString()},
       headers: {'Authorization': 'Bearer $token'},

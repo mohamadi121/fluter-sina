@@ -494,7 +494,7 @@ class _StoreDetailScreenState extends State<StoreDetailScreen> {
         // final bool? shouldPop = await _showBackDialog();
         const bool shouldPop = true;
         BlocProvider.of<WorkspaceBloc>(context).add(LoadStores());
-        if (shouldPop ?? false) {
+        if (shouldPop) {
           navigator.pop();
         }
       },
