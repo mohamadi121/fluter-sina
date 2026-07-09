@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:asood/core/constants/constants.dart';
 import 'package:asood/core/widgets/custom_button.dart';
 import 'package:asood/core/widgets/custom_textfield.dart';
-import 'package:asood/features/market/presentation/widgets/custom_switch.dart';
-import 'package:asood/features/market/presentation/widgets/row_widget_title_widget.dart';
+import 'package:asood/features/market/presentation/blocs/edit_market/edit_market_cubit.dart';
 
+/// Market contact tab.
+/// Contract: PUT owner/market/contact/update/{market_id}/
+/// (fields: first/second_mobile_number, telephone, fax, email, website_url).
 class ContactsInfo extends StatefulWidget {
   const ContactsInfo({super.key});
 
@@ -14,438 +17,118 @@ class ContactsInfo extends StatefulWidget {
 }
 
 class _ContactsInfoState extends State<ContactsInfo> {
-  bool switchValue = false;
+  final firstMobileController = TextEditingController();
+  final secondMobileController = TextEditingController();
+  final telephoneController = TextEditingController();
+  final faxController = TextEditingController();
+  final emailController = TextEditingController();
+  final websiteController = TextEditingController();
+  bool _hydrated = false;
+
+  @override
+  void dispose() {
+    firstMobileController.dispose();
+    secondMobileController.dispose();
+    telephoneController.dispose();
+    faxController.dispose();
+    emailController.dispose();
+    websiteController.dispose();
+    super.dispose();
+  }
+
+  void _hydrateFrom(EditMarketState state) {
+    final contact = state.contact;
+    if (_hydrated || contact == null) {
+      return;
+    }
+    _hydrated = true;
+    firstMobileController.text =
+        contact['first_mobile_number']?.toString() ?? '';
+    secondMobileController.text =
+        contact['second_mobile_number']?.toString() ?? '';
+    telephoneController.text = contact['telephone']?.toString() ?? '';
+    faxController.text = contact['fax']?.toString() ?? '';
+    emailController.text = contact['email']?.toString() ?? '';
+    websiteController.text = contact['website_url']?.toString() ?? '';
+  }
+
+  void _save(BuildContext context) {
+    if (firstMobileController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('شماره موبایل اول الزامی است')),
+      );
+      return;
+    }
+    context.read<EditMarketCubit>().saveContact({
+      'first_mobile_number': firstMobileController.text.trim(),
+      'second_mobile_number': secondMobileController.text.trim(),
+      'telephone': telephoneController.text.trim(),
+      'fax': faxController.text.trim(),
+      'email': emailController.text.trim(),
+      'website_url': websiteController.text.trim(),
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: Dimensions.width,
-      height: Dimensions.height * .6,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        color: Colora.primaryColor,
-      ),
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            const SizedBox(height: 7),
-            CustomTextField(
-              controller: TextEditingController(),
-              text: "تلفن همراه",
-            ),
-            const SizedBox(height: 7),
-            CustomTextField(
-              controller: TextEditingController(),
-              text: "تلفن همراه",
-            ),
-            const SizedBox(height: 7),
-            CustomTextField(
-              controller: TextEditingController(),
-              text: "تلفن ثابت",
-            ),
-            const SizedBox(height: 7),
-            CustomTextField(controller: TextEditingController(), text: "فکس"),
-            const SizedBox(height: 7),
-            CustomTextField(controller: TextEditingController(), text: "ایمیل"),
-            const SizedBox(height: 7),
-            CustomTextField(controller: TextEditingController(), text: "سایت"),
-            const SizedBox(height: 7),
-            CustomTextField(
-              controller: TextEditingController(),
-              text: "تلگرام",
-            ),
-            const SizedBox(height: 7),
-            CustomTextField(
-              controller: TextEditingController(),
-              text: "اینستاگرام",
-            ),
-            const SizedBox(height: 7),
-            const Text(
-              "کد ملی صرفا جهت تخصیص آگهی به شما میباشد",
-              style: TextStyle(color: Colors.white),
-            ),
-            CustomSwitch(
-              title: "دارای ساعت کاری",
-              onChanged: (p0) {
-                setState(() {
-                  switchValue = p0;
-                });
-              },
-              switchValue: switchValue,
-            ),
-            Container(
-              margin: const EdgeInsets.all(7),
-              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                color: Colors.white,
+    return BlocBuilder<EditMarketCubit, EditMarketState>(
+      builder: (context, state) {
+        _hydrateFrom(state);
+        return SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              CustomTextField(
+                controller: firstMobileController,
+                text: 'شماره موبایل ۱',
+                keyboardType: TextInputType.phone,
+                isRequired: true,
               ),
-              child: Column(
-                children: [
-                  RowWidgetTitle(
-                    title: "شنبه",
-                    widget: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Container(
-                        width: 200,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          color: Colora.primaryColor,
-                        ),
-                        child: Center(
-                          child: Row(
-                            children: [
-                              SizedBox(
-                                width: 90,
-                                child: CustomTextField(
-                                  color: Colora.primaryColor,
-                                  controller: TextEditingController(),
-                                  text: 'از ساعت',
-                                  hintStyle: const TextStyle(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                              const Text(
-                                '-',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              SizedBox(
-                                width: 90,
-                                child: CustomTextField(
-                                  color: Colora.primaryColor,
-                                  controller: TextEditingController(),
-                                  text: 'تا ساعت',
-                                  hintStyle: const TextStyle(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const Divider(thickness: 1),
-                  RowWidgetTitle(
-                    title: "یکشنبه",
-                    widget: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Container(
-                        width: 200,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          color: Colora.primaryColor,
-                        ),
-                        child: Center(
-                          child: Row(
-                            children: [
-                              SizedBox(
-                                width: 90,
-                                child: CustomTextField(
-                                  color: Colora.primaryColor,
-                                  controller: TextEditingController(),
-                                  text: 'از ساعت',
-                                  hintStyle: const TextStyle(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                              const Text(
-                                '-',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              SizedBox(
-                                width: 90,
-                                child: CustomTextField(
-                                  color: Colora.primaryColor,
-                                  controller: TextEditingController(),
-                                  text: 'تا ساعت',
-                                  hintStyle: const TextStyle(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const Divider(thickness: 1),
-                  RowWidgetTitle(
-                    title: "دوشنبه",
-                    widget: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Container(
-                        width: 200,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          color: Colora.primaryColor,
-                        ),
-                        child: Center(
-                          child: Row(
-                            children: [
-                              SizedBox(
-                                width: 90,
-                                child: CustomTextField(
-                                  color: Colora.primaryColor,
-                                  controller: TextEditingController(),
-                                  text: 'از ساعت',
-                                  hintStyle: const TextStyle(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                              const Text(
-                                '-',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              SizedBox(
-                                width: 90,
-                                child: CustomTextField(
-                                  color: Colora.primaryColor,
-                                  controller: TextEditingController(),
-                                  text: 'تا ساعت',
-                                  hintStyle: const TextStyle(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const Divider(thickness: 1),
-                  RowWidgetTitle(
-                    title: "سهشنبه",
-                    widget: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Container(
-                        width: 200,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          color: Colora.primaryColor,
-                        ),
-                        child: Center(
-                          child: Row(
-                            children: [
-                              SizedBox(
-                                width: 90,
-                                child: CustomTextField(
-                                  color: Colora.primaryColor,
-                                  controller: TextEditingController(),
-                                  text: 'از ساعت',
-                                  hintStyle: const TextStyle(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                              const Text(
-                                '-',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              SizedBox(
-                                width: 90,
-                                child: CustomTextField(
-                                  color: Colora.primaryColor,
-                                  controller: TextEditingController(),
-                                  text: 'تا ساعت',
-                                  hintStyle: const TextStyle(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const Divider(thickness: 1),
-                  RowWidgetTitle(
-                    title: "چهارشنبه",
-                    widget: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Container(
-                        width: 200,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          color: Colora.primaryColor,
-                        ),
-                        child: Center(
-                          child: Row(
-                            children: [
-                              SizedBox(
-                                width: 90,
-                                child: CustomTextField(
-                                  color: Colora.primaryColor,
-                                  controller: TextEditingController(),
-                                  text: 'از ساعت',
-                                  hintStyle: const TextStyle(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                              const Text(
-                                '-',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              SizedBox(
-                                width: 90,
-                                child: CustomTextField(
-                                  color: Colora.primaryColor,
-                                  controller: TextEditingController(),
-                                  text: 'تا ساعت',
-                                  hintStyle: const TextStyle(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const Divider(thickness: 1),
-                  RowWidgetTitle(
-                    title: "پنجشنبه",
-                    widget: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Container(
-                        width: 200,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          color: Colora.primaryColor,
-                        ),
-                        child: Center(
-                          child: Row(
-                            children: [
-                              SizedBox(
-                                width: 90,
-                                child: CustomTextField(
-                                  color: Colora.primaryColor,
-                                  controller: TextEditingController(),
-                                  text: 'از ساعت',
-                                  hintStyle: const TextStyle(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                              const Text(
-                                '-',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              SizedBox(
-                                width: 90,
-                                child: CustomTextField(
-                                  color: Colora.primaryColor,
-                                  controller: TextEditingController(),
-                                  text: 'تا ساعت',
-                                  hintStyle: const TextStyle(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const Divider(thickness: 1),
-                  RowWidgetTitle(
-                    title: "جمعه",
-                    widget: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Container(
-                        width: 200,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          color: Colora.primaryColor,
-                        ),
-                        child: Center(
-                          child: Row(
-                            children: [
-                              SizedBox(
-                                width: 90,
-                                child: CustomTextField(
-                                  color: Colora.primaryColor,
-                                  controller: TextEditingController(),
-                                  text: 'از ساعت',
-                                  hintStyle: const TextStyle(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                              const Text(
-                                '-',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              SizedBox(
-                                width: 90,
-                                child: CustomTextField(
-                                  color: Colora.primaryColor,
-                                  controller: TextEditingController(),
-                                  text: 'تا ساعت',
-                                  hintStyle: const TextStyle(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+              const SizedBox(height: 12),
+              CustomTextField(
+                controller: secondMobileController,
+                text: 'شماره موبایل ۲',
+                keyboardType: TextInputType.phone,
               ),
-            ),
-            const SizedBox(height: 7),
-            Align(
-              alignment: Alignment.centerRight,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 7),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    CustomButton(
-                      width: 100,
-                      onPress: () {},
-                      text: "قبلی",
-                      color: Colors.white,
-                      textColor: Colora.primaryColor,
-                      height: 40,
-                    ),
-                    const SizedBox(width: 5),
-                    CustomButton(
-                      width: 100,
-                      onPress: () {},
-                      text: "بعدی",
-                      color: Colors.white,
-                      textColor: Colora.primaryColor,
-                      height: 40,
-                    ),
-                  ],
-                ),
+              const SizedBox(height: 12),
+              CustomTextField(
+                controller: telephoneController,
+                text: 'تلفن ثابت',
+                keyboardType: TextInputType.phone,
               ),
-            ),
-            const SizedBox(height: 7),
-          ],
-        ),
-      ),
+              const SizedBox(height: 12),
+              CustomTextField(
+                controller: faxController,
+                text: 'فکس',
+                keyboardType: TextInputType.phone,
+              ),
+              const SizedBox(height: 12),
+              CustomTextField(
+                controller: emailController,
+                text: 'ایمیل',
+                keyboardType: TextInputType.emailAddress,
+              ),
+              const SizedBox(height: 12),
+              CustomTextField(
+                controller: websiteController,
+                text: 'وب‌سایت',
+                keyboardType: TextInputType.url,
+              ),
+              const SizedBox(height: 24),
+              CustomButton(
+                onPress: () => _save(context),
+                color: Colora.primaryColor,
+                textColor: Colora.scaffold,
+                text:
+                    state.status == EditMarketStatus.saving
+                        ? '...در حال ذخیره'
+                        : 'ذخیره اطلاعات تماس',
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

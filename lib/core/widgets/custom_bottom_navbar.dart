@@ -314,7 +314,12 @@ void showBottomSheet(
                   // edit store info
                   IconButton(
                     onPressed: () {
-                      context.push(AppRoutes.editStoreInfo);
+                      if (marketId != null) {
+                        context.push(
+                          AppRoutes.editStoreInfo,
+                          extra: marketId.toString(),
+                        );
+                      }
                       /*      Navigator.push(
                         context,
                         MaterialPageRoute(

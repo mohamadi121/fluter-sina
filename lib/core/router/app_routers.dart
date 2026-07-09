@@ -19,6 +19,7 @@ import 'package:asood/features/market/presentation/screens/market_preview_screen
 import 'package:asood/features/market/presentation/screens/market_screen.dart';
 import 'package:asood/features/market/presentation/screens/pages/product/create_product.dart';
 // import 'package:asood/features/market/presentation/screens/pages/product/product_detail.dart';
+import 'package:asood/features/market/presentation/screens/edit_store.dart';
 import 'package:asood/features/market/presentation/screens/store_detail_screen.dart';
 import 'package:asood/features/market/presentation/screens/store_info.dart';
 import 'package:asood/features/panel/screens/panel_config_screen.dart';
@@ -204,6 +205,13 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.vendorProfile,
         builder: (context, state) => const VendorProfileScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.editStoreInfo,
+        builder: (context, state) {
+          final marketId = state.extra as String;
+          return EditStoreInfoScreen(marketId: marketId);
+        },
       ),
     ],
   );

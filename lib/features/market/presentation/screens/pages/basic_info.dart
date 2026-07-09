@@ -1,11 +1,13 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/helper/validators.dart';
 import 'package:asood/core/widgets/custom_button.dart';
 import 'package:asood/core/widgets/custom_textfield.dart';
-import 'package:asood/core/widgets/radio_button.dart';
-import 'package:asood/features/market/presentation/widgets/simple_title.dart';
-import 'package:flutter/material.dart';
+import 'package:asood/features/market/presentation/blocs/edit_market/edit_market_cubit.dart';
 
+/// Basic market info tab: name / description / slogan / national code.
+/// Contract: PUT owner/market/update/{pk}/ (MarketUpdateSerializer).
 class BasicInfo extends StatefulWidget {
   const BasicInfo({super.key});
 
@@ -14,124 +16,94 @@ class BasicInfo extends StatefulWidget {
 }
 
 class _BasicInfoState extends State<BasicInfo> {
-  TextEditingController nationalCodeController = TextEditingController();
-  String selectedValue = '';
+  final nameController = TextEditingController();
+  final descriptionController = TextEditingController();
+  final sloganController = TextEditingController();
+  final nationalCodeController = TextEditingController();
+  bool _hydrated = false;
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    descriptionController.dispose();
+    sloganController.dispose();
+    nationalCodeController.dispose();
+    super.dispose();
+  }
+
+  void _hydrateFrom(EditMarketState state) {
+    if (_hydrated || state.market.isEmpty) {
+      return;
+    }
+    _hydrated = true;
+    nameController.text = state.market['name']?.toString() ?? '';
+    descriptionController.text = state.market['description']?.toString() ?? '';
+    sloganController.text = state.market['slogan']?.toString() ?? '';
+    nationalCodeController.text =
+        state.market['national_code']?.toString() ?? '';
+  }
+
+  void _save(BuildContext context, EditMarketState state) {
+    if (nameController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('نام فروشگاه را وارد کنید')));
+      return;
+    }
+    context.read<EditMarketCubit>().saveBasic({
+      'type': state.market['type'],
+      'business_id': state.market['business_id'],
+      'sub_category': state.market['sub_category'],
+      'name': nameController.text.trim(),
+      'description': descriptionController.text.trim(),
+      'slogan': sloganController.text.trim(),
+      'national_code': nationalCodeController.text.trim(),
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: Dimensions.height * .6,
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            Container(
-              height: 200,
-              width: Dimensions.width,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                color: Colors.redAccent,
+    return BlocBuilder<EditMarketCubit, EditMarketState>(
+      builder: (context, state) {
+        _hydrateFrom(state);
+        return SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              CustomTextField(
+                controller: nameController,
+                text: 'نام فروشگاه',
+                isRequired: true,
               ),
-            ),
-            const SizedBox(height: 8),
-            Container(
-              height: Dimensions.height * .65,
-              width: Dimensions.width,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
+              const SizedBox(height: 12),
+              CustomTextField(
+                controller: descriptionController,
+                text: 'توضیحات',
+                maxLine: 4,
+              ),
+              const SizedBox(height: 12),
+              CustomTextField(controller: sloganController, text: 'شعار'),
+              const SizedBox(height: 12),
+              CustomTextField(
+                controller: nationalCodeController,
+                text: 'کد ملی',
+                keyboardType: TextInputType.number,
+              ),
+              const SizedBox(height: 24),
+              CustomButton(
+                onPress: () => _save(context, state),
                 color: Colora.primaryColor,
+                textColor: Colora.scaffold,
+                text:
+                    state.status == EditMarketStatus.saving
+                        ? '...در حال ذخیره'
+                        : 'ذخیره اطلاعات',
               ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  const SimpleTitle(title: 'انتخاب قالب'),
-                  Row(
-                    children: [
-                      radioButton(
-                        title: "فروشگاهی",
-                        value: "x",
-                        groupValue: selectedValue,
-                        onChanged: (value) {
-                          setState(() {
-                            selectedValue = value!;
-                          });
-                        },
-                      ),
-                      radioButton(
-                        title: "شرکتی",
-                        value: "y",
-                        groupValue: selectedValue,
-                        onChanged: (value) {
-                          setState(() {
-                            selectedValue = value!;
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 7),
-                  CustomTextField(
-                    controller: TextEditingController(),
-                    text: "شناسه کسب و کار",
-                  ),
-                  const SizedBox(height: 7),
-                  CustomTextField(
-                    controller: TextEditingController(),
-                    text: "نام کسب و کار",
-                  ),
-                  const SizedBox(height: 7),
-                  CustomTextField(
-                    controller: TextEditingController(),
-                    text: "توضیحات",
-                    maxLine: 6,
-                  ),
-                  const SizedBox(height: 7),
-                  CustomTextField(
-                    controller: TextEditingController(),
-                    text: "شعار تبلیغاتی",
-                  ),
-                  const SizedBox(height: 7),
-                  CustomTextField(
-                    maxLength: 10,
-                    keyboardType: TextInputType.number,
-                    controller: nationalCodeController,
-                    text: "کد ملی",
-                    validator: Validators.iranianNationalCodeValidator,
-                  ),
-                  const Text(
-                    "کد ملی صرفا جهت تخصیص آگهی به شما میباشد",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: CustomButton(
-                      onPress: () {},
-                      text: "انتخاب شغل",
-                      color: Colors.white,
-                      textColor: Colora.primaryColor,
-                      height: 40,
-                    ),
-                  ),
-                  const SizedBox(height: 7),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: CustomButton(
-                        onPress: () {},
-                        text: "بعدی",
-                        color: Colors.white,
-                        textColor: Colora.primaryColor,
-                        height: 40,
-                        width: 100,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
