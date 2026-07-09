@@ -188,7 +188,7 @@ void showBottomSheet(
                       return;
                     }
                     context.read<CartBloc>().add(
-                      AddItemToCart({'product': productId, 'quantity': 1}),
+                      AddItemToCart({'product_id': productId, 'quantity': 1}),
                     );
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(

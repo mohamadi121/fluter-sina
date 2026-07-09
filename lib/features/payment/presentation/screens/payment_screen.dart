@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:asood/core/constants/constants.dart';
+import 'package:asood/core/constants/endpoints.dart';
+import 'package:asood/core/logging/app_logger.dart';
 import 'package:asood/core/widgets/appbar/default_appbar.dart';
 import 'package:asood/features/payment/presentation/bloc/payment_bloc.dart';
 
@@ -66,21 +69,7 @@ class _PaymentScreenContentState extends State<_PaymentScreenContent> {
                   ),
                 );
               } else if (state is PaymentCreated) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('پرداخت ایجاد شد'),
-                    backgroundColor: Colors.green,
-                  ),
-                );
-              } else if (state is PaymentRedirectReady) {
-                if (state.redirectUrl != null) {
-                  // TODO: Open WebView or browser for payment gateway
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Redirecting to: ${state.redirectUrl}'),
-                    ),
-                  );
-                }
+                _openGateway(context, state.payment?.id);
               } else if (state is PaymentVerified) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
@@ -107,9 +96,7 @@ class _PaymentScreenContentState extends State<_PaymentScreenContent> {
                     ),
                   ),
                   const NewAppBar(title: 'پرداخت'),
-                  if (state is PaymentLoading ||
-                      state is PaymentRedirecting ||
-                      state is PaymentVerifying)
+                  if (state is PaymentLoading || state is PaymentVerifying)
                     Container(
                       color: Colors.black54,
                       child: const Center(child: CircularProgressIndicator()),
@@ -121,6 +108,35 @@ class _PaymentScreenContentState extends State<_PaymentScreenContent> {
         ),
       ),
     );
+  }
+
+  Future<void> _openGateway(BuildContext context, String? paymentId) async {
+    if (paymentId == null || paymentId.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('شناسه پرداخت دریافت نشد'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+    // GET user/payments/pay is the Zarinpal redirect (AllowAny) — must open
+    // in the browser, not be called as an API.
+    final url = Uri.parse(
+      '${Endpoints.baseUrl}user/payments/pay?id=$paymentId',
+    );
+    final opened = await launchUrl(url, mode: LaunchMode.externalApplication);
+    if (!opened) {
+      AppLogger.error('payment', 'could not open gateway url $url');
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('باز کردن درگاه پرداخت ناموفق بود'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   Widget _buildAmountCard(NumberFormat formatter) {
@@ -199,10 +215,7 @@ class _PaymentScreenContentState extends State<_PaymentScreenContent> {
   }
 
   Widget _buildPaymentButton(BuildContext context, PaymentState state) {
-    final isLoading =
-        state is PaymentLoading ||
-        state is PaymentRedirecting ||
-        state is PaymentVerifying;
+    final isLoading = state is PaymentLoading || state is PaymentVerifying;
 
     return Container(
       margin: EdgeInsets.symmetric(horizontal: Dimensions.width * 0.05),
@@ -218,7 +231,7 @@ class _PaymentScreenContentState extends State<_PaymentScreenContent> {
                   context.read<PaymentBloc>().add(
                     CreatePayment({
                       'amount': widget.amount,
-                      'target_content': widget.targetContent,
+                      'target': widget.targetContent,
                       'target_id': widget.targetId,
                       'gateway': selectedGateway,
                     }),

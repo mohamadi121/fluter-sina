@@ -16,15 +16,6 @@ class CreatePayment extends PaymentEvent {
   List<Object?> get props => [data];
 }
 
-class RedirectToPayment extends PaymentEvent {
-  final Map<String, dynamic> data;
-
-  const RedirectToPayment(this.data);
-
-  @override
-  List<Object?> get props => [data];
-}
-
 class VerifyPayment extends PaymentEvent {
   final Map<String, dynamic> data;
 

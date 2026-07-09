@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:asood/core/constants/constants.dart';
 import 'package:asood/core/widgets/appbar/default_appbar.dart';
+import 'package:asood/features/payment/presentation/screens/payment_screen.dart';
 import 'package:asood/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:asood/features/wallet/domain/models/wallet_model.dart';
 
@@ -193,20 +194,70 @@ class _WalletScreenContent extends StatelessWidget {
           context,
           'شارژ کیف پول',
           Icons.add_circle_outline,
-          () {
-            // TODO: Navigate to top-up screen
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('قابلیت شارژ کیف پول به زودی اضافه می‌شود'),
-              ),
-            );
-          },
+          () => _startTopUp(context),
         ),
         _buildActionButton(context, 'تاریخچه تراکنش‌ها', Icons.history, () {
           context.read<WalletBloc>().add(const LoadTransactions());
         }),
       ],
     );
+  }
+
+  Future<void> _startTopUp(BuildContext context) async {
+    final walletState = context.read<WalletBloc>().state;
+    if (walletState is! WalletLoaded) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('اطلاعات کیف پول هنوز بارگیری نشده است')),
+      );
+      return;
+    }
+    final walletId = walletState.wallet.id;
+
+    final controller = TextEditingController();
+    final amount = await showDialog<double>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('شارژ کیف پول'),
+          content: TextField(
+            controller: controller,
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(hintText: 'مبلغ (تومان)'),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('انصراف'),
+            ),
+            TextButton(
+              onPressed: () {
+                final value = double.tryParse(controller.text.trim());
+                Navigator.of(dialogContext).pop(value);
+              },
+              child: const Text('پرداخت'),
+            ),
+          ],
+        );
+      },
+    );
+    controller.dispose();
+
+    if (amount == null || amount <= 0 || !context.mounted) {
+      return;
+    }
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder:
+            (_) => PaymentScreen(
+              amount: amount,
+              targetContent: 'wallet',
+              targetId: walletId,
+            ),
+      ),
+    );
+    if (context.mounted) {
+      context.read<WalletBloc>().add(const LoadWalletBalance());
+    }
   }
 
   Widget _buildActionButton(

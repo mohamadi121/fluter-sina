@@ -15,15 +15,6 @@ class PaymentApiService {
     }
   }
 
-  Future redirectToPayment(Map<String, dynamic> data) async {
-    try {
-      final res = await dioClient.postData('user/payments/pay', data);
-      return apiStatus(res);
-    } catch (e) {
-      return apiFailure(e);
-    }
-  }
-
   Future verifyPayment(Map<String, dynamic> data) async {
     try {
       final res = await dioClient.postData('user/payments/verify/', data);

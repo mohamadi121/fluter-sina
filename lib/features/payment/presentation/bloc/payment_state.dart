@@ -20,17 +20,6 @@ class PaymentCreated extends PaymentState {
   List<Object?> get props => [payment];
 }
 
-class PaymentRedirecting extends PaymentState {}
-
-class PaymentRedirectReady extends PaymentState {
-  final String? redirectUrl;
-
-  const PaymentRedirectReady({this.redirectUrl});
-
-  @override
-  List<Object?> get props => [redirectUrl];
-}
-
 class PaymentVerifying extends PaymentState {}
 
 class PaymentVerified extends PaymentState {

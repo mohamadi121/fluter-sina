@@ -12,7 +12,6 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
 
   PaymentBloc({required this.paymentApiService}) : super(PaymentInitial()) {
     on<CreatePayment>(_onCreatePayment);
-    on<RedirectToPayment>(_onRedirectToPayment);
     on<VerifyPayment>(_onVerifyPayment);
     on<LoadPayments>(_onLoadPayments);
     on<LoadPaymentDetail>(_onLoadPaymentDetail);
@@ -38,31 +37,6 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
           PaymentError(
             message:
                 result.errorResponse?.toString() ?? 'Failed to create payment',
-          ),
-        );
-      }
-    } catch (e) {
-      emit(PaymentError(message: e.toString()));
-    }
-  }
-
-  Future<void> _onRedirectToPayment(
-    RedirectToPayment event,
-    Emitter<PaymentState> emit,
-  ) async {
-    emit(PaymentRedirecting());
-    try {
-      final result = await paymentApiService.redirectToPayment(event.data);
-      if (result is Success) {
-        final data = result.response;
-        final redirectUrl =
-            data is Map ? data['redirect_url']?.toString() : null;
-
-        emit(PaymentRedirectReady(redirectUrl: redirectUrl));
-      } else if (result is Failure) {
-        emit(
-          PaymentError(
-            message: result.errorResponse?.toString() ?? 'Failed to redirect',
           ),
         );
       }
