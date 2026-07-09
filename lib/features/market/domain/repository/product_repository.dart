@@ -17,4 +17,15 @@ abstract class ProductRepository {
     required String themeId,
     required String themeIndex,
   }) async {}
+  Future<dynamic> getProductDetail(String productId);
+  Future<dynamic> getProductComments(String productId);
+  Future<dynamic> createComment({
+    required String contentType,
+    required String objectId,
+    required String comment,
+    int? parentId,
+  });
+  Future<dynamic> deleteMarketTheme(String themeId);
+  Future<dynamic> getShipList(String productId);
+  Future<dynamic> createShip(String productId, Map<String, dynamic> body);
 }

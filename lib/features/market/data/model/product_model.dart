@@ -23,7 +23,6 @@ class ProductModel {
   String? tag;
   String? tagPosition;
   String? sellType;
-  int? shipCost;
   String? shipCostPayType;
   List<XFile>? image;
 
@@ -42,7 +41,6 @@ class ProductModel {
     this.giftProduct,
     this.isMarketer,
     this.sellType,
-    this.shipCost,
     this.shipCostPayType,
     this.publishStatus,
     this.tagPosition,
@@ -75,7 +73,8 @@ class ProductModel {
     data['required_product'] = requiredProduct ?? "";
     data['is_marketer'] = isMarketer;
     data['sell_type'] = sellType;
-    data['ship_cost'] = shipCost;
+    // ship_cost is not accepted by ProductCreateSerializer; per-product
+    // shipping entries live under owner/product/ship/*.
     data['ship_cost_pay_type'] = shipCostPayType;
     data['status'] = publishStatus;
     data['tag_position'] = tagPosition;

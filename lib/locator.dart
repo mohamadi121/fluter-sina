@@ -19,7 +19,6 @@ import 'package:asood/features/market/domain/repository/product_repository.dart'
 import 'package:asood/features/market/presentation/blocs/add_product/add_product_bloc.dart';
 import 'package:asood/features/market/presentation/blocs/bloc/market_bloc.dart';
 import 'package:asood/features/market/presentation/blocs/theme/theme_bloc.dart';
-import 'package:asood/features/product/blocs/product_bloc.dart';
 import 'package:asood/features/vendor/presentation/bloc/vendor/vendor_bloc.dart';
 import 'package:asood/features/vendor/presentation/bloc/workspace/workspace_bloc.dart';
 import 'package:asood/features/cart/data/data_source/cart_api_service.dart';
@@ -41,6 +40,7 @@ import 'package:asood/features/auth/data/repository/auth_repository_imp.dart';
 import 'package:asood/features/auth/domain/repository/auth_repository.dart';
 import 'package:asood/features/auth/presentation/blocs/auth_bloc.dart';
 import 'package:asood/features/splash/blocs/splash_bloc.dart';
+import 'package:asood/features/store_setting_screens/takhfif_setting_screen/data/discount_api_service.dart';
 
 GetIt locator = GetIt.instance;
 
@@ -86,6 +86,9 @@ locatorSetup() async {
   );
   locator.registerFactory(
     () => BookmarkApiService(dioClient: locator<DioClient>()),
+  );
+  locator.registerFactory(
+    () => DiscountApiService(dioClient: locator<DioClient>()),
   );
 
   /// Repositories
@@ -136,7 +139,6 @@ locatorSetup() async {
   locator.registerFactory(() => BusinessBloc());
   locator.registerFactory(() => ProfileBloc());
   locator.registerFactory(() => CustomerBloc());
-  locator.registerFactory(() => ProductBloc());
   locator.registerFactory(
     () => CartBloc(cartApiService: locator<CartApiService>()),
   );

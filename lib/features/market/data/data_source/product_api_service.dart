@@ -130,4 +130,60 @@ class ProductApiService {
       return apiFailure(e);
     }
   }
+
+  Future deleteMarketTheme(String themeId) async {
+    try {
+      Response res = await dioClient.deleteData(
+        "${Endpoints.baseProduct}/theme/delete/$themeId/",
+      );
+      return apiStatus(res);
+    } catch (e) {
+      return apiFailure(e);
+    }
+  }
+
+  // Shipping entries are per product (apps/product ship views).
+  Future getShipList(String productId) async {
+    try {
+      Response res = await dioClient.getData(
+        "${Endpoints.baseProduct}/ship/list/$productId/",
+      );
+      return apiStatus(res);
+    } catch (e) {
+      return apiFailure(e);
+    }
+  }
+
+  Future createShip(String productId, Map<String, dynamic> body) async {
+    try {
+      Response res = await dioClient.postData(
+        "${Endpoints.baseProduct}/ship/create/$productId/",
+        body,
+      );
+      return apiStatus(res);
+    } catch (e) {
+      return apiFailure(e);
+    }
+  }
+
+  /// POST user/comment/create/ — bare `{"message", "id"}` with 201.
+  /// content_type: 'product' | 'market'; parentId for replies.
+  Future createComment({
+    required String contentType,
+    required String objectId,
+    required String comment,
+    int? parentId,
+  }) async {
+    try {
+      Response res = await dioClient.postData('user/comment/create/', {
+        'content_type': contentType,
+        'object_id': objectId,
+        'comment': comment,
+        if (parentId != null) 'parent_id': parentId,
+      });
+      return apiStatus(res);
+    } catch (e) {
+      return apiFailure(e);
+    }
+  }
 }

@@ -255,7 +255,6 @@ class AddProductBloc extends Bloc<AddProductEvent, AddProductState> {
         giftProduct: state.selectedProductGift?.id ?? "",
         isMarketer: state.isMarketer,
         sellType: sellTypeEnumChanger(state.productSellType),
-        shipCost: 2000, // TODO: Update ship cost from backend
         shipCostPayType: state.productSendPrice.name,
         publishStatus: publishStatusEnumChanger(state.publishStatus),
         subCategory: state.selectedCategoryId,

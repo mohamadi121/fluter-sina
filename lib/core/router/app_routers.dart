@@ -188,7 +188,10 @@ class AppRouter {
 
       GoRoute(
         path: AppRoutes.takhfif,
-        builder: (context, state) => TakhfifScreen(),
+        builder: (context, state) {
+          final marketId = state.extra as String;
+          return TakhfifScreen(marketId: marketId);
+        },
       ),
       GoRoute(
         path: AppRoutes.fontColorSettings,

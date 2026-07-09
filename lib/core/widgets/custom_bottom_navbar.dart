@@ -217,7 +217,12 @@ void showBottomSheet(
                   //Takhfif Route
                   IconButton(
                     onPressed: () {
-                      context.push(AppRoutes.takhfif);
+                      if (marketId != null) {
+                        context.push(
+                          AppRoutes.takhfif,
+                          extra: marketId.toString(),
+                        );
+                      }
                       /*  Navigator.push(
                         context,
                         MaterialPageRoute(

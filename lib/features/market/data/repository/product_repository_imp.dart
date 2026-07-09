@@ -53,4 +53,44 @@ class ProductRepositoryImp implements ProductRepository {
       themeIndex,
     );
   }
+
+  @override
+  Future getProductDetail(String productId) {
+    return productApiService.getProductById(productId);
+  }
+
+  @override
+  Future getProductComments(String productId) {
+    return productApiService.getProductComments(productId);
+  }
+
+  @override
+  Future createComment({
+    required String contentType,
+    required String objectId,
+    required String comment,
+    int? parentId,
+  }) {
+    return productApiService.createComment(
+      contentType: contentType,
+      objectId: objectId,
+      comment: comment,
+      parentId: parentId,
+    );
+  }
+
+  @override
+  Future deleteMarketTheme(String themeId) {
+    return productApiService.deleteMarketTheme(themeId);
+  }
+
+  @override
+  Future getShipList(String productId) {
+    return productApiService.getShipList(productId);
+  }
+
+  @override
+  Future createShip(String productId, Map<String, dynamic> body) {
+    return productApiService.createShip(productId, body);
+  }
 }

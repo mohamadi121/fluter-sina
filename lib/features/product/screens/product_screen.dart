@@ -1,23 +1,21 @@
-import 'dart:convert';
+import 'dart:async';
 
 import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/helper/secure_storage.dart';
 import 'package:asood/core/router/app_routers.dart';
 import 'package:asood/core/widgets/custom_bottom_navbar.dart';
 import 'package:asood/features/market/data/model/theme_model_model.dart';
+import 'package:asood/features/market/domain/repository/product_repository.dart';
+import 'package:asood/features/product/blocs/product_detail_cubit.dart';
 import 'package:asood/features/product/widgets/product_app_bar.dart';
 import 'package:asood/features/vendor/presentation/bloc/vendor/vendor_bloc.dart';
+import 'package:asood/locator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
-// test by sina :
-import 'package:http/http.dart' as http;
 import 'package:iconsax/iconsax.dart';
-
-import '../../../core/constants/endpoints.dart';
 
 class ProductScreen extends StatefulWidget {
   final ThemeProductModel productDetails;
@@ -34,20 +32,57 @@ class _ProductScreenState extends State<ProductScreen> {
 
   String replyMessage = '';
 
-  String name = '';
-  String description = '';
-  String technicalDetail = '';
-  String stock = '';
-  String mainPrice = '';
-  String requiredProduct = '';
-  String giftProduct = '';
-  String marketPrice = '';
-  String tag = '';
-  String shipCost = '';
-  String giftImage = '';
-  String requiredImage = '';
-  List<Map> comments = [];
   int replyId = -1;
+
+  late final ProductDetailCubit _cubit;
+  StreamSubscription<ProductDetailState>? _cubitSub;
+
+  Map<String, dynamic> get _detail => _cubit.state.detail;
+  String get name => _detail['name']?.toString() ?? '';
+  String get description => _detail['description']?.toString() ?? '';
+  String get technicalDetail => _detail['technical_detail']?.toString() ?? '';
+  String get stock => _detail['stock']?.toString() ?? '';
+  String get mainPrice => _detail['main_price']?.toString() ?? '';
+  String get marketPrice => _detail['marketer_price']?.toString() ?? '';
+  String get shipCost => _detail['shipping_cost']?.toString() ?? '';
+
+  String get tag {
+    switch (_detail['tag']?.toString()) {
+      case 'new':
+        return 'جدید';
+      case 'special_offer':
+        return 'ویژه';
+      case 'coming_soon':
+        return 'به زودی';
+      default:
+        return '';
+    }
+  }
+
+  Map<String, dynamic>? get giftWidget =>
+      _detail['gift_product'] is Map
+          ? Map<String, dynamic>.from(_detail['gift_product'])
+          : null;
+  Map<String, dynamic>? get reqProductWidget =>
+      _detail['required_product'] is Map
+          ? Map<String, dynamic>.from(_detail['required_product'])
+          : null;
+
+  String get giftProduct => giftWidget?['name']?.toString() ?? 'null';
+  String get requiredProduct => reqProductWidget?['name']?.toString() ?? 'null';
+  String get giftImage => _firstImage(giftWidget);
+  String get requiredImage => _firstImage(reqProductWidget);
+
+  List<Map<String, dynamic>> get comments => _cubit.state.comments;
+
+  static String _firstImage(Map<String, dynamic>? product) {
+    final images = product?['images'];
+    if (images is! List || images.isEmpty) {
+      return '';
+    }
+    final first = images.first;
+    return first is Map ? (first['image']?.toString() ?? '') : '';
+  }
 
   List testSina = ['sina ', 'hashemi', 'is the best '];
 
@@ -59,166 +94,41 @@ class _ProductScreenState extends State<ProductScreen> {
   TextEditingController replyEmailController = TextEditingController();
   TextEditingController replyMessageController = TextEditingController();
 
-  var giftWidget;
-  var reqProductWidget;
-
-  void getProductByID(id) async {
-    String url = '${Endpoints.baseUrl}owner/product/detail/$id/';
-    String? token = await SecureStorage.readSecureStorage(Keys.token);
-
-    var response = await http.get(
-      Uri.parse(url),
-      headers: {'Authorization': 'Bearer $token'},
-    );
-
-    var data = jsonDecode(response.body)['data'];
-
-    setState(() {
-      name = data['name'].toString();
-      description = data['description'].toString();
-      technicalDetail = data['technical_detail'].toString();
-      stock = data['stock'].toString();
-      mainPrice = data['main_price'].toString();
-      // requiredProduct = data['required_product'].toString();
-
-      marketPrice = data['marketer_price'].toString();
-      if (data['tag'].toString() == 'new') {
-        tag = 'جدید';
-      } else if (data['tag'].toString() == 'special_offer') {
-        tag = 'ویژه';
-      } else if (data['tag'].toString() == 'coming_soon') {
-        tag = 'به زودی';
-      }
-      shipCost = data['ship_cost'].toString();
-
-      if (data['gift_product'] == null) {
-        // giftProduct = data['gift_product'];
-        giftProduct = 'null';
-      } else {
-        giftProduct = data['gift_product']['name'];
-        giftImage = data['gift_product']['images'][0]['image'];
-        giftWidget = data['gift_product'];
-      }
-
-      if (data['required_product'] == null) {
-        requiredProduct = 'null';
-      } else {
-        requiredProduct = data['required_product']['name'];
-        requiredImage = data['required_product']['images'][0]['image'];
-        reqProductWidget = data['required_product'];
-      }
-    });
-  }
-
-  void sendComment(String name, String email, String message) async {
-    String url = '${Endpoints.baseUrl}user/comment/create/';
-
-    String? token = await SecureStorage.readSecureStorage(Keys.token);
-
-    Map<String, String> data_ = {
-      "content_type": "product",
-      "object_id": widget.productDetails.id.toString(),
-      "comment": message.toString(),
-    };
-
-    var data = json.encode(data_);
-
-    var response = await http.post(
-      Uri.parse(url),
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
-      body: data,
-    );
-
-    if (response.statusCode == 201) {
-      setState(() {
-        getProductByID(widget.productDetails.id.toString());
-        getCommentsByID(widget.productDetails.id.toString());
-        getDiscountByID(widget.productDetails.id.toString());
-        nameController.clear();
-        emailController.clear();
-        messageController.clear();
-      });
-    } else {}
-  }
-
-  void getCommentsByID(id) async {
-    String url = '${Endpoints.baseUrl}user/comment/comments/product/$id/';
-
-    String? token = await SecureStorage.readSecureStorage(Keys.token);
-    var response = await http.get(
-      Uri.parse(url),
-      headers: {'Authorization': 'Bearer $token'},
-    );
-
-    comments.clear();
-
-    for (var i in jsonDecode(response.body)) {
-      if (!comments.contains(i)) {
-        setState(() {
-          comments.add(i);
-        });
-      }
-    }
-    setState(() {
-      comments.reversed.toList();
-    });
-  }
-
-  void sendReply(parrentId, message) async {
-    String url = '${Endpoints.baseUrl}user/comment/create/';
-
-    String? token = await SecureStorage.readSecureStorage(Keys.token);
-
-    Map<String, String> data_ = {
-      "content_type": "product",
-      "object_id": widget.productDetails.id.toString(),
-      "parent_id": parrentId.toString(),
-      "comment": message.toString(),
-    };
-
-    var data = json.encode(data_);
-
-    var response = await http.post(
-      Uri.parse(url),
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
-      body: data,
-    );
-
-    if (response.statusCode == 201) {
-      setState(() {
-        getProductByID(widget.productDetails.id.toString());
-        getCommentsByID(widget.productDetails.id.toString());
-        getDiscountByID(widget.productDetails.id.toString());
-        nameController.clear();
-        emailController.clear();
-        messageController.clear();
-
-        replyId = -1;
-      });
-    } else {}
-  }
-
-  void getDiscountByID(id) async {
-    // String url = 'https://asoud.ir/api/v1/user/comment/comments/$id';
-  }
-
   bool isMarketBookmarked = false;
 
   @override
   void initState() {
-    getProductByID(widget.productDetails.id.toString());
-    getCommentsByID(widget.productDetails.id.toString());
-    getDiscountByID(widget.productDetails.id.toString());
-
     super.initState();
+    _cubit = ProductDetailCubit(repo: locator<ProductRepository>())
+      ..load(widget.productDetails.id.toString());
+    // Rebuild on cubit changes and reset the comment forms after a
+    // successful submit (the build tree predates bloc wiring).
+    _cubitSub = _cubit.stream.listen((pdState) {
+      if (!mounted) {
+        return;
+      }
+      if (pdState.commentSent) {
+        userName = '';
+        userEmail = '';
+        userMessage = '';
+        replyMessage = '';
+        replyId = -1;
+        nameController.clear();
+        emailController.clear();
+        messageController.clear();
+        replyNameController.clear();
+        replyEmailController.clear();
+        replyMessageController.clear();
+      }
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _cubitSub?.cancel();
+    _cubit.close();
+    super.dispose();
   }
 
   @override
@@ -800,15 +710,15 @@ class _ProductScreenState extends State<ProductScreen> {
                                                     onTap: () {
                                                       ThemeProductModel
                                                       productGift = ThemeProductModel(
-                                                        id: giftWidget['id'],
+                                                        id: giftWidget!['id'],
                                                         name:
-                                                            giftWidget['name'],
+                                                            giftWidget!['name'],
                                                         description:
-                                                            giftWidget['description'],
+                                                            giftWidget!['description'],
                                                         mainPrice:
-                                                            giftWidget['main_price'],
+                                                            giftWidget!['main_price'],
                                                         stock:
-                                                            giftWidget['stock']
+                                                            giftWidget!['stock']
                                                                 .toString(),
                                                         images: [
                                                           ProductImage(
@@ -1044,15 +954,15 @@ class _ProductScreenState extends State<ProductScreen> {
                                                       ThemeProductModel
                                                       productRequired = ThemeProductModel(
                                                         id:
-                                                            reqProductWidget['id'],
+                                                            reqProductWidget!['id'],
                                                         name:
-                                                            reqProductWidget['name'],
+                                                            reqProductWidget!['name'],
                                                         description:
-                                                            reqProductWidget['description'],
+                                                            reqProductWidget!['description'],
                                                         mainPrice:
-                                                            reqProductWidget['main_price'],
+                                                            reqProductWidget!['main_price'],
                                                         stock:
-                                                            reqProductWidget['stock']
+                                                            reqProductWidget!['stock']
                                                                 .toString(),
                                                         images: [
                                                           ProductImage(
@@ -1339,13 +1249,7 @@ class _ProductScreenState extends State<ProductScreen> {
                                               if (userName != '' &&
                                                   userEmail != '' &&
                                                   userMessage != '') {
-                                                setState(() {
-                                                  sendComment(
-                                                    userName,
-                                                    userEmail,
-                                                    userMessage,
-                                                  );
-                                                });
+                                                _cubit.sendComment(userMessage);
                                               } else {
                                                 ScaffoldMessenger.of(
                                                   context,
@@ -1766,9 +1670,10 @@ class _ProductScreenState extends State<ProductScreen> {
                                                             replyId =
                                                                 comments[index]['id'];
                                                           } else {
-                                                            sendReply(
-                                                              comments[index]['id'],
+                                                            _cubit.sendComment(
                                                               replyMessage,
+                                                              parentId:
+                                                                  comments[index]['id'],
                                                             );
                                                           }
                                                         });
