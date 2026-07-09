@@ -18,18 +18,21 @@ class CartModel {
   factory CartModel.fromJson(Map<String, dynamic> json) {
     return CartModel(
       id: json['id']?.toString() ?? '',
-      items: (json['items'] as List<dynamic>?)
+      items:
+          (json['items'] as List<dynamic>?)
               ?.map((item) => CartItemModel.fromJson(item))
               .toList() ??
           [],
       totalPrice: (json['total_price'] ?? 0.0).toDouble(),
       totalItems: json['total_items'] ?? 0,
-      createdAt: json['created_at'] != null
-          ? DateTime.parse(json['created_at'])
-          : DateTime.now(),
-      updatedAt: json['updated_at'] != null
-          ? DateTime.parse(json['updated_at'])
-          : DateTime.now(),
+      createdAt:
+          json['created_at'] != null
+              ? DateTime.parse(json['created_at'])
+              : DateTime.now(),
+      updatedAt:
+          json['updated_at'] != null
+              ? DateTime.parse(json['updated_at'])
+              : DateTime.now(),
     );
   }
 
@@ -84,14 +87,18 @@ class CartItemModel {
     return CartItemModel(
       id: json['id']?.toString() ?? '',
       productId: json['product']?['id']?.toString(),
-      productName: json['product']?['name']?.toString() ??
+      productName:
+          json['product']?['name']?.toString() ??
           json['product_name']?.toString(),
       productImage: _firstImageUrl(json['product']),
       affiliateId: json['affiliate']?['id']?.toString(),
-      affiliateName: json['affiliate']?['name']?.toString() ??
+      affiliateName:
+          json['affiliate']?['name']?.toString() ??
           json['affiliate_name']?.toString(),
       quantity: json['quantity'] ?? 1,
-      price: json['price']?.toDouble() ?? json['product']?['main_price']?.toDouble(),
+      price:
+          json['price']?.toDouble() ??
+          json['product']?['main_price']?.toDouble(),
       totalPrice: json['total_price']?.toDouble(),
     );
   }
@@ -112,4 +119,3 @@ class CartItemModel {
   String get itemName => productName ?? affiliateName ?? 'Unknown';
   String? get itemImage => productImage;
 }
-

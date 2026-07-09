@@ -9,6 +9,8 @@ class ThemeProductModel {
   final String stock;
   final List<ProductImage> images;
   final String? themeIndex;
+  final String? tag;
+  final String? tagPosition;
 
   ThemeProductModel({
     required this.id,
@@ -18,6 +20,8 @@ class ThemeProductModel {
     required this.stock,
     required this.images,
     this.themeIndex,
+    this.tag,
+    this.tagPosition,
   });
 
   factory ThemeProductModel.fromJson(Map<String, dynamic> json) {
@@ -32,6 +36,8 @@ class ThemeProductModel {
               .map((img) => ProductImage.fromJson(img))
               .toList(),
       themeIndex: json['theme_index'],
+      tag: json['tag'],
+      tagPosition: json['tag_position'],
     );
   }
 }

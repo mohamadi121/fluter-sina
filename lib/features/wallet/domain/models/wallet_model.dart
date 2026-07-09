@@ -15,12 +15,14 @@ class WalletModel {
     return WalletModel(
       id: json['id']?.toString() ?? '',
       balance: (json['balance'] ?? 0.0).toDouble(),
-      createdAt: json['created_at'] != null
-          ? DateTime.parse(json['created_at'])
-          : null,
-      updatedAt: json['updated_at'] != null
-          ? DateTime.parse(json['updated_at'])
-          : null,
+      createdAt:
+          json['created_at'] != null
+              ? DateTime.parse(json['created_at'])
+              : null,
+      updatedAt:
+          json['updated_at'] != null
+              ? DateTime.parse(json['updated_at'])
+              : null,
     );
   }
 
@@ -59,9 +61,10 @@ class TransactionModel {
       type: json['type']?.toString() ?? '',
       amount: (json['amount'] ?? 0.0).toDouble(),
       description: json['description']?.toString(),
-      createdAt: json['created_at'] != null
-          ? DateTime.parse(json['created_at'])
-          : DateTime.now(),
+      createdAt:
+          json['created_at'] != null
+              ? DateTime.parse(json['created_at'])
+              : DateTime.now(),
       targetContent: json['target_content']?.toString(),
       targetId: json['target_id']?.toString(),
     );
@@ -79,4 +82,3 @@ class TransactionModel {
     };
   }
 }
-

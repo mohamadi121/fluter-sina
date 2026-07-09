@@ -117,4 +117,49 @@ class CreateMarketRepositoryImp implements CreateMarketRepository {
   Future createSchedule(scheduleMarketModel) async {
     return await marketApiService.setSchedule(scheduleMarketModel);
   }
+
+  @override
+  Future getMarket(String marketId) {
+    return marketApiService.getMarket(marketId);
+  }
+
+  @override
+  Future updateMarket(String marketId, Map<String, dynamic> body) {
+    return marketApiService.updateMarket(marketId, body);
+  }
+
+  @override
+  Future getMarketContact(String marketId) {
+    return marketApiService.getMarketContact(marketId);
+  }
+
+  @override
+  Future updateMarketContact(String contactId, Map<String, dynamic> body) {
+    return marketApiService.updateMarketContact(contactId, body);
+  }
+
+  @override
+  Future getMarketLocation(String marketId) {
+    return marketApiService.getMarketLocation(marketId);
+  }
+
+  @override
+  Future updateMarketLocation(String locationId, Map<String, dynamic> body) {
+    return marketApiService.updateMarketLocation(locationId, body);
+  }
+
+  @override
+  Future getSchedules() {
+    return marketApiService.getSchedules();
+  }
+
+  @override
+  Future updateSchedule(String scheduleId, Map<String, dynamic> body) {
+    return marketApiService.updateSchedule(scheduleId, body);
+  }
+
+  @override
+  Future deleteSchedule(String scheduleId) {
+    return marketApiService.deleteSchedule(scheduleId);
+  }
 }

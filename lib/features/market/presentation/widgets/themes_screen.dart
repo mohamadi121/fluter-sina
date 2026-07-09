@@ -1,7 +1,4 @@
-import 'dart:convert';
-
 import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/helper/secure_storage.dart';
 import 'package:asood/core/helper/snack_bar_util.dart';
 import 'package:asood/core/http_client/api_status.dart';
 import 'package:asood/core/router/app_routers.dart';
@@ -14,9 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:http/http.dart' as http;
-
-import '../../../../core/constants/endpoints.dart';
 
 class MultiViewSliderScreen extends StatefulWidget {
   const MultiViewSliderScreen({super.key});
@@ -340,30 +334,6 @@ class ProductGridView extends StatefulWidget {
 }
 
 class _ProductGridViewState extends State<ProductGridView> {
-  Future<String> getProductLableById(String? id) async {
-    String url = '${Endpoints.baseUrl}owner/product/detail/$id/';
-    String? token = await SecureStorage.readSecureStorage(Keys.token);
-
-    var response = await http.get(
-      Uri.parse(url),
-      headers: {'Authorization': 'Bearer $token'},
-    );
-
-    return jsonDecode(response.body)['data']['tag'];
-  }
-
-  Future<String> getProductLablePositionById(String? id) async {
-    String url = '${Endpoints.baseUrl}owner/product/detail/$id/';
-    String? token = await SecureStorage.readSecureStorage(Keys.token);
-
-    var response = await http.get(
-      Uri.parse(url),
-      headers: {'Authorization': 'Bearer $token'},
-    );
-
-    return jsonDecode(response.body)['data']['tag_position'];
-  }
-
   @override
   Widget build(BuildContext context) {
     return ConstrainedBox(
@@ -492,45 +462,36 @@ class _ProductGridViewState extends State<ProductGridView> {
                               ),
                     ),
 
-                    // Label part:
-                    FutureBuilder(
-                      future: getProductLableById(product?.id),
-                      builder: (context, asyncSnapshot) {
-                        return Padding(
-                          padding: EdgeInsets.all(8),
-                          child: FutureBuilder(
-                            future: getProductLablePositionById(product?.id),
-                            builder: (context, positionSnapshot) {
-                              return Align(
-                                alignment:
-                                    positionSnapshot.data == 'bottom_right'
-                                        ? Alignment.bottomRight
-                                        : positionSnapshot.data == 'top_right'
-                                        ? Alignment.topRight
-                                        : positionSnapshot.data == 'bottom_left'
-                                        ? Alignment.bottomLeft
-                                        : Alignment.topLeft,
-                                child:
-                                    asyncSnapshot.data == 'new'
-                                        ? SizedBox(
-                                          child: Image(
-                                            image: AssetImage(
-                                              'assets/images/new_product.png',
-                                            ),
-                                          ),
-                                        )
-                                        : asyncSnapshot.data == 'special_offer'
-                                        ? Image(
-                                          image: AssetImage(
-                                            'assets/images/special_product.png',
-                                          ),
-                                        )
-                                        : Container(),
-                              );
-                            },
-                          ),
-                        );
-                      },
+                    // Label part (tag/tag_position come with the list
+                    // response — no per-product lookups needed):
+                    Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Align(
+                        alignment:
+                            product?.tagPosition == 'bottom_right'
+                                ? Alignment.bottomRight
+                                : product?.tagPosition == 'top_right'
+                                ? Alignment.topRight
+                                : product?.tagPosition == 'bottom_left'
+                                ? Alignment.bottomLeft
+                                : Alignment.topLeft,
+                        child:
+                            product?.tag == 'new'
+                                ? SizedBox(
+                                  child: Image(
+                                    image: AssetImage(
+                                      'assets/images/new_product.png',
+                                    ),
+                                  ),
+                                )
+                                : product?.tag == 'special_offer'
+                                ? Image(
+                                  image: AssetImage(
+                                    'assets/images/special_product.png',
+                                  ),
+                                )
+                                : Container(),
+                      ),
                     ),
                   ],
                 ),

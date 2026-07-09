@@ -16,12 +16,8 @@ class CartLoaded extends CartState {
 
   const CartLoaded({required this.cart});
 
-  CartLoaded copyWith({
-    CartModel? cart,
-  }) {
-    return CartLoaded(
-      cart: cart ?? this.cart,
-    );
+  CartLoaded copyWith({CartModel? cart}) {
+    return CartLoaded(cart: cart ?? this.cart);
   }
 
   @override
@@ -56,4 +52,3 @@ class CartCheckoutError extends CartState {
   @override
   List<Object?> get props => [message];
 }
-

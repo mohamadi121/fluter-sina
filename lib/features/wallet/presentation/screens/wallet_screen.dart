@@ -12,7 +12,9 @@ class WalletScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => context.read<WalletBloc>()..add(const LoadWalletBalance()),
+      create:
+          (context) =>
+              context.read<WalletBloc>()..add(const LoadWalletBalance()),
       child: const _WalletScreenContent(),
     );
   }
@@ -105,7 +107,9 @@ class _WalletScreenContent extends StatelessWidget {
                     const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: () {
-                        context.read<WalletBloc>().add(const LoadWalletBalance());
+                        context.read<WalletBloc>().add(
+                          const LoadWalletBalance(),
+                        );
                       },
                       child: const Text('تلاش مجدد'),
                     ),
@@ -122,7 +126,7 @@ class _WalletScreenContent extends StatelessWidget {
 
   Widget _buildWalletContent(BuildContext context, WalletLoaded state) {
     final formatter = NumberFormat('#,###');
-    
+
     return Stack(
       children: [
         SingleChildScrollView(
@@ -192,18 +196,15 @@ class _WalletScreenContent extends StatelessWidget {
           () {
             // TODO: Navigate to top-up screen
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('قابلیت شارژ کیف پول به زودی اضافه می‌شود')),
+              const SnackBar(
+                content: Text('قابلیت شارژ کیف پول به زودی اضافه می‌شود'),
+              ),
             );
           },
         ),
-        _buildActionButton(
-          context,
-          'تاریخچه تراکنش‌ها',
-          Icons.history,
-          () {
-            context.read<WalletBloc>().add(const LoadTransactions());
-          },
-        ),
+        _buildActionButton(context, 'تاریخچه تراکنش‌ها', Icons.history, () {
+          context.read<WalletBloc>().add(const LoadTransactions());
+        }),
       ],
     );
   }
@@ -229,10 +230,7 @@ class _WalletScreenContent extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               label,
-              style: const TextStyle(
-                color: Colora.scaffold,
-                fontSize: 14,
-              ),
+              style: const TextStyle(color: Colora.scaffold, fontSize: 14),
             ),
           ],
         ),
@@ -260,10 +258,7 @@ class _WalletScreenContent extends StatelessWidget {
         ),
         child: const Text(
           'هیچ تراکنشی یافت نشد',
-          style: TextStyle(
-            color: Colora.primaryColor,
-            fontSize: 16,
-          ),
+          style: TextStyle(color: Colora.primaryColor, fontSize: 16),
           textAlign: TextAlign.center,
         ),
       );
@@ -296,10 +291,13 @@ class _WalletScreenContent extends StatelessWidget {
     );
   }
 
-  Widget _buildTransactionItem(BuildContext context, TransactionModel transaction) {
+  Widget _buildTransactionItem(
+    BuildContext context,
+    TransactionModel transaction,
+  ) {
     final formatter = NumberFormat('#,###');
     final dateFormatter = DateFormat('yyyy/MM/dd HH:mm');
-    
+
     return Container(
       margin: EdgeInsets.symmetric(
         horizontal: Dimensions.width * 0.05,
@@ -337,10 +335,7 @@ class _WalletScreenContent extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 dateFormatter.format(transaction.createdAt),
-                style: const TextStyle(
-                  color: Colors.grey,
-                  fontSize: 12,
-                ),
+                style: const TextStyle(color: Colors.grey, fontSize: 12),
               ),
             ],
           ),
@@ -357,4 +352,3 @@ class _WalletScreenContent extends StatelessWidget {
     );
   }
 }
-

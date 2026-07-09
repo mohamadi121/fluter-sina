@@ -27,13 +27,19 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
       final result = await paymentApiService.createPayment(event.data);
       if (result is Success) {
         final data = result.response;
-        final payment = data is Map
-            ? PaymentModel.fromJson(Map<String, dynamic>.from(data))
-            : null;
+        final payment =
+            data is Map
+                ? PaymentModel.fromJson(Map<String, dynamic>.from(data))
+                : null;
 
         emit(PaymentCreated(payment: payment));
       } else if (result is Failure) {
-        emit(PaymentError(message: result.errorResponse?.toString() ?? 'Failed to create payment'));
+        emit(
+          PaymentError(
+            message:
+                result.errorResponse?.toString() ?? 'Failed to create payment',
+          ),
+        );
       }
     } catch (e) {
       emit(PaymentError(message: e.toString()));
@@ -54,7 +60,11 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
 
         emit(PaymentRedirectReady(redirectUrl: redirectUrl));
       } else if (result is Failure) {
-        emit(PaymentError(message: result.errorResponse?.toString() ?? 'Failed to redirect'));
+        emit(
+          PaymentError(
+            message: result.errorResponse?.toString() ?? 'Failed to redirect',
+          ),
+        );
       }
     } catch (e) {
       emit(PaymentError(message: e.toString()));
@@ -70,13 +80,20 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
       final result = await paymentApiService.verifyPayment(event.data);
       if (result is Success) {
         final data = result.response;
-        final payment = data is Map
-            ? PaymentModel.fromJson(Map<String, dynamic>.from(data))
-            : null;
+        final payment =
+            data is Map
+                ? PaymentModel.fromJson(Map<String, dynamic>.from(data))
+                : null;
 
         emit(PaymentVerified(payment: payment));
       } else if (result is Failure) {
-        emit(PaymentError(message: result.errorResponse?.toString() ?? 'Payment verification failed'));
+        emit(
+          PaymentError(
+            message:
+                result.errorResponse?.toString() ??
+                'Payment verification failed',
+          ),
+        );
       }
     } catch (e) {
       emit(PaymentError(message: e.toString()));
@@ -92,16 +109,25 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
       final result = await paymentApiService.getPayments();
       if (result is Success) {
         final data = result.response;
-        final payments = data is List
-            ? data
-                .map((item) =>
-                    PaymentModel.fromJson(Map<String, dynamic>.from(item)))
-                .toList()
-            : <PaymentModel>[];
+        final payments =
+            data is List
+                ? data
+                    .map(
+                      (item) => PaymentModel.fromJson(
+                        Map<String, dynamic>.from(item),
+                      ),
+                    )
+                    .toList()
+                : <PaymentModel>[];
 
         emit(PaymentsLoaded(payments: payments));
       } else if (result is Failure) {
-        emit(PaymentError(message: result.errorResponse?.toString() ?? 'Failed to load payments'));
+        emit(
+          PaymentError(
+            message:
+                result.errorResponse?.toString() ?? 'Failed to load payments',
+          ),
+        );
       }
     } catch (e) {
       emit(PaymentError(message: e.toString()));
@@ -117,17 +143,23 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
       final result = await paymentApiService.getPaymentDetail(event.paymentId);
       if (result is Success) {
         final data = result.response;
-        final payment = data is Map
-            ? PaymentModel.fromJson(Map<String, dynamic>.from(data))
-            : null;
+        final payment =
+            data is Map
+                ? PaymentModel.fromJson(Map<String, dynamic>.from(data))
+                : null;
 
         emit(PaymentDetailLoaded(payment: payment));
       } else if (result is Failure) {
-        emit(PaymentError(message: result.errorResponse?.toString() ?? 'Failed to load payment detail'));
+        emit(
+          PaymentError(
+            message:
+                result.errorResponse?.toString() ??
+                'Failed to load payment detail',
+          ),
+        );
       }
     } catch (e) {
       emit(PaymentError(message: e.toString()));
     }
   }
 }
-

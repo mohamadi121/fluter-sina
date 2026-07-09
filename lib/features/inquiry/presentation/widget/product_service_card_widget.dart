@@ -13,9 +13,7 @@ class ProductServiceCard extends StatelessWidget {
           color: Colors.deepPurple,
         ),
         height: 150,
-        child: const Center(
-          child: Text('Item'),
-        ),
+        child: const Center(child: Text('Item')),
       ),
     );
   }

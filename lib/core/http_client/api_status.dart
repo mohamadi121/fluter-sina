@@ -35,11 +35,20 @@ class Failure {
   String get message => errorResponse?.toString() ?? 'خطای نامشخص';
 }
 
-/// Maps a 2xx backend envelope `{success, code, data, message}` /
-/// `{success, code, error: {code, detail}}` to Success/Failure.
+/// Maps a 2xx backend body to Success/Failure.
+///
+/// Most endpoints use the ApiResponse envelope `{success, code, data,
+/// message}` / `{success, code, error}`. Some (comments, cart viewset)
+/// return bare DRF serializer data — a Map without a `success` key or a
+/// List — which is a success at this point because dio already threw for
+/// non-2xx statuses.
 dynamic apiStatus(Response response) {
   try {
     final res = response.data;
+
+    if (res is List || (res is Map && !res.containsKey('success'))) {
+      return Success(code: response.statusCode, response: res);
+    }
 
     if (res['success'] == true) {
       return Success(

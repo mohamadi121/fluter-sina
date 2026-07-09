@@ -51,4 +51,3 @@ class CheckoutCart extends CartEvent {
 class ClearCart extends CartEvent {
   const ClearCart();
 }
-

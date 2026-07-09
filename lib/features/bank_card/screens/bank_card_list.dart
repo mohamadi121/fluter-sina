@@ -238,9 +238,7 @@ class _BankCardListScreenState extends State<BankCardListScreen> {
                                               SizedBox(width: 30),
                                               ClipRRect(
                                                 borderRadius:
-                                                    BorderRadius.circular(
-                                                      5,
-                                                    ),
+                                                    BorderRadius.circular(5),
                                                 child: Image.network(
                                                   'https://asoud.ir/${bank['logo']}',
                                                   height: 30,

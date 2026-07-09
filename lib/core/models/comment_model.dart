@@ -1,53 +1,55 @@
-class CommentModel{
-  int? id;
-  int? creator;
-  String? content;
-  List<Replies>? replies;
+/// Comment as served by the backend's django-comments-xtd integration
+/// (`GET user/comment/comments/{content_type}/{object_id}/`, bare list —
+/// fields: id, user, comment, submit_date, parent_id, level, children).
+class CommentModel {
+  final int? id;
+  final int? user;
+  final String? comment;
+  final String? submitDate;
+  final int? parentId;
+  final int? level;
+  final List<CommentModel> children;
 
-  CommentModel({this.id, this.creator, this.content, this.replies});
+  const CommentModel({
+    this.id,
+    this.user,
+    this.comment,
+    this.submitDate,
+    this.parentId,
+    this.level,
+    this.children = const [],
+  });
 
-  CommentModel.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    creator = json['creator'];
-    content = json['content'];
-    if (json['replies'] != null) {
-      replies = <Replies>[];
-      json['replies'].forEach((v) {
-        replies!.add(Replies.fromJson(v));
-      });
-    }
+  factory CommentModel.fromJson(Map<String, dynamic> json) {
+    final rawChildren = json['children'];
+    return CommentModel(
+      id: json['id'],
+      user: json['user'],
+      comment: json['comment']?.toString(),
+      submitDate: json['submit_date']?.toString(),
+      parentId: json['parent_id'],
+      level: json['level'],
+      children:
+          rawChildren is List
+              ? rawChildren
+                  .whereType<Map>()
+                  .map(
+                    (e) => CommentModel.fromJson(Map<String, dynamic>.from(e)),
+                  )
+                  .toList()
+              : const [],
+    );
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = id;
-    data['creator'] = creator;
-    data['content'] = content;
-    if (replies != null) {
-      data['replies'] = replies!.map((v) => v.toJson()).toList();
-    }
-    return data;
-  }
-}
-
-class Replies {
-  int? id;
-  int? creator;
-  String? content;
-
-  Replies({this.id, this.creator, this.content});
-
-  Replies.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    creator = json['creator'];
-    content = json['content'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = id;
-    data['creator'] = creator;
-    data['content'] = content;
-    return data;
+    return {
+      'id': id,
+      'user': user,
+      'comment': comment,
+      'submit_date': submitDate,
+      'parent_id': parentId,
+      'level': level,
+      'children': children.map((c) => c.toJson()).toList(),
+    };
   }
 }

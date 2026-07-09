@@ -18,7 +18,6 @@ import 'package:asood/features/market/data/repository/product_repository_imp.dar
 import 'package:asood/features/market/domain/repository/product_repository.dart';
 import 'package:asood/features/market/presentation/blocs/add_product/add_product_bloc.dart';
 import 'package:asood/features/market/presentation/blocs/bloc/market_bloc.dart';
-import 'package:asood/features/market/presentation/blocs/comment/comment_bloc.dart';
 import 'package:asood/features/market/presentation/blocs/theme/theme_bloc.dart';
 import 'package:asood/features/product/blocs/product_bloc.dart';
 import 'package:asood/features/vendor/presentation/bloc/vendor/vendor_bloc.dart';
@@ -36,6 +35,8 @@ import 'package:asood/core/auth/token_storage.dart';
 import 'package:asood/core/constants/endpoints.dart';
 import 'package:asood/core/http_client/api_client.dart';
 import 'package:asood/features/auth/data/data_source/auth_api_service.dart';
+import 'package:asood/features/bookmarks/bloc/bookmark_cubit.dart';
+import 'package:asood/features/bookmarks/data/bookmark_api_service.dart';
 import 'package:asood/features/auth/data/repository/auth_repository_imp.dart';
 import 'package:asood/features/auth/domain/repository/auth_repository.dart';
 import 'package:asood/features/auth/presentation/blocs/auth_bloc.dart';
@@ -83,6 +84,9 @@ locatorSetup() async {
   locator.registerFactory(
     () => PaymentApiService(dioClient: locator<DioClient>()),
   );
+  locator.registerFactory(
+    () => BookmarkApiService(dioClient: locator<DioClient>()),
+  );
 
   /// Repositories
   locator.registerLazySingleton<AuthRepository>(
@@ -126,7 +130,6 @@ locatorSetup() async {
   );
   locator.registerFactory(() => AddProductBloc(locator<ProductRepository>()));
   locator.registerFactory(() => ThemeBloc());
-  locator.registerFactory(() => CommentBloc());
   locator.registerFactory(
     () => MarketBloc(productRepository: locator<ProductRepository>()),
   );
@@ -142,5 +145,8 @@ locatorSetup() async {
   );
   locator.registerFactory(
     () => PaymentBloc(paymentApiService: locator<PaymentApiService>()),
+  );
+  locator.registerFactory(
+    () => BookmarkCubit(api: locator<BookmarkApiService>()),
   );
 }

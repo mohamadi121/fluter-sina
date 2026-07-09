@@ -32,4 +32,3 @@ class PayWithWallet extends WalletEvent {
   @override
   List<Object?> get props => [data];
 }
-

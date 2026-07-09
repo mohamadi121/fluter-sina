@@ -30,11 +30,15 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
           emit(const WalletError(message: 'پاسخ نامعتبر کیف پول'));
           return;
         }
-        final wallet =
-            WalletModel.fromJson(Map<String, dynamic>.from(data));
+        final wallet = WalletModel.fromJson(Map<String, dynamic>.from(data));
         emit(WalletLoaded(wallet: wallet));
       } else if (result is Failure) {
-        emit(WalletError(message: result.errorResponse?.toString() ?? 'Failed to load wallet'));
+        emit(
+          WalletError(
+            message:
+                result.errorResponse?.toString() ?? 'Failed to load wallet',
+          ),
+        );
       }
     } catch (e) {
       emit(WalletError(message: e.toString()));
@@ -51,11 +55,11 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       if (result is Success) {
         final data = result.response;
         bool sufficient = false;
-        
+
         if (data is Map) {
           sufficient = data['success'] == true;
         }
-        
+
         emit(WalletCheckResult(sufficient: sufficient));
       } else if (result is Failure) {
         emit(WalletCheckResult(sufficient: false));
@@ -72,31 +76,31 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     if (state is WalletLoaded) {
       emit((state as WalletLoaded).copyWith(loadingTransactions: true));
     }
-    
+
     try {
       final result = await walletApiService.getTransactions();
       if (result is Success) {
         final data = result.response;
         List<TransactionModel> transactions = [];
-        
+
         if (data is Map && data.containsKey('success')) {
           final items = data['data'] ?? [];
           if (items is List) {
-            transactions = items
-                .map((item) => TransactionModel.fromJson(item))
-                .toList();
+            transactions =
+                items.map((item) => TransactionModel.fromJson(item)).toList();
           }
         } else if (data is List) {
-          transactions = data
-              .map((item) => TransactionModel.fromJson(item))
-              .toList();
+          transactions =
+              data.map((item) => TransactionModel.fromJson(item)).toList();
         }
-        
+
         if (state is WalletLoaded) {
-          emit((state as WalletLoaded).copyWith(
-            transactions: transactions,
-            loadingTransactions: false,
-          ));
+          emit(
+            (state as WalletLoaded).copyWith(
+              transactions: transactions,
+              loadingTransactions: false,
+            ),
+          );
         } else {
           emit(WalletTransactionsLoaded(transactions: transactions));
         }
@@ -104,7 +108,13 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         if (state is WalletLoaded) {
           emit((state as WalletLoaded).copyWith(loadingTransactions: false));
         }
-        emit(WalletError(message: result.errorResponse?.toString() ?? 'Failed to load transactions'));
+        emit(
+          WalletError(
+            message:
+                result.errorResponse?.toString() ??
+                'Failed to load transactions',
+          ),
+        );
       }
     } catch (e) {
       if (state is WalletLoaded) {
@@ -122,14 +132,19 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     try {
       final result = await walletApiService.payWithWallet(event.data);
       if (result is Success) {
-        emit(WalletPaymentSuccess(message: result.message ?? 'Payment successful'));
+        emit(
+          WalletPaymentSuccess(message: result.message ?? 'Payment successful'),
+        );
         add(const LoadWalletBalance());
       } else if (result is Failure) {
-        emit(WalletPaymentError(message: result.errorResponse?.toString() ?? 'Payment failed'));
+        emit(
+          WalletPaymentError(
+            message: result.errorResponse?.toString() ?? 'Payment failed',
+          ),
+        );
       }
     } catch (e) {
       emit(WalletPaymentError(message: e.toString()));
     }
   }
 }
-

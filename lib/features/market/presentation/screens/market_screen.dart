@@ -155,9 +155,7 @@ class _MarketsScreenState extends State<MarketsScreen>
                                           return SizedBox(
                                             height: Dimensions.height * 0.2,
                                             child: Padding(
-                                              padding: EdgeInsets.all(
-                                                8,
-                                              ),
+                                              padding: EdgeInsets.all(8),
                                               child: Align(
                                                 alignment: Alignment.topRight,
                                                 child: FloatingActionButton(

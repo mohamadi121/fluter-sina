@@ -8,7 +8,6 @@ import 'package:asood/features/create_workspace/presentation/bloc/create_workspa
 import 'package:asood/features/job_managment/presentation/bloc/jobmanagment_bloc.dart';
 import 'package:asood/features/market/presentation/blocs/add_product/add_product_bloc.dart';
 import 'package:asood/features/market/presentation/blocs/bloc/market_bloc.dart';
-import 'package:asood/features/market/presentation/blocs/comment/comment_bloc.dart';
 import 'package:asood/features/market/presentation/blocs/theme/theme_bloc.dart';
 import 'package:asood/features/splash/blocs/splash_bloc.dart';
 import 'package:asood/features/vendor/presentation/bloc/vendor/vendor_bloc.dart';
@@ -63,7 +62,6 @@ class Asood extends StatelessWidget {
           BlocProvider(create: (context) => locator<WorkspaceBloc>()),
           BlocProvider(create: (context) => locator<AddProductBloc>()),
           BlocProvider(create: (context) => locator<ThemeBloc>()),
-          BlocProvider(create: (context) => locator<CommentBloc>()),
           BlocProvider(create: (context) => locator<MarketBloc>()),
           BlocProvider(create: (context) => locator<BusinessBloc>()),
           BlocProvider(create: (context) => locator<CartBloc>()),

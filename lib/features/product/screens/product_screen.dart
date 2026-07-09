@@ -390,8 +390,7 @@ class _ProductScreenState extends State<ProductScreen> {
                                       children: [
                                         //edit
                                         InkWell(
-                                          onTap: () {
-                                          },
+                                          onTap: () {},
                                           // padding: const EdgeInsets.all(0),
                                           child: Icon(
                                             Iconsax.edit5,
@@ -403,8 +402,7 @@ class _ProductScreenState extends State<ProductScreen> {
 
                                         //save
                                         InkWell(
-                                          onTap: () {
-                                          },
+                                          onTap: () {},
                                           child: Icon(
                                             Iconsax.save_2,
                                             // Icons.save,

@@ -1,5 +1,4 @@
 import 'package:asood/core/http_client/api_status.dart';
-import 'package:asood/core/logging/app_logger.dart';
 import 'package:asood/core/models/market_model.dart';
 import 'package:asood/features/create_workspace/domain/repository/create_market_repository.dart';
 import 'package:bloc/bloc.dart';
@@ -19,17 +18,6 @@ class WorkspaceBloc extends Bloc<WorkspaceEvent, WorkspaceState> {
     on<InvoiceConfirm>(_invoiceConfirmView);
 
     on<SelectMarket>(_selectMarket);
-    on<GetProducts>(_getProducts);
-    on<ContactUs>(_contactUs);
-    on<GetComments>(_getComments);
-    on<GetSpecialProducts>(_getSpecialProducts);
-    on<GetDiscounts>(_getDiscounts);
-    on<DeleteDiscount>(_deleteDiscount);
-    on<CreateDiscount>(_createDiscount);
-    on<ChangeColorAndFont>(_changeColorAndFont);
-    on<ChangeProductTheme>(_changeProductTheme);
-    on<ChangeThemeColors>(_changeThemeColors);
-    on<EditeWorkSpaceInfo>(_editeWorkSpaceInfo);
   }
 
   _changeActiveTab(ChangeTabView event, Emitter<WorkspaceState> emit) async {
@@ -70,62 +58,5 @@ class WorkspaceBloc extends Bloc<WorkspaceEvent, WorkspaceState> {
 
   _selectMarket(SelectMarket event, Emitter<WorkspaceState> emit) {
     emit(state.copyWith(selectedMarket: event.marketId));
-  }
-
-  // FAKE (pre-existing): handlers below emit success without any backend
-  // call. Real wiring lands in batch 2 — tracked in ARCHITECTURE_MAP.md §3.
-  _getProducts(GetProducts event, Emitter<WorkspaceState> emit) {
-    AppLogger.warning('workspace', 'stub handler — no backend call (batch 2)');
-    emit(state.copyWith(status: CWSStatus.success));
-  }
-
-  _contactUs(ContactUs event, Emitter<WorkspaceState> emit) {
-    AppLogger.warning('workspace', 'stub handler — no backend call (batch 2)');
-    emit(state.copyWith(status: CWSStatus.success));
-  }
-
-  _getComments(GetComments event, Emitter<WorkspaceState> emit) {
-    AppLogger.warning('workspace', 'stub handler — no backend call (batch 2)');
-    emit(state.copyWith(status: CWSStatus.success));
-  }
-
-  _getSpecialProducts(GetSpecialProducts event, Emitter<WorkspaceState> emit) {
-    AppLogger.warning('workspace', 'stub handler — no backend call (batch 2)');
-    emit(state.copyWith(status: CWSStatus.success));
-  }
-
-  _getDiscounts(GetDiscounts event, Emitter<WorkspaceState> emit) {
-    AppLogger.warning('workspace', 'stub handler — no backend call (batch 2)');
-    emit(state.copyWith(status: CWSStatus.success));
-  }
-
-  _deleteDiscount(DeleteDiscount event, Emitter<WorkspaceState> emit) {
-    AppLogger.warning('workspace', 'stub handler — no backend call (batch 2)');
-    emit(state.copyWith(status: CWSStatus.success));
-  }
-
-  _createDiscount(CreateDiscount event, Emitter<WorkspaceState> emit) {
-    AppLogger.warning('workspace', 'stub handler — no backend call (batch 2)');
-    emit(state.copyWith(status: CWSStatus.success));
-  }
-
-  _changeColorAndFont(ChangeColorAndFont event, Emitter<WorkspaceState> emit) {
-    AppLogger.warning('workspace', 'stub handler — no backend call (batch 2)');
-    emit(state.copyWith(status: CWSStatus.success));
-  }
-
-  _editeWorkSpaceInfo(EditeWorkSpaceInfo event, Emitter<WorkspaceState> emit) {
-    AppLogger.warning('workspace', 'stub handler — no backend call (batch 2)');
-    emit(state.copyWith(status: CWSStatus.success));
-  }
-
-  _changeProductTheme(ChangeProductTheme event, Emitter<WorkspaceState> emit) {
-    AppLogger.warning('workspace', 'stub handler — no backend call (batch 2)');
-    emit(state.copyWith(status: CWSStatus.success));
-  }
-
-  _changeThemeColors(ChangeThemeColors event, Emitter<WorkspaceState> emit) {
-    AppLogger.warning('workspace', 'stub handler — no backend call (batch 2)');
-    emit(state.copyWith(status: CWSStatus.success));
   }
 }

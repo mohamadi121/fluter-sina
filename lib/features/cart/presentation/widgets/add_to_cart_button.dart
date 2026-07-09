@@ -36,10 +36,7 @@ class AddToCartButton extends StatelessWidget {
           onSuccess?.call();
         } else if (state is CartError) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: Colors.red,
-            ),
+            SnackBar(content: Text(state.message), backgroundColor: Colors.red),
           );
         }
       },
@@ -53,59 +50,58 @@ class AddToCartButton extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
             ),
             child: MaterialButton(
-              onPressed: isLoading
-                  ? null
-                  : () {
-                      final data = <String, dynamic>{
-                        'quantity': quantity,
-                      };
+              onPressed:
+                  isLoading
+                      ? null
+                      : () {
+                        final data = <String, dynamic>{'quantity': quantity};
 
-                      if (productId != null) {
-                        data['product_id'] = productId;
-                      } else if (productName != null) {
-                        data['product_name'] = productName;
-                      } else if (affiliateId != null) {
-                        data['affiliate_id'] = affiliateId;
-                      } else if (affiliateName != null) {
-                        data['affiliate_name'] = affiliateName;
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('لطفا محصول یا محصول وابسته را مشخص کنید'),
-                            backgroundColor: Colors.red,
+                        if (productId != null) {
+                          data['product_id'] = productId;
+                        } else if (productName != null) {
+                          data['product_name'] = productName;
+                        } else if (affiliateId != null) {
+                          data['affiliate_id'] = affiliateId;
+                        } else if (affiliateName != null) {
+                          data['affiliate_name'] = affiliateName;
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'لطفا محصول یا محصول وابسته را مشخص کنید',
+                              ),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                          return;
+                        }
+
+                        context.read<CartBloc>().add(AddItemToCart(data));
+                      },
+              child:
+                  isLoading
+                      ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
+                      )
+                      : const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.shopping_cart, color: Colora.scaffold),
+                          SizedBox(width: 8),
+                          Text(
+                            'افزودن به سبد خرید',
+                            style: TextStyle(
+                              color: Colora.scaffold,
+                              fontSize: 16,
+                            ),
                           ),
-                        );
-                        return;
-                      }
-
-                      context.read<CartBloc>().add(AddItemToCart(data));
-                    },
-              child: isLoading
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(
-                        color: Colors.white,
-                        strokeWidth: 2,
+                        ],
                       ),
-                    )
-                  : const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.shopping_cart,
-                          color: Colora.scaffold,
-                        ),
-                        SizedBox(width: 8),
-                        Text(
-                          'افزودن به سبد خرید',
-                          style: TextStyle(
-                            color: Colora.scaffold,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ],
-                    ),
             ),
           );
         },
@@ -113,4 +109,3 @@ class AddToCartButton extends StatelessWidget {
     );
   }
 }
-

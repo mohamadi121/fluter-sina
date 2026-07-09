@@ -31,12 +31,14 @@ class PaymentModel {
       gateway: json['gateway']?.toString(),
       targetContent: json['target_content']?.toString(),
       targetId: json['target_id']?.toString(),
-      createdAt: json['created_at'] != null
-          ? DateTime.parse(json['created_at'])
-          : DateTime.now(),
-      updatedAt: json['updated_at'] != null
-          ? DateTime.parse(json['updated_at'])
-          : null,
+      createdAt:
+          json['created_at'] != null
+              ? DateTime.parse(json['created_at'])
+              : DateTime.now(),
+      updatedAt:
+          json['updated_at'] != null
+              ? DateTime.parse(json['updated_at'])
+              : null,
       transactionId: json['transaction_id']?.toString(),
       referenceId: json['reference_id']?.toString(),
     );
@@ -57,4 +59,3 @@ class PaymentModel {
     };
   }
 }
-

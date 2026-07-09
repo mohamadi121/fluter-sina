@@ -86,4 +86,3 @@ class WalletError extends WalletState {
   @override
   List<Object?> get props => [message];
 }
-

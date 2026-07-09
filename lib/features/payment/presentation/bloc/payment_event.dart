@@ -46,4 +46,3 @@ class LoadPaymentDetail extends PaymentEvent {
   @override
   List<Object?> get props => [paymentId];
 }
-

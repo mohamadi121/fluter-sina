@@ -117,14 +117,10 @@ class ChangeSelectedCategory extends CreateWorkSpaceEvent {
   });
 }
 
-class CalPrice extends CreateWorkSpaceEvent {}
-
 class SetDiscount extends CreateWorkSpaceEvent {
   final String discountCode;
   const SetDiscount({required this.discountCode});
 }
-
-class PayPrice extends CreateWorkSpaceEvent {}
 
 //region
 class LoadCountry extends CreateWorkSpaceEvent {}

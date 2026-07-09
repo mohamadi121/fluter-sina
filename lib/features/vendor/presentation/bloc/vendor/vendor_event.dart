@@ -115,6 +115,6 @@ class SelectTheme extends VendorEvent {
 
 //----------------- comments ------------------
 class LoadComments extends VendorEvent {
-  final int marketId;
+  final String marketId;
   const LoadComments({required this.marketId});
 }

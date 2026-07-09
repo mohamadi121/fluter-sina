@@ -31,7 +31,9 @@ class Endpoints {
   static String ownerSlider = '$baseMarket/slider';
   static String ownerDeleteBg = '$baseMarket/background';
   static String ownerTheme = '$baseMarket/theme';
-  static String ownerCommentList = '$baseMarket/comment/list';
+
+  /// generic comments API: {commentsBase}/{content_type}/{object_id}/
+  static String commentsBase = 'user/comment/comments';
   static String ownerBackground = '$baseMarket/background';
   static String ownerLogo = '$baseMarket/logo';
   static String ownerQueue = '$baseMarket/queue';

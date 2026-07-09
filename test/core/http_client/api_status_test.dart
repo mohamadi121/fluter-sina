@@ -62,6 +62,24 @@ void main() {
       expect(result, isA<Failure>());
       expect((result as Failure).kind, FailureKind.parsing);
     });
+
+    test('bare list body (comments API) is a Success with the raw list', () {
+      final result = apiStatus(
+        _response([
+          {'id': 1, 'comment': 'x'},
+        ], 200),
+      );
+
+      expect(result, isA<Success>());
+      expect((result as Success).response, isA<List<dynamic>>());
+    });
+
+    test('bare map body without success key (cart viewset) is a Success', () {
+      final result = apiStatus(_response({'id': 'item1', 'quantity': 2}, 201));
+
+      expect(result, isA<Success>());
+      expect(((result as Success).response as Map)['quantity'], 2);
+    });
   });
 
   group('apiFailure (thrown errors)', () {

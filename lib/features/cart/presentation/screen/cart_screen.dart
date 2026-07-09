@@ -118,11 +118,7 @@ class _CartScreenContent extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.error_outline,
-                      size: 64,
-                      color: Colors.red,
-                    ),
+                    Icon(Icons.error_outline, size: 64, color: Colors.red),
                     SizedBox(height: 16),
                     Text(
                       message,
@@ -224,15 +220,16 @@ class _CartScreenContent extends StatelessWidget {
                     ),
                     child: Container(
                       color: Colora.borderAvatar,
-                      child: item.itemImage != null
-                          ? Image.network(
-                              item.itemImage!,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return const Icon(Icons.image_not_supported);
-                              },
-                            )
-                          : const Icon(Icons.image_not_supported),
+                      child:
+                          item.itemImage != null
+                              ? Image.network(
+                                item.itemImage!,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return const Icon(Icons.image_not_supported);
+                                },
+                              )
+                              : const Icon(Icons.image_not_supported),
                     ),
                   ),
                 ),
@@ -339,11 +336,10 @@ class _CartScreenContent extends StatelessWidget {
                               child: InkWell(
                                 onTap: () {
                                   context.read<CartBloc>().add(
-                                        UpdateCartItem(
-                                          item.id,
-                                          {'quantity': item.quantity + 1},
-                                        ),
-                                      );
+                                    UpdateCartItem(item.id, {
+                                      'quantity': item.quantity + 1,
+                                    }),
+                                  );
                                 },
                                 child: const Icon(
                                   Icons.add,
@@ -374,11 +370,10 @@ class _CartScreenContent extends StatelessWidget {
                                 onTap: () {
                                   if (item.quantity > 1) {
                                     context.read<CartBloc>().add(
-                                          UpdateCartItem(
-                                            item.id,
-                                            {'quantity': item.quantity - 1},
-                                          ),
-                                        );
+                                      UpdateCartItem(item.id, {
+                                        'quantity': item.quantity - 1,
+                                      }),
+                                    );
                                   }
                                 },
                                 child: const Icon(
@@ -412,17 +407,12 @@ class _CartScreenContent extends StatelessWidget {
         color: Colora.primaryColor,
         borderRadius: BorderRadius.circular(32),
       ),
-      padding: EdgeInsets.symmetric(
-        horizontal: Dimensions.width * 0.07,
-      ),
+      padding: EdgeInsets.symmetric(horizontal: Dimensions.width * 0.07),
       child: MaterialButton(
         onPressed: onPressed,
         child: Text(
           text,
-          style: const TextStyle(
-            color: Colora.scaffold,
-            fontSize: 20,
-          ),
+          style: const TextStyle(color: Colora.scaffold, fontSize: 20),
         ),
       ),
     );
@@ -469,9 +459,7 @@ class _CheckoutDialogState extends State<_CheckoutDialog> {
             children: [
               Container(
                 height: Dimensions.height * 0.06,
-                margin: EdgeInsets.only(
-                  bottom: Dimensions.height * 0.01,
-                ),
+                margin: EdgeInsets.only(bottom: Dimensions.height * 0.01),
                 decoration: BoxDecoration(
                   color: Colora.primaryColor,
                   borderRadius: BorderRadius.circular(26),
@@ -479,10 +467,7 @@ class _CheckoutDialogState extends State<_CheckoutDialog> {
                 alignment: Alignment.center,
                 child: const Text(
                   'تکمیل خرید',
-                  style: TextStyle(
-                    color: Colora.scaffold,
-                    fontSize: 17,
-                  ),
+                  style: TextStyle(color: Colora.scaffold, fontSize: 17),
                 ),
               ),
               SizedBox(height: Dimensions.height * 0.02),
@@ -507,28 +492,23 @@ class _CheckoutDialogState extends State<_CheckoutDialog> {
                     Colors.grey,
                   ),
                   SizedBox(width: Dimensions.width * 0.03),
-                  _buildDialogButton(
-                    context,
-                    'ثبت نهایی',
-                    () {
-                      if (selectedPaymentMethod != null) {
-                        context.read<CartBloc>().add(
-                              CheckoutCart({
-                                'type': selectedPaymentMethod,
-                                'description': 'Order placed',
-                              }),
-                            );
-                        Navigator.pop(context);
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('لطفا روش پرداخت را انتخاب کنید'),
-                          ),
-                        );
-                      }
-                    },
-                    Colora.primaryColor,
-                  ),
+                  _buildDialogButton(context, 'ثبت نهایی', () {
+                    if (selectedPaymentMethod != null) {
+                      context.read<CartBloc>().add(
+                        CheckoutCart({
+                          'type': selectedPaymentMethod,
+                          'description': 'Order placed',
+                        }),
+                      );
+                      Navigator.pop(context);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('لطفا روش پرداخت را انتخاب کنید'),
+                        ),
+                      );
+                    }
+                  }, Colora.primaryColor),
                 ],
               ),
             ],
@@ -599,4 +579,3 @@ class _CheckoutDialogState extends State<_CheckoutDialog> {
     );
   }
 }
-

@@ -270,11 +270,125 @@ class CreateMarketApiService {
     }
   }
 
-  // Get market comments
+  // Get market comments (generic comments API, bare-list response)
   Future getMarketComments(String marketId) async {
     try {
       Response res = await dioClient.getData(
-        "${Endpoints.ownerCommentList}/$marketId/",
+        "${Endpoints.commentsBase}/market/$marketId/",
+      );
+      return apiStatus(res);
+    } catch (e) {
+      return apiFailure(e);
+    }
+  }
+
+  // Market detail (owner)
+  Future getMarket(String marketId) async {
+    try {
+      Response res = await dioClient.getData(
+        "${Endpoints.baseMarket}/$marketId/",
+      );
+      return apiStatus(res);
+    } catch (e) {
+      return apiFailure(e);
+    }
+  }
+
+  // Market update (owner)
+  Future updateMarket(String marketId, Map<String, dynamic> body) async {
+    try {
+      Response res = await dioClient.putData(
+        "${Endpoints.baseMarket}/update/$marketId/",
+        body,
+      );
+      return apiStatus(res);
+    } catch (e) {
+      return apiFailure(e);
+    }
+  }
+
+  // Market contact detail / update
+  Future getMarketContact(String marketId) async {
+    try {
+      Response res = await dioClient.getData(
+        "${Endpoints.baseMarket}/contact/$marketId/",
+      );
+      return apiStatus(res);
+    } catch (e) {
+      return apiFailure(e);
+    }
+  }
+
+  Future updateMarketContact(
+    String contactId,
+    Map<String, dynamic> body,
+  ) async {
+    try {
+      Response res = await dioClient.putData(
+        "${Endpoints.baseMarket}/contact/update/$contactId/",
+        body,
+      );
+      return apiStatus(res);
+    } catch (e) {
+      return apiFailure(e);
+    }
+  }
+
+  // Market location detail / update
+  Future getMarketLocation(String marketId) async {
+    try {
+      Response res = await dioClient.getData(
+        "${Endpoints.baseMarket}/location/$marketId/",
+      );
+      return apiStatus(res);
+    } catch (e) {
+      return apiFailure(e);
+    }
+  }
+
+  Future updateMarketLocation(
+    String locationId,
+    Map<String, dynamic> body,
+  ) async {
+    try {
+      Response res = await dioClient.putData(
+        "${Endpoints.baseMarket}/location/update/$locationId/",
+        body,
+      );
+      return apiStatus(res);
+    } catch (e) {
+      return apiFailure(e);
+    }
+  }
+
+  // Schedules list / update / delete
+  Future getSchedules() async {
+    try {
+      Response res = await dioClient.getData(
+        "${Endpoints.baseMarket}/schedules/list/",
+      );
+      return apiStatus(res);
+    } catch (e) {
+      return apiFailure(e);
+    }
+  }
+
+  Future updateSchedule(String scheduleId, Map<String, dynamic> body) async {
+    try {
+      Response res = await dioClient.putData(
+        "${Endpoints.baseMarket}/schedules/$scheduleId/update/",
+        body,
+      );
+      return apiStatus(res);
+    } catch (e) {
+      return apiFailure(e);
+    }
+  }
+
+  Future deleteSchedule(String scheduleId) async {
+    try {
+      Response res = await dioClient.deleteData(
+        "${Endpoints.baseMarket}/schedules/$scheduleId/delete/",
       );
       return apiStatus(res);
     } catch (e) {

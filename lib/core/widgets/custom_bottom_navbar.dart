@@ -1,17 +1,14 @@
 import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/helper/secure_storage.dart';
 import 'package:asood/core/router/app_routers.dart';
 import 'package:asood/core/widgets/colorpicker.dart';
+import 'package:asood/features/cart/presentation/bloc/cart_bloc.dart';
 import 'package:asood/features/market/presentation/blocs/bloc/market_bloc.dart';
 import 'package:asood/features/vendor/presentation/bloc/vendor/vendor_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:go_router/go_router.dart';
-import 'package:http/http.dart' as http;
 import 'package:iconsax/iconsax.dart';
-
-import '../constants/endpoints.dart';
 
 class CustomBottomNavigationBar extends StatefulWidget {
   final String? marketId;
@@ -187,15 +184,16 @@ void showBottomSheet(
                 //shopping cart
                 IconButton(
                   onPressed: () {
-                    if (productId != '') {
-                      sendProductToShoppingCart(productId);
+                    if (productId == '') {
+                      return;
                     }
+                    context.read<CartBloc>().add(
+                      AddItemToCart({'product': productId, 'quantity': 1}),
+                    );
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         backgroundColor: Colors.green,
-                        content: Text(
-                          'محصول با موفقیت به سبد خرید شما اضافه شد',
-                        ),
+                        content: Text('محصول به سبد خرید شما اضافه شد'),
                       ),
                     );
                     context.push(AppRoutes.shoppingCart);
@@ -339,36 +337,6 @@ void showBottomSheet(
       );
     },
   );
-}
-
-void sendProductToShoppingCart(String id) async {
-  String url = '${Endpoints.baseUrl}user/order/add_item';
-  String? token = await SecureStorage.readSecureStorage(Keys.token);
-
-  await http.post(
-    Uri.parse(url),
-    body: {"product_id": id, "quantity": "1"},
-    headers: {'Authorization': 'Bearer $token'},
-  );
-
-  // SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-  // List<String>? loadedList = sharedPreferences.getStringList('shopping_cart');
-
-  // if (loadedList == null) {
-  //   sharedPreferences.setStringList("shopping_cart", []);
-  // }
-
-  // if (!loadedList!.contains(id)) {
-  //   loadedList.add(id);
-  //   sharedPreferences.setStringList("shopping_cart", loadedList);
-  //   log('Sina This product is added to your shopping cart');
-  // } else {
-  //   log(
-  //     'Sina this product is already in your shopping cart and i will print them:',
-  //   );
-  //   log(loadedList.toString());
-  // }
-  // // sharedPreferences.setStringList('favs', globalFavs);
 }
 
 void changeFont(

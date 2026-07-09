@@ -182,7 +182,7 @@ class _StoreDetailScreenState extends State<StoreDetailScreen> {
 
   void loadSlider() {
     bloc.add(LoadSlider(marketId: widget.market.id!));
-    // bloc.add(LoadComments(marketId: widget.market.id!));
+    bloc.add(LoadComments(marketId: widget.market.id!));
   }
 
   void sliderImage(
@@ -1093,7 +1093,9 @@ class _StoreDetailScreenState extends State<StoreDetailScreen> {
                                   // padding: const EdgeInsets.all(0),
                                   child: Transform(
                                     alignment: Alignment.center,
-                                    transform: Matrix4.identity()..scale(-1.0, 1.0, 1.0),
+                                    transform:
+                                        Matrix4.identity()
+                                          ..scale(-1.0, 1.0, 1.0),
                                     child: Icon(
                                       Icons.help_outline,
                                       // Icons.edit,
@@ -1105,8 +1107,7 @@ class _StoreDetailScreenState extends State<StoreDetailScreen> {
 
                                 //save
                                 InkWell(
-                                  onTap: () {
-                                  },
+                                  onTap: () {},
                                   child: Icon(
                                     Icons.favorite_border,
                                     // Icons.save,
@@ -1163,7 +1164,7 @@ class _StoreDetailScreenState extends State<StoreDetailScreen> {
                                   ),
                                 ),
                                 InkWell(
-                                  onTap: () async{
+                                  onTap: () async {
                                     // Token
                                   },
                                   child: Icon(
@@ -1283,7 +1284,7 @@ selectPageView(index, String marketId, styleState, MarketBloc marketBloc) {
     case 1:
       return specialView(styleState);
     case 2:
-      return commentView();
+      return commentView(styleState);
     case 3:
       return contactUsView(styleState);
     default:
@@ -1580,8 +1581,8 @@ specialView(styleState) {
   );
 }
 
-commentView() {
-  return const SingleChildScrollView(
+commentView(styleState) {
+  return SingleChildScrollView(
     child: Column(
       children: [
         // Row(
@@ -1635,11 +1636,25 @@ commentView() {
         //     ],
         //   ),
         // ),
-        CMBox(
-          senderName: 'میلاد',
-          messageText: 'سلام محصولاتتون عالی هستند',
-          senderImageUrl: 'https://via.placeholder.com/150',
-        ),
+        if (styleState.commentList.isEmpty)
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Text(
+              'هنوز نظری ثبت نشده است',
+              style: TextStyle(
+                color: styleState.topColor,
+                fontFamily: styleState.fontFamily,
+              ),
+            ),
+          )
+        else
+          ...styleState.commentList.map(
+            (comment) => CMBox(
+              senderName:
+                  comment.user != null ? 'کاربر ${comment.user}' : 'کاربر',
+              messageText: comment.comment ?? '',
+            ),
+          ),
       ],
     ),
   );

@@ -9,12 +9,12 @@ class CMBox extends StatelessWidget {
     super.key,
     required this.senderName,
     required this.messageText,
-    required this.senderImageUrl,
+    this.senderImageUrl,
   });
 
   final String senderName;
   final String messageText;
-  final String senderImageUrl;
+  final String? senderImageUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,14 @@ class CMBox extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 20,
-                  backgroundImage: NetworkImage(senderImageUrl),
+                  backgroundImage:
+                      senderImageUrl != null
+                          ? NetworkImage(senderImageUrl!)
+                          : null,
+                  child:
+                      senderImageUrl == null
+                          ? const Icon(Icons.person, size: 22)
+                          : null,
                 ),
                 const SizedBox(width: 8),
                 Column(

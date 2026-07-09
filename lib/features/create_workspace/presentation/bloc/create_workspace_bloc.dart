@@ -154,12 +154,6 @@ class CreateWorkSpaceBloc
       );
     });
 
-    on<CalPrice>(_calPrice);
-
-    on<SetDiscount>(_setDiscount);
-
-    on<PayPrice>(_payPrice);
-
     on<ChangeSelectedCategory>((event, emit) {
       emit(
         state.copyWith(
@@ -255,24 +249,6 @@ class CreateWorkSpaceBloc
         ),
       );
     }
-  }
-
-  // FAKE (pre-existing): the three handlers below emit success without any
-  // backend call. Real pricing/discount/payment wiring lands in batch 2 —
-  // tracked in ARCHITECTURE_MAP.md §3.
-  _calPrice(CalPrice event, Emitter<CreateWorkSpaceState> emit) async {
-    AppLogger.warning('create_workspace', 'calPrice is a stub — no backend call');
-    emit(state.copyWith(status: CWSStatus.success));
-  }
-
-  _setDiscount(SetDiscount event, Emitter<CreateWorkSpaceState> emit) async {
-    AppLogger.warning('create_workspace', 'setDiscount is a stub — no backend call');
-    emit(state.copyWith(status: CWSStatus.success));
-  }
-
-  _payPrice(PayPrice event, Emitter<CreateWorkSpaceState> emit) async {
-    AppLogger.warning('create_workspace', 'payPrice is a stub — no backend call');
-    emit(state.copyWith(status: CWSStatus.success));
   }
 
   //--------------- Region ----------

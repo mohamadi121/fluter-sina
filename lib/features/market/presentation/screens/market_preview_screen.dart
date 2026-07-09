@@ -1,13 +1,12 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/helper/secure_storage.dart';
 import 'package:asood/core/http_client/api_status.dart';
 import 'package:asood/core/models/location_model.dart';
 import 'package:asood/core/models/market_model.dart';
 import 'package:asood/core/widgets/custom_bottom_navbar.dart';
 import 'package:asood/core/widgets/map_widget_2.dart';
+import 'package:asood/features/bookmarks/bloc/bookmark_cubit.dart';
 import 'package:asood/features/market/data/model/theme_model_model.dart';
 import 'package:asood/features/market/presentation/blocs/bloc/market_bloc.dart';
 import 'package:asood/features/market/presentation/widgets/comment_messagebox_widget.dart';
@@ -16,17 +15,15 @@ import 'package:asood/features/market/presentation/widgets/store_appbar.dart';
 import 'package:asood/features/market/presentation/widgets/themes_screen.dart';
 import 'package:asood/features/vendor/presentation/bloc/vendor/vendor_bloc.dart';
 import 'package:asood/features/vendor/presentation/bloc/workspace/workspace_bloc.dart';
+import 'package:asood/locator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:http/http.dart' as http;
 import 'package:iconsax/iconsax.dart';
 import 'package:shimmer/shimmer.dart';
-
-import '../../../../core/constants/endpoints.dart';
 
 class MarketPreviewScreen extends StatefulWidget {
   const MarketPreviewScreen({super.key, required this.market});
@@ -55,11 +52,12 @@ class _MarketPreviewScreenState extends State<MarketPreviewScreen> {
   Color initFontColor = Colora.scaffold;
   Color initFontSecondColor = Colora.primaryColor;
 
+  final BookmarkCubit bookmarkCubit = locator<BookmarkCubit>();
+
   @override
   void initState() {
-    getUserBookMarks();
-    // TODO: implement initState
     super.initState();
+    bookmarkCubit.load();
     bloc = BlocProvider.of<VendorBloc>(context);
     marketBloc = BlocProvider.of<MarketBloc>(context)
       ..add(LoadTemplateEvent(marketId: widget.market.id!));
@@ -184,57 +182,15 @@ class _MarketPreviewScreenState extends State<MarketPreviewScreen> {
     }
   }
 
+  @override
+  void dispose() {
+    bookmarkCubit.close();
+    super.dispose();
+  }
+
   void loadSlider() {
     bloc.add(LoadSlider(marketId: widget.market.id!));
-    // bloc.add(LoadComments(marketId: widget.market.id!));
-  }
-
-  bool isMarketBookmarked = false;
-
-  void getUserBookMarks() async {
-    String url = '${Endpoints.baseUrl}user/market/bookmark/';
-    String? token = await SecureStorage.readSecureStorage(Keys.token);
-    var response = await http.get(
-      Uri.parse(url),
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8',
-        'Authorization': 'Bearer $token',
-      },
-    );
-
-
-    for (var bmark in jsonDecode(response.body)['data']) {
-      if (bmark['id'] == widget.market.id) {
-        setState(() {
-          isMarketBookmarked = true;
-        });
-      }
-    }
-  }
-
-  void bookmarkMarket(String marketId) async {
-
-    String url = '${Endpoints.baseUrl}user/market/bookmark/$marketId/';
-    String? token = await SecureStorage.readSecureStorage(Keys.token);
-
-    var response = await http.post(
-      Uri.parse(url),
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8',
-        'Authorization': 'Bearer $token',
-      },
-    );
-    if (jsonDecode(response.body)['message'] ==
-        'Market unbookmarked successfully.') {
-      setState(() {
-        isMarketBookmarked = false;
-      });
-    } else if (jsonDecode(response.body)['message'] ==
-        'Market bookmarked successfully.') {
-      setState(() {
-        isMarketBookmarked = true;
-      });
-    }
+    bloc.add(LoadComments(marketId: widget.market.id!));
   }
 
   @override
@@ -690,8 +646,7 @@ class _MarketPreviewScreenState extends State<MarketPreviewScreen> {
                               children: [
                                 //edit
                                 InkWell(
-                                  onTap: () {
-                                  },
+                                  onTap: () {},
                                   // padding: const EdgeInsets.all(0),
                                   child: Icon(
                                     Iconsax.edit5,
@@ -703,8 +658,7 @@ class _MarketPreviewScreenState extends State<MarketPreviewScreen> {
 
                                 //save
                                 InkWell(
-                                  onTap: () {
-                                  },
+                                  onTap: () {},
                                   child: Icon(
                                     Iconsax.save_2,
                                     // Icons.save,
@@ -714,24 +668,23 @@ class _MarketPreviewScreenState extends State<MarketPreviewScreen> {
                                 ),
 
                                 //mark
-                                InkWell(
-                                  onTap: () {
-                                    setState(() {
-                                      bookmarkMarket(
-                                        widget.market.id.toString(),
-                                      );
-                                    });
+                                BlocBuilder<BookmarkCubit, BookmarkState>(
+                                  bloc: bookmarkCubit,
+                                  builder: (context, bookmarkState) {
+                                    final marketId =
+                                        widget.market.id.toString();
+                                    return InkWell(
+                                      onTap:
+                                          () => bookmarkCubit.toggle(marketId),
+                                      child: Icon(
+                                        bookmarkState.isBookmarked(marketId)
+                                            ? Icons.bookmark_rounded
+                                            : Icons.bookmark_border_rounded,
+                                        color: state.fontColor,
+                                        size: Dimensions.width * 0.055,
+                                      ),
+                                    );
                                   },
-                                  child: Icon(
-                                    // Iconsax.bookmark,
-                                    // Icons.bookmark_border_rounded,
-                                    // Icons.bookmark_border_rounded,
-                                    isMarketBookmarked
-                                        ? Icons.bookmark_rounded
-                                        : Icons.bookmark_border_rounded,
-                                    color: state.fontColor,
-                                    size: Dimensions.width * 0.055,
-                                  ),
                                 ),
 
                                 //share
@@ -880,7 +833,7 @@ selectPageView(index, String marketId, styleState, MarketBloc marketBloc) {
     case 1:
       return specialView(styleState);
     case 2:
-      return commentView();
+      return commentView(styleState);
     case 3:
       return contactUsView(styleState);
     default:
@@ -1513,8 +1466,8 @@ specialView(styleState) {
   );
 }
 
-commentView() {
-  return const SingleChildScrollView(
+commentView(styleState) {
+  return SingleChildScrollView(
     child: Column(
       children: [
         // Row(
@@ -1568,11 +1521,25 @@ commentView() {
         //     ],
         //   ),
         // ),
-        CMBox(
-          senderName: 'میلاد',
-          messageText: 'سلام محصولاتتون عالی هستند',
-          senderImageUrl: 'https://via.placeholder.com/150',
-        ),
+        if (styleState.commentList.isEmpty)
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Text(
+              'هنوز نظری ثبت نشده است',
+              style: TextStyle(
+                color: styleState.topColor,
+                fontFamily: styleState.fontFamily,
+              ),
+            ),
+          )
+        else
+          ...styleState.commentList.map(
+            (comment) => CMBox(
+              senderName:
+                  comment.user != null ? 'کاربر ${comment.user}' : 'کاربر',
+              messageText: comment.comment ?? '',
+            ),
+          ),
       ],
     ),
   );
