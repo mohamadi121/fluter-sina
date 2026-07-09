@@ -1,4 +1,5 @@
 import 'package:asood/features/business_card/presentation/bloc/business_bloc.dart';
+import 'package:asood/features/customer/data/public_market_api_service.dart';
 import 'package:asood/features/customer/presentation/blocs/customer/customer_bloc.dart';
 import 'package:asood/features/customer/presentation/blocs/profile/profile_bloc.dart';
 import 'package:asood/features/job_managment/data/data_source/category_api_service.dart';
@@ -89,6 +90,9 @@ locatorSetup() async {
   );
   locator.registerFactory(
     () => DiscountApiService(dioClient: locator<DioClient>()),
+  );
+  locator.registerFactory(
+    () => PublicMarketApiService(dioClient: locator<DioClient>()),
   );
 
   /// Repositories
