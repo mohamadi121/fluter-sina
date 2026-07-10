@@ -18,7 +18,10 @@ pluginManagement {
 
 plugins {
     id("dev.flutter.flutter-plugin-loader") version "1.0.0"
-    id("com.android.application") version "8.7.3" apply false
+    // 8.9.1+ is required by transitive AndroidX deps (core 1.18, activity
+    // 1.12.4, browser 1.9.0, navigationevent) pulled in by url_launcher/
+    // share_plus/geolocator. Gradle 8.14 + JDK 17 + compileSdk 36 satisfy it.
+    id("com.android.application") version "8.9.1" apply false
     id("org.jetbrains.kotlin.android") version "2.1.0" apply false
 }
 
