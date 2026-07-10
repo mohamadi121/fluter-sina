@@ -225,11 +225,11 @@ class _StoreCardState extends State<StoreCard> {
                                     },
                                     placeholder:
                                         (context, url) => Shimmer.fromColors(
-                                          baseColor: Colors.grey.withOpacity(
-                                            0.2,
+                                          baseColor: Colors.grey.withValues(
+                                            alpha: 0.2,
                                           ),
                                           highlightColor: Colors.black
-                                              .withOpacity(0.2),
+                                              .withValues(alpha: 0.2),
                                           direction: ShimmerDirection.rtl,
                                           child: Container(
                                             decoration: BoxDecoration(

@@ -301,10 +301,14 @@ class _StoreDetailScreenState extends State<StoreDetailScreen> {
                                                         url,
                                                       ) => Shimmer.fromColors(
                                                         baseColor: Colors.grey
-                                                            .withOpacity(0.2),
+                                                            .withValues(
+                                                              alpha: 0.2,
+                                                            ),
                                                         highlightColor: Colors
                                                             .black
-                                                            .withOpacity(0.2),
+                                                            .withValues(
+                                                              alpha: 0.2,
+                                                            ),
                                                         direction:
                                                             ShimmerDirection
                                                                 .rtl,
@@ -576,9 +580,9 @@ class _StoreDetailScreenState extends State<StoreDetailScreen> {
                                                       BorderRadius.circular(20),
                                                   child: Shimmer.fromColors(
                                                     baseColor: Colors.grey
-                                                        .withOpacity(0.2),
+                                                        .withValues(alpha: 0.2),
                                                     highlightColor: Colors.black
-                                                        .withOpacity(0.2),
+                                                        .withValues(alpha: 0.2),
                                                     direction:
                                                         ShimmerDirection.rtl,
                                                     child: Container(
@@ -675,13 +679,15 @@ class _StoreDetailScreenState extends State<StoreDetailScreen> {
                                                                   ) => Shimmer.fromColors(
                                                                     baseColor: Colors
                                                                         .grey
-                                                                        .withOpacity(
-                                                                          0.2,
+                                                                        .withValues(
+                                                                          alpha:
+                                                                              0.2,
                                                                         ),
                                                                     highlightColor: Colors
                                                                         .black
-                                                                        .withOpacity(
-                                                                          0.2,
+                                                                        .withValues(
+                                                                          alpha:
+                                                                              0.2,
                                                                         ),
                                                                     direction:
                                                                         ShimmerDirection
@@ -892,8 +898,9 @@ class _StoreDetailScreenState extends State<StoreDetailScreen> {
                                                                   colorFilter: ColorFilter.mode(
                                                                     state
                                                                         .topColor
-                                                                        .withOpacity(
-                                                                          0.7,
+                                                                        .withValues(
+                                                                          alpha:
+                                                                              0.7,
                                                                         ),
                                                                     BlendMode
                                                                         .srcIn,
@@ -912,8 +919,9 @@ class _StoreDetailScreenState extends State<StoreDetailScreen> {
                                                                 decoration: BoxDecoration(
                                                                   color: Colora
                                                                       .scaffold
-                                                                      .withOpacity(
-                                                                        0.7,
+                                                                      .withValues(
+                                                                        alpha:
+                                                                            0.7,
                                                                       ),
                                                                   borderRadius:
                                                                       BorderRadius.circular(
@@ -1077,7 +1085,7 @@ class _StoreDetailScreenState extends State<StoreDetailScreen> {
                               borderRadius: BorderRadius.circular(30),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.5),
+                                  color: Colors.black.withValues(alpha: 0.5),
                                   blurRadius: 5,
                                   spreadRadius: 2,
                                   offset: const Offset(0, 2),

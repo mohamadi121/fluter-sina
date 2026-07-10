@@ -230,7 +230,7 @@ class _ProductScreenState extends State<ProductScreen> {
                                               Container(
                                                 decoration: BoxDecoration(
                                                   color: state.topColor
-                                                      .withOpacity(0.8),
+                                                      .withValues(alpha: 0.8),
                                                   borderRadius:
                                                       const BorderRadius.only(
                                                         topLeft:
@@ -250,7 +250,7 @@ class _ProductScreenState extends State<ProductScreen> {
                                               Container(
                                                 decoration: BoxDecoration(
                                                   color: state.topColor
-                                                      .withOpacity(0.8),
+                                                      .withValues(alpha: 0.8),
                                                   borderRadius:
                                                       const BorderRadius.only(
                                                         topRight:
@@ -287,7 +287,9 @@ class _ProductScreenState extends State<ProductScreen> {
                                       borderRadius: BorderRadius.circular(30),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.black.withOpacity(0.5),
+                                          color: Colors.black.withValues(
+                                            alpha: 0.5,
+                                          ),
                                           blurRadius: 5,
                                           spreadRadius: 2,
                                           offset: const Offset(0, 2),

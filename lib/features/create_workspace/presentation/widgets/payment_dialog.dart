@@ -29,7 +29,7 @@ void paymentDialog(BuildContext context) {
                   CustomDialog(
                     context: context,
                     title: "ثبت درگاه شخصی",
-                    widget: Container(
+                    widget: SizedBox(
                       height: 130,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -121,7 +121,9 @@ void paymentDialog(BuildContext context) {
                                   height: 35,
                                   width: 180,
                                   child: CustomTextField(
-                                    color: Colora.primaryColor.withOpacity(0.5),
+                                    color: Colora.primaryColor.withValues(
+                                      alpha: 0.5,
+                                    ),
                                     controller: TextEditingController(),
                                     text: "کد تخفیف",
                                   ),
@@ -148,7 +150,7 @@ void paymentDialog(BuildContext context) {
                             width: Dimensions.width,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(20),
-                              color: Colors.grey.withOpacity(0.2),
+                              color: Colors.grey.withValues(alpha: 0.2),
                             ),
                             child: const Column(
                               children: [

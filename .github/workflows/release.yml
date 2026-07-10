@@ -1,0 +1,99 @@
+name: Release APK
+
+# Build a signed release APK and publish it to a GitHub Release.
+# Triggers:
+#   - pushing a version tag like v1.0.0
+#   - manual run (workflow_dispatch) with a version input
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release, e.g. 1.0.0 (without the leading v)'
+        required: true
+
+permissions:
+  contents: write # needed to create the GitHub Release and upload the APK
+
+jobs:
+  build-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Resolve version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            VERSION="${GITHUB_REF_NAME#v}"
+          fi
+          # versionName = the semver string; versionCode = a monotonic integer
+          # derived from it (major*10000 + minor*100 + patch).
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
+          CODE=$(( ${MAJOR:-0} * 10000 + ${MINOR:-0} * 100 + ${PATCH:-0} ))
+          echo "version_name=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "version_code=$CODE" >> "$GITHUB_OUTPUT"
+          echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Building version $VERSION (code $CODE)"
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.44.4
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Decode keystore and write signing config
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ]; then
+            echo "::error::ANDROID_KEYSTORE_BASE64 secret is not set. See README 'Releasing' section."
+            exit 1
+          fi
+          echo "$KEYSTORE_BASE64" | base64 --decode > android/app/upload-keystore.jks
+          cat > android/key.properties <<EOF
+          storeFile=upload-keystore.jks
+          storePassword=$STORE_PASSWORD
+          keyAlias=$KEY_ALIAS
+          keyPassword=$KEY_PASSWORD
+          EOF
+
+      - name: Build release APK
+        run: |
+          flutter build apk --release \
+            --build-name=${{ steps.version.outputs.version_name }} \
+            --build-number=${{ steps.version.outputs.version_code }}
+
+      - name: Rename APK
+        run: |
+          mkdir -p dist
+          cp build/app/outputs/flutter-apk/app-release.apk \
+            "dist/asood-${{ steps.version.outputs.version_name }}.apk"
+
+      - name: Publish GitHub Release with APK
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ steps.version.outputs.tag }}" \
+            "dist/asood-${{ steps.version.outputs.version_name }}.apk" \
+            --title "Asood ${{ steps.version.outputs.version_name }}" \
+            --notes "Automated release build for ${{ steps.version.outputs.tag }}. Download the APK below." \
+            --target "${{ github.sha }}" || \
+          gh release upload "${{ steps.version.outputs.tag }}" \
+            "dist/asood-${{ steps.version.outputs.version_name }}.apk" --clobber
+
+      - name: Clean up signing material
+        if: always()
+        run: rm -f android/key.properties android/app/upload-keystore.jks

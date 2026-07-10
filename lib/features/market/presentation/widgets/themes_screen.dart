@@ -409,7 +409,7 @@ class _ProductGridViewState extends State<ProductGridView> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.3),
+            color: Colors.black.withValues(alpha: 0.3),
             blurRadius: 5,
             spreadRadius: 1,
           ),
@@ -563,7 +563,7 @@ class _ProductGridViewState extends State<ProductGridView> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.3),
+            color: Colors.black.withValues(alpha: 0.3),
             blurRadius: 5,
             spreadRadius: 1,
           ),

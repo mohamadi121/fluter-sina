@@ -623,20 +623,25 @@ void changeFont(
                             //save
                             MaterialButton(
                               onPressed: () {
-                                var topColor = initTopColor.value
+                                var topColor = initTopColor
+                                    .toARGB32()
                                     .toRadixString(16)
                                     .substring(2, 8);
-                                var secondColor = initSecondColor.value
+                                var secondColor = initSecondColor
+                                    .toARGB32()
                                     .toRadixString(16)
                                     .substring(2, 8);
-                                var backColor = initBackColor.value
+                                var backColor = initBackColor
+                                    .toARGB32()
                                     .toRadixString(16)
                                     .substring(2, 8);
-                                var fontColor = initSelectedFontColor.value
+                                var fontColor = initSelectedFontColor
+                                    .toARGB32()
                                     .toRadixString(16)
                                     .substring(2, 8);
                                 var fontSecondColor =
-                                    initSelectedFontSecondColor.value
+                                    initSelectedFontSecondColor
+                                        .toARGB32()
                                         .toRadixString(16)
                                         .substring(2, 8);
 
@@ -933,19 +938,24 @@ void changeColor(
                           //save
                           MaterialButton(
                             onPressed: () {
-                              var topColor = mainColorPicker.value
+                              var topColor = mainColorPicker
+                                  .toARGB32()
                                   .toRadixString(16)
                                   .substring(2, 8);
-                              var secondColor = secondColorPicker.value
+                              var secondColor = secondColorPicker
+                                  .toARGB32()
                                   .toRadixString(16)
                                   .substring(2, 8);
-                              var backColor = backgroundColorPicker.value
+                              var backColor = backgroundColorPicker
+                                  .toARGB32()
                                   .toRadixString(16)
                                   .substring(2, 8);
-                              var fontColor = initFontColor.value
+                              var fontColor = initFontColor
+                                  .toARGB32()
                                   .toRadixString(16)
                                   .substring(2, 8);
-                              var fontSecondColor = initFontSecondColor.value
+                              var fontSecondColor = initFontSecondColor
+                                  .toARGB32()
                                   .toRadixString(16)
                                   .substring(2, 8);
 

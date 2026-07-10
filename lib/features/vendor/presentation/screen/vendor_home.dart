@@ -616,10 +616,10 @@ class DashboardAdditionalWidget extends StatelessWidget {
               width: Dimensions.width * .7,
 
               child: GridView.count(
+                cacheExtent: 2,
                 physics: const NeverScrollableScrollPhysics(),
                 crossAxisCount: 3,
                 shrinkWrap: true,
-                cacheExtent: 2,
                 childAspectRatio: 1,
                 crossAxisSpacing: 10,
                 mainAxisSpacing: 10,
@@ -708,10 +708,10 @@ class DashboardServicesWidget extends StatelessWidget {
                   height: Dimensions.height * .4,
                   width: Dimensions.width * .8,
                   child: GridView.count(
+                    cacheExtent: 2,
                     physics: const NeverScrollableScrollPhysics(),
                     crossAxisCount: 3,
                     shrinkWrap: true,
-                    cacheExtent: 2,
                     childAspectRatio: 3 / 4,
                     crossAxisSpacing: 20,
                     mainAxisSpacing: 15,
