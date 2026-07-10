@@ -1,13 +1,10 @@
-import 'dart:convert';
-
 import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/helper/secure_storage.dart';
+import 'package:asood/core/http_client/api_client.dart';
+import 'package:asood/core/http_client/api_status.dart';
 import 'package:asood/features/business_card/presentation/screens/business_list.dart';
 import 'package:asood/features/business_card/presentation/screens/without_market_visit.dart';
+import 'package:asood/locator.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-
-import '../../../../core/constants/endpoints.dart';
 
 class BusinessPart extends StatefulWidget {
   const BusinessPart({super.key});
@@ -19,30 +16,33 @@ class BusinessPart extends StatefulWidget {
 class _BusinessPartState extends State<BusinessPart> {
   List<Map<String, dynamic>> dataList = [];
 
-  void getVisitCard() async {
-    String url = '${Endpoints.baseUrl}owner/market/list/';
-    String? token = await SecureStorage.readSecureStorage(Keys.token);
+  final DioClient _dio = locator<DioClient>();
 
-    var response = await http.get(
-      Uri.parse(url),
-      headers: {'Authorization': 'Bearer $token'},
-    );
+  void getVisitCard() async {
+    final res = await _dio.getData('owner/market/list/');
+    final result = apiStatus(res);
+    if (!mounted || result is! Success || result.response is! List) {
+      return;
+    }
     dataList.clear();
 
-    for (var market in jsonDecode(response.body)['data']) {
-      String businessId = market['business_id'];
-
-      var getVisitCard = await http.get(
-        Uri.parse('https://asoud.ir/$businessId'),
-        headers: {'Authorization': 'Bearer $token'},
-      );
-      setState(() {
-        dataList.add(jsonDecode(getVisitCard.body));
-      });
+    for (final market in result.response as List) {
+      final businessId = market['business_id']?.toString();
+      if (businessId == null) {
+        continue;
+      }
+      try {
+        final card = await _dio.dio.get('https://asoud.ir/$businessId');
+        if (card.data is Map) {
+          setState(() => dataList.add(Map<String, dynamic>.from(card.data)));
+        }
+      } catch (_) {
+        // Visit card page unavailable for this business — skip it.
+      }
     }
 
-    if (dataList.isEmpty) {
-      dataList.add({'first': 'null'});
+    if (dataList.isEmpty && mounted) {
+      setState(() => dataList.add({'first': 'null'}));
     }
   }
 

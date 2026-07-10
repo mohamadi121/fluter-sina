@@ -307,7 +307,7 @@ class _VendorDashboardScreenState extends State<VendorDashboardScreen>
   //         horizontal: Dimensions.width * 0.05,
   //         vertical: Dimensions.height * 0.05
   //     ),
-  //     color: Colora.primaryColor.withOpacity(0.6),
+  //     color: Colora.primaryColor.withValues(alpha: 0.6),
   //     child: Container(
   //       decoration: BoxDecoration(
   //           color: Colora.scaffold,
@@ -925,7 +925,7 @@ class _VendorDashboardScreenState extends State<VendorDashboardScreen>
   //         horizontal: Dimensions.width * 0.05,
   //         vertical: Dimensions.height * 0.33
   //     ),
-  //     color: Colora.primaryColor.withOpacity(0.7),
+  //     color: Colora.primaryColor.withValues(alpha: 0.7),
   //     child: Container(
   //       decoration: BoxDecoration(
   //           color: Colora.scaffold,

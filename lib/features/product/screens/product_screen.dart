@@ -136,7 +136,7 @@ class _ProductScreenState extends State<ProductScreen> {
     return BlocBuilder<VendorBloc, VendorState>(
       builder: (context, state) {
         // if (state.secondColor == state.topColor) {
-        //   newSecondColor = state.topColor.withOpacity(0.8);
+        //   newSecondColor = state.topColor.withValues(alpha: 0.8);
         // } else {
         //   newSecondColor = state.secondColor;
         // }

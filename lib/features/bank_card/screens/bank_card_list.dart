@@ -1,16 +1,12 @@
-import 'dart:convert';
-import 'dart:developer';
-
 import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/helper/secure_storage.dart';
+import 'package:asood/core/http_client/api_status.dart';
 import 'package:asood/core/widgets/appbar/default_appbar.dart';
+import 'package:asood/features/bank_card/data/bank_api_service.dart';
 import 'package:asood/features/bank_card/screens/bank_card_sharing_screen.dart';
 import 'package:asood/features/bank_card/screens/card_sample.dart';
+import 'package:asood/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
-
-import '../../../core/constants/endpoints.dart';
 
 class BankCardListScreen extends StatefulWidget {
   const BankCardListScreen({super.key});
@@ -27,61 +23,38 @@ class _BankCardListScreenState extends State<BankCardListScreen> {
   String branchName = '';
   String fullName = '';
 
-  List<Map<String, dynamic>> bankCards = [
-    {
-      "id": "noId",
-      "bank_info": "ملت",
-      "created_at": "2025-07-06 01:59:17",
-      "updated_at": "2025-07-06 02:00:31",
-      "card_number": "08909",
-      "account_number": "0980",
-      "iban": null,
-      "full_name": "",
-      "branch_id": 1234,
-      "branch_name": "shobe.",
-      "description": "test",
-      "user": 4,
-    },
-  ];
+  final BankApiService _api = locator<BankApiService>();
+
+  List<Map<String, dynamic>> bankCards = [];
 
   List<dynamic> banks = [];
 
   int whichExpanded = -1;
 
   void getBanks() async {
-    String url = '${Endpoints.baseUrl}user/bank-info/list/';
-    String? token = await SecureStorage.readSecureStorage(Keys.token);
-
-    var response2 = await http.get(
-      Uri.parse(url),
-      headers: {'Authorization': 'Bearer $token'},
-    );
-
-    log(jsonDecode(response2.body)['data'][0]['name'].toString());
-
+    final res = await _api.banks();
+    if (!mounted || res is! Success) {
+      return;
+    }
     setState(() {
-      banks = jsonDecode(response2.body)['data'];
+      banks = res.response is List ? res.response as List : [];
     });
   }
 
   void getBankCards() async {
-    String url = '${Endpoints.baseUrl}user/bank/info/list/';
-    String? token = await SecureStorage.readSecureStorage(Keys.token);
-
-    var response = await http.get(
-      Uri.parse(url),
-      headers: {'Authorization': 'Bearer $token'},
-    );
-    bankCards.clear();
-
-    for (var bankCard in jsonDecode(response.body)['data']) {
-      setState(() {
-        bankCards.add(bankCard);
-      });
+    final res = await _api.myBankInfos();
+    if (!mounted || res is! Success) {
+      return;
     }
-
-    log(bankCards.toString());
-
+    setState(() {
+      bankCards =
+          res.response is List
+              ? (res.response as List)
+                  .whereType<Map>()
+                  .map((e) => Map<String, dynamic>.from(e))
+                  .toList()
+              : [];
+    });
     getBanks();
   }
 
@@ -94,36 +67,20 @@ class _BankCardListScreenState extends State<BankCardListScreen> {
     branchName,
     description,
   ) async {
-    String url = '${Endpoints.baseUrl}user/bank/info/create/';
-    String? token = await SecureStorage.readSecureStorage(Keys.token);
-
-    Map<String, dynamic> data_ = {
+    final res = await _api.create({
       "bank_info": info,
       "card_number": card,
       "account_number": account,
       "full_name": name,
-      "branch_id": int.parse(branchId),
+      "branch_id": int.tryParse(branchId.toString()) ?? 0,
       "branch_name": branchName,
       "description": "",
-    };
+    });
+    if (!mounted) {
+      return;
+    }
 
-    var data = json.encode(data_);
-
-    var response = await http.post(
-      Uri.parse(url),
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
-      body: data,
-    );
-
-    log(jsonDecode(response.body).toString());
-    log(response.statusCode.toString());
-    log(data.toString());
-
-    if (response.statusCode == 201) {
+    if (res is Success) {
       Navigator.pop(context);
       setState(() {
         getBankCards();
