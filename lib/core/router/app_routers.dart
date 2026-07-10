@@ -9,6 +9,7 @@ import 'package:asood/features/bookmarks/bookmarks_page.dart';
 import 'package:asood/features/business_card/presentation/screens/business_part.dart';
 import 'package:asood/features/cart/presentation/screen/cart_screen.dart';
 import 'package:asood/features/chat/screens/chat_list.dart';
+import 'package:asood/features/chat/screens/support_tickets_screen.dart';
 import 'package:asood/features/create_workspace/presentation/screen/create_workspace.dart';
 import 'package:asood/features/customer/presentation/screens/customer_dashboard_screen.dart';
 import 'package:asood/features/inquiry/presentation/screens/inquiry_requests.dart';
@@ -112,6 +113,10 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.chatList,
         builder: (context, state) => ChatList(),
+      ),
+      GoRoute(
+        path: AppRoutes.support,
+        builder: (context, state) => const SupportTicketsScreen(),
       ),
       GoRoute(
         path: AppRoutes.storeInfo,

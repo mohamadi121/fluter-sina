@@ -221,7 +221,7 @@ logic + app exit (`profile_menu_widget.dart:34,49`), product-details navigation
 | 6 | CI/CD | ci.yml (format+analyze --no-fatal-infos+test+debug build on push/PR); release.yml (v*.*.* tag or dispatch → signed release APK → GitHub Release asset asood-<ver>.apk); build.gradle.kts reads git-ignored key.properties, CI writes it from secrets, local falls back to debug; version derived from tag; README + signing-secrets guide | DONE (2026-07-10). Owner action: set the 4 ANDROID_* secrets before first real release |
 | 7 | Backend infra cleanup | Dockerfile/compose/nginx consolidation per INFRA_NOTES.md, no behavior change | PENDING |
 | 8 | Comments + inquiry completion | comment create/like UI, inquiry list/detail/answers, image upload | PENDING |
-| 9 | Notifications + chat | notification list/read, chat rooms/messages (+WS if present) | PENDING |
+| 9 | Chat + support (WS-first) | backend: room_id routing fix + TokenAuthMiddleware for WS auth; frontend: ChatListCubit (rooms), ChatRoomBloc (REST history + live WebSocket via ChatSocket, socket-or-REST send, typing/presence frames), chat_list/chat_page rebuilt from empty shells, support tickets (create->chat_room reuse). 14 tests. Notifications still pending (own batch) | DONE (2026-07-10) |
 | 10 | Orders (owner) + secondary | owner order list/verify, advertise self/create+payment, referral, terms screen | PENDING |
 | 11 | Reservation module | owner: services/specialists/times/dayoffs; user: browse+reserve+pay (~25 endpoints) | PENDING |
 | 12 | Affiliate + analytics | affiliate owner/user flows; owner analytics dashboard (scope: dashboard/sales/products screens) | PENDING |

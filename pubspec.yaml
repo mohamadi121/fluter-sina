@@ -46,6 +46,7 @@ dependencies:
   shared_preferences: ^2.5.3
 
   url_launcher: ^6.2.4
+  web_socket_channel: ^3.0.3
 
   # her e we have to add a package named flutter url_launcher for adding a new ability to our app.
   

@@ -1,11 +1,13 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:asood/core/constants/constants.dart';
 import 'package:asood/core/widgets/appbar/default_appbar.dart';
-
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-
-import 'chat_page.dart';
+import 'package:asood/features/chat/blocs/chat_list_cubit.dart';
+import 'package:asood/features/chat/data/models/chat_room_model.dart';
+import 'package:asood/features/chat/screens/chat_page.dart';
+import 'package:asood/features/chat/screens/support_tickets_screen.dart';
+import 'package:asood/locator.dart';
 
 class ChatList extends StatefulWidget {
   const ChatList({super.key});
@@ -15,142 +17,147 @@ class ChatList extends StatefulWidget {
 }
 
 class _ChatListState extends State<ChatList> {
+  late final ChatListCubit _cubit;
+
+  @override
+  void initState() {
+    super.initState();
+    _cubit = locator<ChatListCubit>()..load();
+  }
+
+  @override
+  void dispose() {
+    _cubit.close();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
       color: Colora.primaryColor,
       child: SafeArea(
         child: Scaffold(
+          floatingActionButton: FloatingActionButton.extended(
+            backgroundColor: Colora.primaryColor,
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const SupportTicketsScreen()),
+              );
+            },
+            icon: const Icon(Icons.support_agent, color: Colors.white),
+            label: const Text(
+              'پشتیبانی',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
           body: Stack(
             children: [
-              Column(
-                children: [
-                  SizedBox(height: Dimensions.height * 0.12),
-
-                  ListView.builder(
-                    itemCount: 3,
-                    shrinkWrap: true,
-                    itemBuilder:
-                        (context, index) => InkWell(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const ChatPage(),
-                              ),
-                            );
-                          },
-                          child: Container(
-                            width: Dimensions.width,
-                            height: Dimensions.height * 0.11,
-                            margin: EdgeInsets.symmetric(
-                              vertical: Dimensions.height * 0.01,
-                              horizontal: Dimensions.width * 0.05,
-                            ),
-                            padding: EdgeInsets.symmetric(
-                              vertical: Dimensions.height * 0.01,
-                              horizontal: Dimensions.width * 0.03,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colora.scaffold,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: CupertinoColors.inactiveGray
-                                      .withValues(alpha: 0.5),
-                                  spreadRadius: 1,
-                                  blurRadius: 5,
-                                ),
-                              ],
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            child: Row(
-                              children: [
-                                //image
-                                SizedBox(
-                                  width: Dimensions.width * 0.2,
-                                  child: AspectRatio(
-                                    aspectRatio: 1,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(30),
-                                        border: Border.all(
-                                          color: Colora.lightBlue,
-                                        ),
-                                      ),
-                                      child: SvgPicture.asset(
-                                        'assets/images/logo_svg.svg',
-                                        colorFilter: const ColorFilter.mode(
-                                          Colora.lightBlue,
-                                          BlendMode.srcIn,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-
-                                Container(
-                                  width: Dimensions.width * 0.64,
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: Dimensions.width * 0.03,
-                                    vertical: Dimensions.height * 0.01,
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    // mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                    children: [
-                                      //name and date
-                                      const Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          //name
-                                          Text(
-                                            'احمد فرج پور',
-                                            style: TextStyle(
-                                              color: Colora.primaryColor,
-                                              fontSize: 12,
-                                            ),
-                                          ),
-
-                                          //date
-                                          Text(
-                                            '1400/5/18',
-                                            style: TextStyle(
-                                              color: Colora.primaryColor,
-                                              fontSize: 8,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-
-                                      SizedBox(
-                                        height: Dimensions.height * 0.01,
-                                      ),
-
-                                      //title / price
-                                      const Text(
-                                        'عنوان :‌دریل برقی - قیمت ۲۰۰.۰۰۰ تومان',
-                                        style: TextStyle(
-                                          color: Colora.primaryColor,
-                                          fontSize: 8,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
+              Padding(
+                padding: EdgeInsets.only(top: Dimensions.height * 0.12),
+                child: BlocBuilder<ChatListCubit, ChatListState>(
+                  bloc: _cubit,
+                  builder: (context, state) {
+                    switch (state.status) {
+                      case ChatListStatus.loading:
+                      case ChatListStatus.initial:
+                        return const Center(child: CircularProgressIndicator());
+                      case ChatListStatus.failure:
+                        return _ErrorView(
+                          message: state.error ?? 'خطا در دریافت گفتگوها',
+                          onRetry: _cubit.load,
+                        );
+                      case ChatListStatus.loaded:
+                        if (state.rooms.isEmpty) {
+                          return const Center(
+                            child: Text('گفتگویی وجود ندارد'),
+                          );
+                        }
+                        return RefreshIndicator(
+                          onRefresh: _cubit.load,
+                          child: ListView.builder(
+                            itemCount: state.rooms.length,
+                            itemBuilder:
+                                (context, index) =>
+                                    _RoomTile(room: state.rooms[index]),
                           ),
-                        ),
-                  ),
-                ],
+                        );
+                    }
+                  },
+                ),
               ),
-
-              const NewAppBar(title: 'پیام ‌ها'),
+              const NewAppBar(title: 'گفتگوها'),
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _RoomTile extends StatelessWidget {
+  const _RoomTile({required this.room});
+
+  final ChatRoomModel room;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      child: ListTile(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => ChatPage(roomId: room.id, roomName: room.name),
+            ),
+          );
+        },
+        leading: CircleAvatar(
+          backgroundColor: Colora.primaryColor,
+          child: Text(
+            room.name.isNotEmpty ? room.name.characters.first : '?',
+            style: const TextStyle(color: Colors.white),
+          ),
+        ),
+        title: Text(room.name),
+        subtitle: Text(
+          room.lastMessage ?? room.description ?? '',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        trailing:
+            room.unreadCount > 0
+                ? CircleAvatar(
+                  radius: 11,
+                  backgroundColor: Colora.primaryColor,
+                  child: Text(
+                    '${room.unreadCount}',
+                    style: const TextStyle(color: Colors.white, fontSize: 11),
+                  ),
+                )
+                : null,
+      ),
+    );
+  }
+}
+
+class _ErrorView extends StatelessWidget {
+  const _ErrorView({required this.message, required this.onRetry});
+
+  final String message;
+  final Future<void> Function() onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(message, textAlign: TextAlign.center),
+          const SizedBox(height: 12),
+          ElevatedButton(onPressed: onRetry, child: const Text('تلاش مجدد')),
+        ],
       ),
     );
   }

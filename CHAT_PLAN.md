@@ -102,9 +102,23 @@ fields.
 `messages`, `hasMore`, `page`, `sending`, `connection` (offline/connecting/
 live), `error`. No message state outside the bloc.
 
-## 5. Rollout strategy — decision requested
+## 5. Rollout strategy — DECIDED (2026-07-10)
 
-**Recommended: REST-first, WebSocket-second.**
+Owner decisions:
+1. **WebSocket-first.** Ship true real-time chat in v1 — not REST+polling.
+   So the backend fixes in §3 are prerequisites and land at the start of the
+   chat batch.
+2. **Support tickets are in v1** — build the customer "contact support" flow
+   (`support/tickets/…`) inside the chat batch.
+3. **I own the two backend WS fixes** (§3) — do them in this project, tested,
+   before the WS client goes live.
+
+Resulting batch-9 order: (a) backend WS fixes + token WS-auth middleware +
+verify; (b) `ChatSocketDataSource` + repository (rooms/history via REST,
+live via WS); (c) `ChatListCubit` + `ChatRoomBloc` + screens; (d) support
+tickets; (e) tests.
+
+### Superseded original recommendation (kept for context): REST-first.
 
 - **Phase A — REST chat (ships value, no backend dependency).**
   DataSource + repository + `ChatListCubit` + `ChatRoomBloc` over the Token

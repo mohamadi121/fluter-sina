@@ -37,6 +37,11 @@ import 'package:asood/core/http_client/api_client.dart';
 import 'package:asood/features/auth/data/data_source/auth_api_service.dart';
 import 'package:asood/features/bookmarks/bloc/bookmark_cubit.dart';
 import 'package:asood/features/bookmarks/data/bookmark_api_service.dart';
+import 'package:asood/features/chat/blocs/chat_list_cubit.dart';
+import 'package:asood/features/chat/data/chat_api_service.dart';
+import 'package:asood/features/chat/data/chat_repository.dart';
+import 'package:asood/features/chat/data/chat_socket.dart';
+import 'package:asood/features/chat/data/support_api_service.dart';
 import 'package:asood/features/auth/data/repository/auth_repository_imp.dart';
 import 'package:asood/features/auth/domain/repository/auth_repository.dart';
 import 'package:asood/features/auth/presentation/blocs/auth_bloc.dart';
@@ -89,6 +94,16 @@ locatorSetup() async {
     () => BookmarkApiService(dioClient: locator<DioClient>()),
   );
   locator.registerFactory(
+    () => ChatApiService(dioClient: locator<DioClient>()),
+  );
+  locator.registerFactory(
+    () => SupportApiService(dioClient: locator<DioClient>()),
+  );
+  // Fresh socket per room (each ChatRoomBloc owns and closes one).
+  locator.registerFactory(
+    () => ChatSocket(authSession: locator<AuthSession>()),
+  );
+  locator.registerFactory(
     () => DiscountApiService(dioClient: locator<DioClient>()),
   );
   locator.registerFactory(
@@ -110,6 +125,9 @@ locatorSetup() async {
   );
   locator.registerLazySingleton<ProductRepository>(
     () => ProductRepositoryImp(locator<ProductApiService>()),
+  );
+  locator.registerLazySingleton<ChatRepository>(
+    () => ChatRepository(locator<ChatApiService>()),
   );
 
   /// BLOCs
@@ -154,5 +172,8 @@ locatorSetup() async {
   );
   locator.registerFactory(
     () => BookmarkCubit(api: locator<BookmarkApiService>()),
+  );
+  locator.registerFactory(
+    () => ChatListCubit(repository: locator<ChatRepository>()),
   );
 }

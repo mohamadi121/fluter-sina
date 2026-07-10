@@ -27,6 +27,7 @@ abstract class AppRoutes {
   static const storeInfo = "/store_info";
   static const shoppingCart = "/shopping_cart";
   static const chatList = "/chat_list";
+  static const support = "/support";
   static const takhfif = "/takhfif";
   static const screenLists = "/screen_lists";
   static const settings = "/settings_page";
