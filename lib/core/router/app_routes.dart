@@ -29,6 +29,7 @@ abstract class AppRoutes {
   static const chatList = "/chat_list";
   static const support = "/support";
   static const notifications = "/notifications";
+  static const ownerOrders = "/owner_orders";
   static const takhfif = "/takhfif";
   static const screenLists = "/screen_lists";
   static const settings = "/settings_page";

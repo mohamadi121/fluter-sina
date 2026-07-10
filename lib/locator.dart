@@ -49,6 +49,7 @@ import 'package:asood/features/inquiry/presentation/blocs/inquiry_bloc.dart';
 import 'package:asood/features/inquiry/presentation/blocs/inquiry_list_cubit.dart';
 import 'package:asood/features/notification/blocs/notification_bloc.dart';
 import 'package:asood/features/notification/data/notification_api_service.dart';
+import 'package:asood/features/cart/data/data_source/owner_order_api_service.dart';
 import 'package:asood/features/auth/data/repository/auth_repository_imp.dart';
 import 'package:asood/features/auth/domain/repository/auth_repository.dart';
 import 'package:asood/features/auth/presentation/blocs/auth_bloc.dart';
@@ -111,6 +112,9 @@ locatorSetup() async {
   );
   locator.registerFactory(
     () => NotificationApiService(dioClient: locator<DioClient>()),
+  );
+  locator.registerFactory(
+    () => OwnerOrderApiService(dioClient: locator<DioClient>()),
   );
   // Fresh socket per room (each ChatRoomBloc owns and closes one).
   locator.registerFactory(
