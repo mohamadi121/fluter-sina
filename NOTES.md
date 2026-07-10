@@ -63,6 +63,21 @@ Gradle 8.14, Kotlin 2.1.0, compileSdk/targetSdk 36 (Flutter 3.44), JDK 17.
 CI pins JDK 17 via actions/setup-java. If a plugin later needs an even newer
 AGP, bump again — don't pin the AndroidX deps down.
 
+## Chat is WebSocket-first; backend WS had two blockers (both fixed)
+Backend chat has a working REST API (Token) AND a Channels WebSocket. The WS
+was unusable: (1) routing captured `room_name` but ChatConsumer reads
+`room_id` → KeyError → close on every connect; (2) WS auth was session-cookie
+only, but the app uses Token. Fixed in backend: routing → `room_id`, and
+`apps/core/ws_auth.TokenAuthMiddleware` (reads `?token=`/Authorization, sets
+scope['user']) wired inside AuthMiddlewareStack in `config/asgi.py`. Frontend
+connects `ws(s)://host/ws/chat/<room_id>/?token=<key>`. Support tickets reuse
+the normal chat room (a ticket spawns `chat_room_id`). Message shapes differ
+between REST (sender/created_at) and WS (sender_id/sent_at) — ChatMessageModel
+tolerates both. currentUserId comes from the `connection_established` frame
+(the app never learns its own user id otherwise — pin/verify returns only a
+token). Backend runtime (Channels/ASGI) can't be run here (Linux venv), so the
+WS path is verified by contract + unit tests, not a live socket.
+
 ## SSL private key committed in backend repo
 `ssl/asoud.key` is tracked in git. Cleanup batch: stop mounting from repo,
 gitignore, document rotation. History rewrite / key rotation on the server is
