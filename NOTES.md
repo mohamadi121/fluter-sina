@@ -55,6 +55,14 @@ feature, always grep for `package:http` too, not just DioClient usage.
 Fixed in backend with `AllowAny` (apps/information/views/user_views.py) instead
 of keeping the hardcoded-token hack in the app.
 
+## Android build needs AGP 8.9.1 (was 8.7.3) — plugins pull bleeding-edge AndroidX
+`flutter build apk` failed at `checkDebugAarMetadata`: transitive AndroidX deps
+(core 1.18.0, activity 1.12.4, browser 1.9.0, navigationevent) required AGP
+8.9.1+. Bumped AGP in `android/settings.gradle.kts`. Constraints already met:
+Gradle 8.14, Kotlin 2.1.0, compileSdk/targetSdk 36 (Flutter 3.44), JDK 17.
+CI pins JDK 17 via actions/setup-java. If a plugin later needs an even newer
+AGP, bump again — don't pin the AndroidX deps down.
+
 ## SSL private key committed in backend repo
 `ssl/asoud.key` is tracked in git. Cleanup batch: stop mounting from repo,
 gitignore, document rotation. History rewrite / key rotation on the server is
