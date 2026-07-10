@@ -12,6 +12,7 @@ import 'package:asood/features/chat/screens/chat_list.dart';
 import 'package:asood/features/chat/screens/support_tickets_screen.dart';
 import 'package:asood/features/notification/screens/notifications_screen.dart';
 import 'package:asood/features/cart/presentation/screen/owner_orders_screen.dart';
+import 'package:asood/features/reservation/screens/reservation_screen.dart';
 import 'package:asood/features/create_workspace/presentation/screen/create_workspace.dart';
 import 'package:asood/features/customer/presentation/screens/customer_dashboard_screen.dart';
 import 'package:asood/features/inquiry/presentation/screens/inquiry_requests.dart';
@@ -127,6 +128,13 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.ownerOrders,
         builder: (context, state) => const OwnerOrdersScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.reservation,
+        builder: (context, state) {
+          final marketId = state.extra as String;
+          return ReservationScreen(marketId: marketId);
+        },
       ),
       GoRoute(
         path: AppRoutes.storeInfo,

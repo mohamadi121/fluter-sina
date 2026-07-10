@@ -1,7 +1,44 @@
 part of 'reservation_bloc.dart';
 
-sealed class ReservationState {
-  const ReservationState();
-}
+enum ReservationStatus { initial, loading, loaded, booking, booked, failure }
 
-final class ReservationInitial extends ReservationState {}
+class ReservationState extends Equatable {
+  final ReservationStatus status;
+  final List<Map<String, dynamic>> services;
+  final List<Map<String, dynamic>> reserveTimes;
+  final List<Map<String, dynamic>> myReservations;
+  final String? error;
+
+  const ReservationState({
+    this.status = ReservationStatus.initial,
+    this.services = const [],
+    this.reserveTimes = const [],
+    this.myReservations = const [],
+    this.error,
+  });
+
+  ReservationState copyWith({
+    ReservationStatus? status,
+    List<Map<String, dynamic>>? services,
+    List<Map<String, dynamic>>? reserveTimes,
+    List<Map<String, dynamic>>? myReservations,
+    String? error,
+  }) {
+    return ReservationState(
+      status: status ?? this.status,
+      services: services ?? this.services,
+      reserveTimes: reserveTimes ?? this.reserveTimes,
+      myReservations: myReservations ?? this.myReservations,
+      error: error,
+    );
+  }
+
+  @override
+  List<Object?> get props => [
+    status,
+    services,
+    reserveTimes,
+    myReservations,
+    error,
+  ];
+}

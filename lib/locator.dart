@@ -50,6 +50,8 @@ import 'package:asood/features/inquiry/presentation/blocs/inquiry_list_cubit.dar
 import 'package:asood/features/notification/blocs/notification_bloc.dart';
 import 'package:asood/features/notification/data/notification_api_service.dart';
 import 'package:asood/features/cart/data/data_source/owner_order_api_service.dart';
+import 'package:asood/features/reservation/blocs/reservation_bloc.dart';
+import 'package:asood/features/reservation/data/reservation_api_service.dart';
 import 'package:asood/features/auth/data/repository/auth_repository_imp.dart';
 import 'package:asood/features/auth/domain/repository/auth_repository.dart';
 import 'package:asood/features/auth/presentation/blocs/auth_bloc.dart';
@@ -115,6 +117,9 @@ locatorSetup() async {
   );
   locator.registerFactory(
     () => OwnerOrderApiService(dioClient: locator<DioClient>()),
+  );
+  locator.registerFactory(
+    () => ReservationApiService(dioClient: locator<DioClient>()),
   );
   // Fresh socket per room (each ChatRoomBloc owns and closes one).
   locator.registerFactory(
@@ -198,6 +203,9 @@ locatorSetup() async {
   );
   locator.registerFactory(() => InquiryBloc(locator<InquiryRepo>()));
   locator.registerFactory(() => InquiryListCubit(repo: locator<InquiryRepo>()));
+  locator.registerFactory(
+    () => ReservationBloc(api: locator<ReservationApiService>()),
+  );
   locator.registerFactory(
     () => NotificationBloc(api: locator<NotificationApiService>()),
   );
