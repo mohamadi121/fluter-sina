@@ -1,19 +1,17 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/helper/secure_storage.dart';
 import 'package:asood/core/helper/snack_bar_util.dart';
+import 'package:asood/core/http_client/api_status.dart';
 import 'package:asood/core/widgets/appbar/default_appbar.dart';
 import 'package:asood/core/widgets/custom_button.dart';
 import 'package:asood/core/widgets/custom_textfield.dart';
 import 'package:asood/core/widgets/radio_button.dart';
+import 'package:asood/features/inquiry/data/data_source/inquiry_api_service.dart';
+import 'package:asood/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
-
-import '../../../../core/constants/endpoints.dart';
 
 class SubmitFeeInquiryScreen extends StatefulWidget {
   final bool isEdit;
@@ -49,55 +47,54 @@ class _SubmitFeeInquiryScreenState extends State<SubmitFeeInquiryScreen> {
 
   var imageFile;
 
+  final InquiryAPIService _api = locator<InquiryAPIService>();
+
   void getLastData() async {
-    String url = '${Endpoints.baseUrl}user/inquiries/${widget.id}/';
-    String? token = await SecureStorage.readSecureStorage(Keys.token);
-
-    var response = await http.get(
-      Uri.parse(url),
-      headers: {'Authorization': 'Bearer $token'},
-    );
-
-    var data = jsonDecode(response.body)['data'];
+    final res = await _api.detail(widget.id);
+    if (!mounted || res is! Success || res.response is! Map) {
+      return;
+    }
+    final data = Map<String, dynamic>.from(res.response as Map);
 
     setState(() {
-      type = data['type'];
-      name = data['name'];
-      technicalDetails = data['technical_detail'];
-      amount = data['amount'];
-      unit = data['unit'];
+      type = data['type']?.toString() ?? 'good';
+      name = data['name']?.toString() ?? '';
+      technicalDetails = data['technical_detail']?.toString() ?? '';
+      amount = data['amount']?.toString() ?? '';
+      unit = data['unit']?.toString() ?? '';
       expiry = data['expiry'].toString();
+      final images = data['images'];
       lastImage =
-          data['images'].isEmpty
-              ? ''
-              : 'https://asoud.ir${data['images'][0]['image']}';
-      send = data['send'];
+          images is List && images.isNotEmpty
+              ? 'https://asoud.ir${images[0]['image']}'
+              : '';
+      send = data['send']?.toString() ?? '';
     });
   }
 
   void putChanges() async {
-    String url = '${Endpoints.baseUrl}user/inquiries/${widget.id}/update/';
-    String? token = await SecureStorage.readSecureStorage(Keys.token);
-
-    var response = await http.put(
-      Uri.parse(url),
-      headers: {'Authorization': 'Bearer $token'},
-      body: {
-        "type": type.toString(),
-        "name": name,
-        "technical_detail": description,
-        // "expiry": DateTime(now.year, now.month, now.day + date).toString(),
-        "amount": amount == "" ? "0" : amount,
-        "unit": unit == "" ? "0" : unit,
-      },
-    );
-    if (response.statusCode == 200) {
+    final res = await _api.update(widget.id, {
+      "type": type.toString(),
+      "name": name,
+      "technical_detail": description,
+      "amount": amount == "" ? "0" : amount,
+      "unit": unit == "" ? "0" : unit,
+    });
+    if (!mounted) {
+      return;
+    }
+    if (res is Success) {
       Navigator.of(context).pop(true);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           backgroundColor: Colors.green,
           content: Text('استعلام با موفقیت ویرایش شد'),
         ),
+      );
+    } else {
+      showSnackBar(
+        context,
+        res is Failure ? res.message : 'ویرایش استعلام ناموفق بود',
       );
     }
   }
@@ -122,45 +119,26 @@ class _SubmitFeeInquiryScreenState extends State<SubmitFeeInquiryScreen> {
 
   void sendImageAndChat(id, image) {
     void sendData(String send) async {
-      String? token = await SecureStorage.readSecureStorage(Keys.token);
-
-      String url = '${Endpoints.baseUrl}user/inquiries/$id/send/';
-      String imageUrl = '${Endpoints.baseUrl}user/inquiries/$id/image/';
-      final request = http.MultipartRequest('POST', Uri.parse(imageUrl));
-
-      Map<String, dynamic> data = {'send': send};
-
-      var response = await http.post(
-        Uri.parse(url),
-        headers: {
-          'Accept': 'application/json',
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode(data),
-      );
-
-      request.headers.addAll({
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      });
-
-      if (image != null && image != '') {
-        request.files.add(
-          await http.MultipartFile.fromPath('images', image.path),
-        );
+      // Upload the image (if any), then finalize/send the inquiry.
+      if (image != null && image is XFile && image.path.isNotEmpty) {
+        await _api.uploadImage(id.toString(), image);
       }
-
-      var response2 = await request.send();
-
-      if (response.statusCode == 200 || response2.statusCode == 200) {
+      final res = await _api.send(id.toString());
+      if (!mounted) {
+        return;
+      }
+      if (res is Success) {
         Navigator.of(context).pop(true);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             backgroundColor: Colors.green,
             content: Text('استعلام جدید با موفقیت ایجاد شد'),
           ),
+        );
+      } else {
+        showSnackBar(
+          context,
+          res is Failure ? res.message : 'ارسال استعلام ناموفق بود',
         );
       }
     }
@@ -252,11 +230,6 @@ class _SubmitFeeInquiryScreenState extends State<SubmitFeeInquiryScreen> {
     String unit,
     int date,
   ) async {
-    String url = '${Endpoints.baseUrl}user/inquiries/create/';
-
-    String? token = await SecureStorage.readSecureStorage(Keys.token);
-    final request = http.MultipartRequest('POST', Uri.parse(url));
-
     String type_ = type == 'good' ? 'محصول' : 'خدمت';
 
     if (name == '') {
@@ -268,44 +241,25 @@ class _SubmitFeeInquiryScreenState extends State<SubmitFeeInquiryScreen> {
     } else {
       DateTime now = DateTime.now();
 
-      Map<String, String> data_ = {
+      final res = await _api.create({
         "type": type.toString(),
         "name": name,
         "technical_detail": description,
         "expiry": DateTime(now.year, now.month, now.day + date).toString(),
         "amount": amount == "" ? "0" : amount,
         "unit": unit == "" ? "0" : unit,
-      };
-
-      var data = json.encode(data_);
-
-      // request.headers.addAll({
-      //   'Accept': 'application/json',
-      //   'Authorization': 'Bearer $token',
-      //   'Content-Type': 'application/json',
-      // });
-
-      request.fields.addAll(data_);
-
-      // if (image != null) {
-      //   request.files.add(
-      //     await http.MultipartFile.fromPath('image', image.path),
-      //   );
-      // }
-
-      // var response = await request.send();
-
-      var response = await http.post(
-        Uri.parse(url),
-        headers: {
-          'Accept': 'application/json',
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
-        body: data,
-      );
-      if (response.statusCode == 201) {
-        sendImageAndChat(jsonDecode(response.body)['data']['id'], image);
+      });
+      if (!mounted) {
+        return;
+      }
+      if (res is Success && res.response is Map) {
+        final id = (res.response as Map)['id'];
+        sendImageAndChat(id, image);
+      } else {
+        showSnackBar(
+          context,
+          res is Failure ? res.message : 'ایجاد استعلام ناموفق بود',
+        );
       }
     }
 

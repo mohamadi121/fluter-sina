@@ -1,15 +1,11 @@
-import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 
 abstract class InquiryRepo {
-  Future<dynamic> submitInquiry(
-    String inquiryType,
-    String inquiryTitle,
-    String? inquiryDescription,
-    String? inquiryDetails,
-    String inquiryCategory,
-    double? inquiryAmount,
-    String? inquiryUnit,
-    String? inquiryName,
-    List<File>? inquiryImages,
-  ) async {}
+  Future<dynamic> list();
+  Future<dynamic> detail(String id);
+  Future<dynamic> answers(String id);
+  Future<dynamic> createInquiry(Map<String, dynamic> body);
+  Future<dynamic> uploadImage(String id, XFile image);
+  Future<dynamic> sendInquiry(String id);
+  Future<dynamic> deleteInquiry(String id);
 }

@@ -1,37 +1,101 @@
-import 'dart:io';
+import 'package:dio/dio.dart';
+import 'package:image_picker/image_picker.dart';
 
+import 'package:asood/core/constants/endpoints.dart';
 import 'package:asood/core/http_client/api_client.dart';
 import 'package:asood/core/http_client/api_status.dart';
-import 'package:asood/core/constants/endpoints.dart';
-import 'package:dio/dio.dart';
 
+/// User price-inquiry endpoints (`api/v1/user/inquiries/`, Token auth).
+/// Flow: create -> upload image(s) -> send. List/detail/answers for viewing.
 class InquiryAPIService {
-  DioClient dioClient;
+  final DioClient dioClient;
   InquiryAPIService({required this.dioClient});
 
-  Future submitInquiry(
-    String inquiryType,
-    String inquiryTitle,
-    String? inquiryDescription,
-    String? inquiryDetails,
-    String inquiryCategory,
-    double? inquiryAmount,
-    String? inquiryUnit,
-    String? inquiryName,
-    List<File>? inquiryImages,
-  ) async {
-    var body = {
-      "type": inquiryType,
-      "name": inquiryTitle,
-      if (inquiryDetails != null) "technical_detail": inquiryDetails,
-      if (inquiryAmount != null) "amount": inquiryAmount.toString(),
-      if (inquiryUnit != null) "unit": inquiryUnit,
-      // Backend requires expiry; set 7 days ahead by default
-      "expiry": DateTime.now().add(const Duration(days: 7)).toIso8601String(),
-    };
-    var uri = '${Endpoints.inquiry}create/';
+  String get _base => Endpoints.inquiry; // 'user/inquiries/'
+
+  Future list() async {
     try {
-      Response res = await dioClient.postData(uri, body);
+      final Response res = await dioClient.getData(_base);
+      return apiStatus(res);
+    } catch (e) {
+      return apiFailure(e);
+    }
+  }
+
+  Future detail(String id) async {
+    try {
+      final Response res = await dioClient.getData('$_base$id/');
+      return apiStatus(res);
+    } catch (e) {
+      return apiFailure(e);
+    }
+  }
+
+  Future answers(String id) async {
+    try {
+      final Response res = await dioClient.getData('$_base$id/answers/');
+      return apiStatus(res);
+    } catch (e) {
+      return apiFailure(e);
+    }
+  }
+
+  Future create(Map<String, dynamic> body) async {
+    try {
+      final Response res = await dioClient.postData('${_base}create/', body);
+      return apiStatus(res);
+    } catch (e) {
+      return apiFailure(e);
+    }
+  }
+
+  Future update(String id, Map<String, dynamic> body) async {
+    try {
+      final Response res = await dioClient.putData('$_base$id/update/', body);
+      return apiStatus(res);
+    } catch (e) {
+      return apiFailure(e);
+    }
+  }
+
+  /// Upload an image to an existing inquiry (multipart field name `images`).
+  Future uploadImage(String id, XFile image) async {
+    try {
+      final Response res = await dioClient.postMultipartData(
+        '$_base$id/image/',
+        {},
+        [MultipartBody('images', image)],
+      );
+      return apiStatus(res);
+    } catch (e) {
+      return apiFailure(e);
+    }
+  }
+
+  /// Finalize/broadcast an inquiry.
+  Future send(String id) async {
+    try {
+      final Response res = await dioClient.postData('$_base$id/send/', {
+        'send': true,
+      });
+      return apiStatus(res);
+    } catch (e) {
+      return apiFailure(e);
+    }
+  }
+
+  Future renewExpiry(String id) async {
+    try {
+      final Response res = await dioClient.postData('$_base$id/expiry/', {});
+      return apiStatus(res);
+    } catch (e) {
+      return apiFailure(e);
+    }
+  }
+
+  Future delete(String id) async {
+    try {
+      final Response res = await dioClient.deleteData('$_base$id/delete/');
       return apiStatus(res);
     } catch (e) {
       return apiFailure(e);

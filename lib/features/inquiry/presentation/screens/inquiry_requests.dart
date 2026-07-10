@@ -1,18 +1,13 @@
-import 'dart:convert';
-import 'dart:developer';
-
 import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/helper/secure_storage.dart';
 import 'package:asood/core/widgets/appbar/default_appbar.dart';
 import 'package:asood/core/widgets/custom_button.dart';
 import 'package:asood/core/widgets/search_box.dart';
 import 'package:asood/core/widgets/simple_bot_navbar.dart';
+import 'package:asood/features/inquiry/presentation/blocs/inquiry_list_cubit.dart';
 import 'package:asood/features/inquiry/presentation/screens/inquiry_dashboard.dart';
 import 'package:asood/features/inquiry/presentation/screens/submit_fee_inquiry.dart';
+import 'package:asood/locator.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-
-import '../../../../core/constants/endpoints.dart';
 
 class InquiryRequestsScreen extends StatefulWidget {
   const InquiryRequestsScreen({super.key});
@@ -22,50 +17,36 @@ class InquiryRequestsScreen extends StatefulWidget {
 }
 
 class _InquiryRequestsScreenState extends State<InquiryRequestsScreen> {
+  final InquiryListCubit _cubit = locator<InquiryListCubit>();
+
   List<Map<String, dynamic>> inquiries = [];
   List<Map<String, dynamic>> visibleInquiriesButtons = [];
 
   void getInquiries() async {
-    inquiries.clear();
-    String url = '${Endpoints.baseUrl}user/inquiries/';
-    String? token = await SecureStorage.readSecureStorage(Keys.token);
-
-    var response = await http.get(
-      Uri.parse(url),
-      headers: {'Authorization': 'Bearer $token'},
-    );
-
-    for (var i in jsonDecode(response.body)['data']) {
-      setState(() {
-        log(i.toString());
-        inquiries.add(i);
-      });
+    await _cubit.load();
+    if (!mounted) {
+      return;
     }
+    setState(() {
+      inquiries = _cubit.state.inquiries;
+    });
   }
 
   void sendData(String send, String id) async {
-    String? token = await SecureStorage.readSecureStorage(Keys.token);
-
-    String url = '${Endpoints.baseUrl}user/inquiries/$id/send/';
-
-    Map<String, dynamic> data = {'send': send};
-
-    var response = await http.post(
-      Uri.parse(url),
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode(data),
-    );
-
-    if (response.statusCode == 200) {
+    final ok = await _cubit.send(id);
+    if (!mounted) {
+      return;
+    }
+    if (ok) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           backgroundColor: Colors.green,
           content: Text('استعلام جدید با موفقیت ارسال شد'),
         ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(_cubit.state.error ?? 'ارسال ناموفق بود')),
       );
     }
   }
@@ -142,9 +123,14 @@ class _InquiryRequestsScreenState extends State<InquiryRequestsScreen> {
 
   @override
   void initState() {
-    getInquiries();
-    // TODO: implement initState
     super.initState();
+    getInquiries();
+  }
+
+  @override
+  void dispose() {
+    _cubit.close();
+    super.dispose();
   }
 
   @override

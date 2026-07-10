@@ -42,6 +42,11 @@ import 'package:asood/features/chat/data/chat_api_service.dart';
 import 'package:asood/features/chat/data/chat_repository.dart';
 import 'package:asood/features/chat/data/chat_socket.dart';
 import 'package:asood/features/chat/data/support_api_service.dart';
+import 'package:asood/features/inquiry/data/data_source/inquiry_api_service.dart';
+import 'package:asood/features/inquiry/data/repository/inquiry_repository_imp.dart';
+import 'package:asood/features/inquiry/domain/inquiry_repository.dart';
+import 'package:asood/features/inquiry/presentation/blocs/inquiry_bloc.dart';
+import 'package:asood/features/inquiry/presentation/blocs/inquiry_list_cubit.dart';
 import 'package:asood/features/auth/data/repository/auth_repository_imp.dart';
 import 'package:asood/features/auth/domain/repository/auth_repository.dart';
 import 'package:asood/features/auth/presentation/blocs/auth_bloc.dart';
@@ -99,6 +104,9 @@ locatorSetup() async {
   locator.registerFactory(
     () => SupportApiService(dioClient: locator<DioClient>()),
   );
+  locator.registerFactory(
+    () => InquiryAPIService(dioClient: locator<DioClient>()),
+  );
   // Fresh socket per room (each ChatRoomBloc owns and closes one).
   locator.registerFactory(
     () => ChatSocket(authSession: locator<AuthSession>()),
@@ -128,6 +136,9 @@ locatorSetup() async {
   );
   locator.registerLazySingleton<ChatRepository>(
     () => ChatRepository(locator<ChatApiService>()),
+  );
+  locator.registerLazySingleton<InquiryRepo>(
+    () => InquiryRepoImp(inquiryAPIService: locator<InquiryAPIService>()),
   );
 
   /// BLOCs
@@ -176,4 +187,6 @@ locatorSetup() async {
   locator.registerFactory(
     () => ChatListCubit(repository: locator<ChatRepository>()),
   );
+  locator.registerFactory(() => InquiryBloc(locator<InquiryRepo>()));
+  locator.registerFactory(() => InquiryListCubit(repo: locator<InquiryRepo>()));
 }
