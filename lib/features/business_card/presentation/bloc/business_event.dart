@@ -9,7 +9,3 @@ class UpdateSelectedLocation extends BusinessEvent {
 
   UpdateSelectedLocation(this.location);
 }
-
-class SaveLocation extends BusinessEvent {}
-
-class ReadSavedLocation extends BusinessEvent {}

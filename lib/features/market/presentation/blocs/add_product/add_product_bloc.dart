@@ -14,7 +14,6 @@ class AddProductBloc extends Bloc<AddProductEvent, AddProductState> {
   final ProductRepository productRepository;
   AddProductBloc(this.productRepository) : super(AddProductState.initial()) {
     on<ResetDataEvent>((event, emit) => emit(AddProductState.initial()));
-    on<AddProductEvent>((event, emit) {});
 
     on<ProductTypeEvent>(_changeProductType);
 
@@ -24,6 +23,7 @@ class AddProductBloc extends Bloc<AddProductEvent, AddProductState> {
     on<SetCategoryEvent>(_changeCategory);
 
     on<ProductPriceStockEvent>(_changeProductPriceStockExtra);
+    on<ChangeProductPriceEvent>(_changeProductPrice);
     on<ChangeProductStockEvent>(_changeProductStock);
 
     on<DiscountTypeEvent>(_changeDiscountType);
@@ -45,7 +45,6 @@ class AddProductBloc extends Bloc<AddProductEvent, AddProductState> {
     on<UpdateProductDetailEvent>(_updateProductDetail);
 
     on<UpdateCategoryImageEvent>(_updateCategoryImage);
-    on<SubmitThemeWithProductEvent>(_submitAndUpdatewithProduct);
   }
 
   _changeProductType(ProductTypeEvent event, Emitter<AddProductState> emit) {
@@ -77,6 +76,13 @@ class AddProductBloc extends Bloc<AddProductEvent, AddProductState> {
     Emitter<AddProductState> emit,
   ) {
     emit(state.copyWith(productStock: event.stock));
+  }
+
+  _changeProductPrice(
+    ChangeProductPriceEvent event,
+    Emitter<AddProductState> emit,
+  ) {
+    emit(state.copyWith(productPrice: event.price));
   }
 
   _changeProductPriceStockExtra(
@@ -217,10 +223,6 @@ class AddProductBloc extends Bloc<AddProductEvent, AddProductState> {
     );
   }
 
-  _submitAndUpdatewithProduct(
-    SubmitThemeWithProductEvent event,
-    Emitter<AddProductState> emit,
-  ) async {}
   _submitNewProduct(
     SubmitNewProductEvent event,
     Emitter<AddProductState> emit,

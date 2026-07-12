@@ -11,8 +11,6 @@ class BusinessBloc extends Bloc<BusinessEvent, BusinessState> {
   BusinessBloc() : super(BusinessState.initial()) {
     on<DetermineCurrentPosition>(_onDetermineCurrentPosition);
     on<UpdateSelectedLocation>(_onUpdateSelectedLocation);
-    on<SaveLocation>(_onSaveLocation);
-    on<ReadSavedLocation>(_onReadSavedLocation);
   }
 
   // A function that handles determining the current position. It takes in an event of type DetermineCurrentPosition
@@ -29,7 +27,7 @@ class BusinessBloc extends Bloc<BusinessEvent, BusinessState> {
       emit(
         state.copyWith(
           location: LatLng(position.latitude, position.longitude),
-          status: CWSStatus.loading,
+          status: CWSStatus.success,
         ),
       );
     } catch (e) {
@@ -43,54 +41,10 @@ class BusinessBloc extends Bloc<BusinessEvent, BusinessState> {
   ) {
     emit(
       state.copyWith(
-        status: CWSStatus.loading,
+        status: CWSStatus.success,
         location: event.location,
         isSelected: true,
       ),
     );
-  }
-
-  Future<void> _onSaveLocation(
-    SaveLocation event,
-    Emitter<BusinessState> emit,
-  ) async {
-    if (state.status == CWSStatus.loading) {
-      final loadedState = state;
-
-      /*   await GetStorage('agahi').write("location",
-          "${loadedState.location.latitude},${loadedState.location.longitude}"); */
-      emit(
-        state.copyWith(
-          status: CWSStatus.loading,
-          location: loadedState.location,
-          isSelected: true,
-        ),
-      );
-    }
-  }
-
-  Future<void> _onReadSavedLocation(
-    ReadSavedLocation event,
-    Emitter<BusinessState> emit,
-  ) async {
-    emit(state.copyWith(status: CWSStatus.loading));
-    try {
-      //final a = GetStorage('agahi').read("location");
-      if (true /* a != null */ ) {
-        const lat = 0.0;
-        const lang = 0.0;
-        /*  final numbersList = a.split(',');
-        final lat = double.parse(numbersList[0]);
-        final lang = double.parse(numbersList[1]); */
-        emit(
-          state.copyWith(location: const LatLng(lat, lang), isSelected: true),
-        );
-        // ignore: dead_code
-      } else {
-        emit(state.copyWith(status: CWSStatus.initial));
-      }
-    } catch (e) {
-      emit(state.copyWith(status: CWSStatus.failure, message: e.toString()));
-    }
   }
 }

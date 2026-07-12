@@ -112,37 +112,6 @@ class LocationPicker extends StatelessWidget {
               ),
             ],
           ),
-          // Positioned(
-          //   bottom: 16,
-          //   left: 16,
-          //   child: GestureDetector(
-          //     onTap: () {
-          //       if (state.status == Status.loaded) {
-          //         locationBloc.add(DetermineCurrentPosition());
-          //       } else {
-          //         locationBloc.add(SaveLocation());
-          //       }
-          //     },
-          //     child: Container(
-          //       height: 30,
-          //       width: 100,
-          //       decoration: BoxDecoration(
-          //         borderRadius: BorderRadius.circular(10),
-          //         color: locationBloc.state.status == Status.loaded
-          //             ? Colors.red
-          //             : Colors.green,
-          //       ),
-          //       child: Center(
-          //         child: Text(
-          //           locationBloc.state.status == Status.loaded
-          //               ? "تغییر لوکیشن"
-          //               : "ذخیره لوکیشن",
-          //           style: const TextStyle(color: Colors.white),
-          //         ),
-          //       ),
-          //     ),
-          //   ),
-          // ),
         ],
       ),
     );

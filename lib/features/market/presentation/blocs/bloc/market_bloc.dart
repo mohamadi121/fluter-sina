@@ -10,8 +10,6 @@ part 'market_state.dart';
 class MarketBloc extends Bloc<MarketEvent, MarketState> {
   final ProductRepository productRepository;
   MarketBloc({required this.productRepository}) : super(MarketState.initial()) {
-    on<MarketEvent>((event, emit) {});
-
     on<AddTemplateEvent>(_addTemplate);
     on<ChangeTemplateEvent>(_changeTemplate);
     on<LoadTemplateEvent>(_loadTemplate);

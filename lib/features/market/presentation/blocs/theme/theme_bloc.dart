@@ -7,7 +7,6 @@ part 'theme_state.dart';
 
 class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
   ThemeBloc() : super(ThemeState.initial()) {
-    // on<ThemeEvent>((event, emit) {});
     on<SelectTopColor>(_selectTopColor);
     on<SelectSecondColor>(_selectSecondColor);
     on<SelectBackColor>(_selectBackColor);

@@ -85,3 +85,20 @@ WS path is verified by contract + unit tests, not a live socket.
 `ssl/asoud.key` is tracked in git. Cleanup batch: stop mounting from repo,
 gitignore, document rotation. History rewrite / key rotation on the server is
 the owner's call (affects production).
+
+## The batch-13 "final audit" was not a complete fake-code audit
+A 2026-07-12 rescan found duplicate empty CartBloc/PaymentBloc trees, unused
+empty ProfileBloc, a CustomerBloc that returned synthetic `Success()` values,
+and catch-all no-op handlers inside active product/market blocs. Batch 14 removes
+those artifacts plus fake business-card location persistence without touching
+the real cart/payment implementations. Several
+dead UI callbacks and incomplete owner-side feature surfaces still remain; do
+not treat the v1.1.0 tag as full backend/frontend feature parity.
+
+## SECURITY: new UI must not expose unsafe backend admin/business paths
+The resumed audit found three backend blockers: analytics returns platform-wide
+data to ordinary authenticated users, notification create accepts an arbitrary
+target user without an admin permission, and SMS send bypasses billing with a
+hardcoded `WALLET_OK = True`. These need explicit product/authorization decisions
+before their full Flutter surfaces are enabled. The existing notification inbox
+is safe to keep because it only lists and marks the current user's notifications.

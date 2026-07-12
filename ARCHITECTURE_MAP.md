@@ -3,7 +3,9 @@
 > Shared reference for the production-v1 effort. Updated after every batch.
 > Backend repo: `asoud-project-full` (Django, source of truth for the API contract).
 > Frontend repo: `fluter-sina` (Flutter, package name `asood`).
-> Last full audit: 2026-07-08 (initial map, pre-change).
+> Initial audit: 2026-07-08. Resumed parity audit: 2026-07-12.
+> Sections 1-3 preserve the initial evidence; the batch table records fixes and
+> the remaining-parity rows at the end are authoritative for current status.
 
 ## 0. Ground truth and conventions
 
@@ -209,6 +211,38 @@ logic + app exit (`profile_menu_widget.dart:34,49`), product-details navigation
 
 ## 6. Batch plan & status
 
+### 6.0 Resumed-audit blockers (2026-07-12)
+
+- **Reservation user GET routes:** backend list/detail were wired to the create-only
+  view and returned 405. Fixed in the backend continuation batch; owner CRUD remains.
+- **Analytics authorization:** backend dashboard/report querysets expose platform-wide
+  totals to any authenticated user. Do not add more owner-facing analytics UI until
+  tenant/role scoping is decided and enforced.
+- **Notification authorization:** backend notification create accepts an arbitrary
+  `user_id` from any authenticated caller. Admin/system-only sending policy is not
+  enforced; existing Flutter UI only consumes/marks the current user's notifications.
+- **SMS billing integrity:** owner bulk/pattern send paths use hardcoded
+  `WALLET_OK = True`; pattern responses are also double-encoded. Do not expose the
+  send UI until billing behavior is defined and fixed.
+- **Secrets:** production env values and TLS private keys are tracked in backend git
+  history. Rotation, safe untracking, and any history rewrite require owner action.
+
+### 6.1 Current parity snapshot (authoritative)
+
+| Domain | Current Flutter coverage | Remaining contract work |
+|---|---|---|
+| Auth/API core | DRF Token, session owner, routing guard, structured errors/logging | none known |
+| Buyer commerce | public markets, bookmarks, cart, order/payment/wallet basics | product discovery, comment update, discount application UX |
+| Owner commerce | market edit, product create/detail, discounts, incoming orders | schedules UI, shipping UI, product update blocked by absent backend endpoint |
+| Reservation | user booking/create and own-list client | owner CRUD/list/detail; navigation entry point |
+| Chat/support | REST + authenticated WebSocket | live environment verification |
+| Notifications | inbox/list/mark-read/mark-all | navigation/badge/preferences/WS; backend create permission fix |
+| Inquiry | user workflow and image upload | verify owner dashboard coverage in final pass |
+| Affiliate | available list plus service methods for create/my/delete | product detail/update/theme UI and reachable navigation |
+| Analytics | one dashboard request/screen | authorization scoping, navigation, report families |
+| Advertisement/referral/SMS | no real Flutter surface | full UI/API wiring; SMS blocked by billing policy |
+| CI/CD | analyze/test/build workflows and signed tagged release | local SDK/release-build verification; owner signing secrets |
+
 | # | Batch | Scope | Status |
 |---|-------|-------|--------|
 | 0 | Foundation: build health + logging + API core | flutter analyze clean-up, structured logging, DioClient auth fix (C1–C4), error taxonomy in `api_status.dart` | DONE (2026-07-08) |
@@ -222,10 +256,17 @@ logic + app exit (`profile_menu_widget.dart:34,49`), product-details navigation
 | 7 | Backend infra cleanup | Dockerfile/compose/nginx consolidation per INFRA_NOTES.md, no behavior change | PENDING |
 | 8 | Inquiry completion | full InquiryAPIService (list/detail/answers/create/update/image/send/expiry/delete) + repo/DI (feature was never registered in locator); create flow fixed to actually upload images then send (images were silently dropped); both raw-http screens (inquiry_requests, submit_fee_inquiry) migrated off package:http/Bearer; InquiryListCubit; 7 tests. NOTE: comment 'like' dropped — no such endpoint in backend (apps/comment/urls.py has only create/detail/update/list; ALL_ENDPOINTS.txt wrong) | DONE (2026-07-10) |
 | 9 | Chat + support (WS-first) | backend: room_id routing fix + TokenAuthMiddleware for WS auth; frontend: ChatListCubit (rooms), ChatRoomBloc (REST history + live WebSocket via ChatSocket, socket-or-REST send, typing/presence frames), chat_list/chat_page rebuilt from empty shells, support tickets (create->chat_room reuse). 14 tests. Notifications still pending (own batch) | DONE (2026-07-10) |
-| 10 | Orders (owner) + secondary | owner order list/verify, advertise self/create+payment, referral, terms screen | PENDING |
+| 10a | Notifications | real list, mark-read, mark-all-read API/BLoC/UI and tests | DONE (2026-07-10) |
+| 10b | Owner orders | real order list/detail-status rendering and accept/reject verification with tests | DONE (2026-07-10) |
 | 11 | Reservation (user booking) | ReservationApiService (services?market, specialists?service, reserve-times?service, my reservations, create {reserve, specialist}); real ReservationBloc replacing empty shell; booking screen (service -> time -> reserve) + /reservation route + DI; empty ServiceBloc feature deleted; 4 tests. DEFERRED: owner CRUD screens for services/specialists/times/dayoffs (backend ready, ~15 endpoints) | DONE (2026-07-10, user side) |
-| 12 | Affiliate + analytics | analytics dashboard screen (GET analytics/dashboard/ -> stat tiles: orders/revenue/users/conversion/...); affiliate feature (available products, my products, create, delete) both were entirely ABSENT in the app; cubits + screens + DI + routes; 4 tests | DONE (2026-07-10). DEFERRED: affiliate create form UI + owner analytics sub-reports (sales/segmentation/etc — ~20 endpoints, read-only) | DONE |
+| 12 | Affiliate + analytics foundation | analytics dashboard screen (one dashboard GET); affiliate available-products screen plus create/my/delete service methods; DI/routes and 4 tests | DONE (2026-07-10), but UI is only a subset; full parity remains in batches 16-17 |
 | 13 | Final audit | ALL raw-http eliminated: bank_card (BankApiService, Token) + business_card migrated off package:http/Bearer (both were broken — Bearer not accepted by this backend); hardcoded mock bank card removed; withOpacity->withValues sweep; 87 tests, analyze 0 err/0 warn (remaining ~53 infos are tolerated legacy deprecations, CI --no-fatal-infos). App is raw-http/Bearer/SecureStorage-in-screens free | DONE (2026-07-10) |
+| 14 | Fake/empty BLoC cleanup | remove duplicate empty cart/payment trees, unused empty profile/customer blocs, synthetic CustomerBloc success paths, catch-all no-op handlers, an unused empty product event, and fake business-card location persistence; correct selected-location and product-price state | DONE (2026-07-12; independently verified: all 21 AddProduct events have handlers) |
+| 15 | Reservation owner management | service/specialist/reserve-time/dayoff CRUD and owner reservation list/detail | REMAINING |
+| 16 | Affiliate/referral/advertise completion | affiliate detail/update/theme and create UI, referral create/list, advertise detail/update/delete/payment surfaces | REMAINING |
+| 17 | Analytics + owner SMS completion | expose production-relevant analytics reports and owner line/template/bulk/pattern SMS workflows | REMAINING |
+| 18 | Residual parity + dead UI | owner schedules, product shipping, comment CRUD, buyer order/discount paths, business-card persistence, and remaining no-op callbacks | REMAINING |
+| 19 | Production verification | restore Flutter 3.44.4 locally, run format/analyze/tests/release build, verify contracts, and refresh the map | REMAINING (Flutter SDK unavailable in current shell) |
 
 Owner decision 2026-07-08: reservation, analytics, and affiliate are ALL in v1 —
 full feature parity with the backend, no reduced scope. Permanent engineering

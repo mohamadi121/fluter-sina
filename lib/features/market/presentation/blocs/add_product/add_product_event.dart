@@ -122,10 +122,6 @@ class SubmitNewProductEvent extends AddProductEvent {
   });
 }
 
-class SubmitThemeWithProductEvent extends AddProductEvent {
-  const SubmitThemeWithProductEvent();
-}
-
 class ProductExtraEvent extends AddProductEvent {
   final bool? gift;
   final bool? extra;
