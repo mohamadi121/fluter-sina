@@ -86,8 +86,7 @@ void main() {
     );
     bloc.add(const LoadReserveTimes('s1'));
     await bloc.stream.firstWhere(
-      (s) =>
-          s.status == ReservationStatus.loaded && s.reserveTimes.isNotEmpty,
+      (s) => s.status == ReservationStatus.loaded && s.reserveTimes.isNotEmpty,
     );
 
     api.specialistsRes = Success(

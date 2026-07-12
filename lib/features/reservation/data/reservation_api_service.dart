@@ -62,11 +62,10 @@ class ReservationApiService {
     required String specialistId,
   }) async {
     try {
-      final Response res = await dioClient
-          .postData('${_base}reservation/create', {
-            'reserve': reserveTimeId,
-            'specialist': specialistId,
-          });
+      final Response res = await dioClient.postData(
+        '${_base}reservation/create',
+        {'reserve': reserveTimeId, 'specialist': specialistId},
+      );
       return apiStatus(res);
     } catch (e) {
       return apiFailure(e);
