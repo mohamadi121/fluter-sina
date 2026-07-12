@@ -27,10 +27,13 @@ Example: cart routes are slash-less in `apps/cart/urls/user.py` but listed with
 trailing slashes in ALL_ENDPOINTS.txt. Verify every path/method against the
 app's `urls.py` + view before wiring.
 
-## graphify was never installed
-User instructions assumed a prebuilt graphify graph over both repos; no graph or
-GRAPH_REPORT.md exists and the tool is not on PATH. Exploration done directly
-(grep/read). If graphify gets installed later, regenerate the map from it.
+## Graphify is installed and both repos are in the shared graph
+Graphify 0.9.13 was installed on 2026-07-12. Both repos have project-scoped
+Claude integration, fresh code-only graphs under their local `graphify-out/`
+directories, and are registered in the global graph as `backend` and `frontend`.
+The generated graph artifacts are intentionally gitignored because they are
+large and reproducible; keep the project integration in version control and
+run `graphify update .` after code changes.
 
 ## Payment "pay" endpoint is a browser redirect, not an API call
 `GET user/payments/pay` (AllowAny) is the Zarinpal redirect URL. The app must

@@ -53,3 +53,6 @@ android/app/*.jks
 android/app/*.keystore
 *.jks
 *.keystore
+
+# Local Graphify extraction artifacts (regenerable with `graphify extract . --code-only`)
+graphify-out/
