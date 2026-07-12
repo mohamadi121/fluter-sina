@@ -23,10 +23,21 @@ class LoadReserveTimes extends ReservationEvent {
   List<Object?> get props => [serviceId];
 }
 
+class LoadSpecialists extends ReservationEvent {
+  final String serviceId;
+  const LoadSpecialists(this.serviceId);
+
+  @override
+  List<Object?> get props => [serviceId];
+}
+
 class CreateReservation extends ReservationEvent {
   final String reserveTimeId;
-  final String? specialistId;
-  const CreateReservation({required this.reserveTimeId, this.specialistId});
+  final String specialistId;
+  const CreateReservation({
+    required this.reserveTimeId,
+    required this.specialistId,
+  });
 
   @override
   List<Object?> get props => [reserveTimeId, specialistId];

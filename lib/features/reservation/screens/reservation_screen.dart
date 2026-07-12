@@ -6,7 +6,7 @@ import 'package:asood/features/reservation/blocs/reservation_bloc.dart';
 import 'package:asood/features/reservation/data/reservation_api_service.dart';
 import 'package:asood/locator.dart';
 
-/// Booking flow for a market: pick a service -> pick a reserve-time -> confirm.
+/// Booking flow: pick a service -> specialist -> reserve-time -> confirm.
 class ReservationScreen extends StatefulWidget {
   const ReservationScreen({super.key, required this.marketId});
 
@@ -19,6 +19,7 @@ class ReservationScreen extends StatefulWidget {
 class _ReservationScreenState extends State<ReservationScreen> {
   late final ReservationBloc _bloc;
   String? _selectedServiceId;
+  String? _selectedSpecialistId;
 
   @override
   void initState() {
@@ -84,14 +85,48 @@ class _ReservationScreenState extends State<ReservationScreen> {
                       title: Text(s['name']?.toString() ?? 'خدمت'),
                       activeColor: Colora.primaryColor,
                       onChanged: (v) {
-                        setState(() => _selectedServiceId = v);
+                        setState(() {
+                          _selectedServiceId = v;
+                          _selectedSpecialistId = null;
+                        });
                         if (v != null) {
-                          _bloc.add(LoadReserveTimes(v));
+                          _bloc.add(LoadSpecialists(v));
                         }
                       },
                     ),
                   ),
                 if (_selectedServiceId != null) ...[
+                  const Divider(),
+                  const Text(
+                    'متخصص',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  if (state.specialists.isEmpty)
+                    const Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Text('متخصصی برای این خدمت ثبت نشده است'),
+                    )
+                  else
+                    ...state.specialists.map(
+                      (specialist) => RadioListTile<String>(
+                        value: specialist['id'].toString(),
+                        groupValue: _selectedSpecialistId,
+                        title: Text(
+                          specialist['field']?.toString() ??
+                              specialist['user']?.toString() ??
+                              'متخصص',
+                        ),
+                        activeColor: Colora.primaryColor,
+                        onChanged: (v) {
+                          setState(() => _selectedSpecialistId = v);
+                          if (v != null) {
+                            _bloc.add(LoadReserveTimes(_selectedServiceId!));
+                          }
+                        },
+                      ),
+                    ),
+                ],
+                if (_selectedSpecialistId != null) ...[
                   const Divider(),
                   const Text(
                     'زمان‌های آزاد',
@@ -118,6 +153,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
                                     : () => _bloc.add(
                                       CreateReservation(
                                         reserveTimeId: t['id'].toString(),
+                                        specialistId: _selectedSpecialistId!,
                                       ),
                                     ),
                             child: const Text('رزرو'),

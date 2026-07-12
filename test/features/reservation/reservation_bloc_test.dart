@@ -7,6 +7,7 @@ import 'package:asood/features/reservation/data/reservation_api_service.dart';
 
 class _FakeReservationApi implements ReservationApiService {
   dynamic servicesRes;
+  dynamic specialistsRes;
   dynamic reserveTimesRes;
   dynamic createRes;
   dynamic mineRes;
@@ -24,14 +25,14 @@ class _FakeReservationApi implements ReservationApiService {
   @override
   Future createReservation({
     required String reserveTimeId,
-    String? specialistId,
+    required String specialistId,
   }) async {
     lastCreate = {'reserve': reserveTimeId, 'specialist': specialistId};
     return createRes;
   }
 
   @override
-  Future specialists(String serviceId) async => throw UnimplementedError();
+  Future specialists(String serviceId) async => specialistsRes;
 
   @override
   DioClient get dioClient => throw UnimplementedError();
@@ -74,6 +75,33 @@ void main() {
     await bloc.stream.firstWhere((s) => s.status == ReservationStatus.loaded);
 
     expect(bloc.state.reserveTimes.single['id'], 't1');
+  });
+
+  test('LoadSpecialists maps specialists and clears reserve-times', () async {
+    api.reserveTimesRes = Success(
+      code: 200,
+      response: [
+        {'id': 'old-time'},
+      ],
+    );
+    bloc.add(const LoadReserveTimes('s1'));
+    await bloc.stream.firstWhere(
+      (s) =>
+          s.status == ReservationStatus.loaded && s.reserveTimes.isNotEmpty,
+    );
+
+    api.specialistsRes = Success(
+      code: 200,
+      response: [
+        {'id': 'sp1', 'name': 'متخصص اول'},
+      ],
+    );
+
+    bloc.add(const LoadSpecialists('s1'));
+    await bloc.stream.firstWhere((s) => s.status == ReservationStatus.loaded);
+
+    expect(bloc.state.specialists.single['id'], 'sp1');
+    expect(bloc.state.reserveTimes, isEmpty);
   });
 
   test('CreateReservation sends reserve id and reaches booked', () async {

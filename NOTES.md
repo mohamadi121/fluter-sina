@@ -102,3 +102,14 @@ target user without an admin permission, and SMS send bypasses billing with a
 hardcoded `WALLET_OK = True`. These need explicit product/authorization decisions
 before their full Flutter surfaces are enabled. The existing notification inbox
 is safe to keep because it only lists and marks the current user's notifications.
+
+## Reservation contract requires a specialist
+The backend `Reservation.specialist` relation is non-null and the create
+serializer requires it. The earlier Flutter booking UI skipped specialist
+selection and therefore could not create a reservation. The repaired user flow
+loads specialists after service selection, loads times after specialist
+selection, and always sends both `reserve` and `specialist`. Backend user list
+and detail URLs were also corrected to their GET views (they previously pointed
+at the POST-only create view and returned 405). Backend create now rejects a
+specialist who does not provide the reserve time's service, and the Flutter BLoC
+ignores stale specialist/time responses after rapid reselection.

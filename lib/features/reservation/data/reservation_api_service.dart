@@ -59,13 +59,13 @@ class ReservationApiService {
 
   Future createReservation({
     required String reserveTimeId,
-    String? specialistId,
+    required String specialistId,
   }) async {
     try {
       final Response res = await dioClient
           .postData('${_base}reservation/create', {
             'reserve': reserveTimeId,
-            if (specialistId != null) 'specialist': specialistId,
+            'specialist': specialistId,
           });
       return apiStatus(res);
     } catch (e) {

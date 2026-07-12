@@ -7,13 +7,16 @@ import 'package:asood/features/reservation/data/reservation_api_service.dart';
 part 'reservation_event.dart';
 part 'reservation_state.dart';
 
-/// User booking flow: services for a market -> reserve-times for a service ->
-/// create reservation. Also lists the user's own reservations.
+/// User booking flow: service -> specialist -> reserve-time -> reservation.
+/// Also lists the user's own reservations.
 class ReservationBloc extends Bloc<ReservationEvent, ReservationState> {
   final ReservationApiService api;
+  int _specialistsRequestId = 0;
+  int _reserveTimesRequestId = 0;
 
   ReservationBloc({required this.api}) : super(const ReservationState()) {
     on<LoadServices>(_onLoadServices);
+    on<LoadSpecialists>(_onLoadSpecialists);
     on<LoadReserveTimes>(_onLoadReserveTimes);
     on<CreateReservation>(_onCreate);
     on<LoadMyReservations>(_onLoadMine);
@@ -33,6 +36,37 @@ class ReservationBloc extends Bloc<ReservationEvent, ReservationState> {
       state.copyWith(
         status: ReservationStatus.loaded,
         services: _asList(res.response),
+        specialists: const [],
+        reserveTimes: const [],
+      ),
+    );
+  }
+
+  Future<void> _onLoadSpecialists(
+    LoadSpecialists event,
+    Emitter<ReservationState> emit,
+  ) async {
+    final requestId = ++_specialistsRequestId;
+    _reserveTimesRequestId++;
+    emit(
+      state.copyWith(
+        status: ReservationStatus.loading,
+        specialists: const [],
+        reserveTimes: const [],
+      ),
+    );
+    final res = await api.specialists(event.serviceId);
+    if (requestId != _specialistsRequestId) {
+      return;
+    }
+    if (res is! Success) {
+      emit(_fail(res));
+      return;
+    }
+    emit(
+      state.copyWith(
+        status: ReservationStatus.loaded,
+        specialists: _asList(res.response),
         reserveTimes: const [],
       ),
     );
@@ -42,8 +76,12 @@ class ReservationBloc extends Bloc<ReservationEvent, ReservationState> {
     LoadReserveTimes event,
     Emitter<ReservationState> emit,
   ) async {
+    final requestId = ++_reserveTimesRequestId;
     emit(state.copyWith(status: ReservationStatus.loading));
     final res = await api.reserveTimes(event.serviceId);
+    if (requestId != _reserveTimesRequestId) {
+      return;
+    }
     if (res is! Success) {
       emit(_fail(res));
       return;
