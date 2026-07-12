@@ -66,7 +66,7 @@ exists but connected to nothing.
 | `create/`, `list/`, `contact/create/`, `location/create/`, `schedules/create/`, `inactive/{pk}`, `queue/{pk}`, `logo/{pk}`, `background/{pk}`, `slider/{pk}`, `theme/{pk}` | `CreateMarketApiService` | OK (media-endpoint HTTP methods need per-case verify in batch) |
 | `{pk}/` (detail), `update/{pk}/` | — | ABSENT (owner cannot view/edit market info → `editStoreInfo`/`storeInfo` screens are cosmetic) |
 | `contact/{pk}/`, `contact/update/{pk}/`, `location/{pk}/`, `location/update/{pk}/` | — | ABSENT |
-| `schedules/list/`, `schedules/{pk}/update|delete/` | — | ABSENT |
+| `schedules/list/`, `schedules/{pk}/update|delete/` | `CreateMarketApiService` | API client present; owner management UI still absent. Create UI sends only complete intervals. |
 | — (no such endpoint) | `CreateMarketApiService.getMarketComments` calls `owner/market/comment/list/{id}/` | WRONG → 404. Real comments API: `user/comment/comments/{content_type}/{object_id}/` |
 
 ### 2.4 Market — user side (`api/v1/user/market/`)
@@ -265,8 +265,8 @@ logic + app exit (`profile_menu_widget.dart:34,49`), product-details navigation
 | 15 | Reservation completion | user list/detail route wiring fixed in backend; user booking now requires service -> specialist -> time and sends both required IDs; owner service/specialist/reserve-time/dayoff CRUD and reservation list/detail still remain | IN PROGRESS (user flow repaired 2026-07-12) |
 | 16 | Affiliate/referral/advertise completion | affiliate detail/update/theme and create UI, referral create/list, advertise detail/update/delete/payment surfaces | REMAINING |
 | 17 | Analytics + owner SMS completion | expose production-relevant analytics reports and owner line/template/bulk/pattern SMS workflows | REMAINING |
-| 18 | Residual parity + dead UI | owner schedules, product shipping, comment CRUD, buyer order/discount paths, business-card persistence, and remaining no-op callbacks | REMAINING |
-| 19 | Production verification | restore Flutter 3.44.4 locally, run format/analyze/tests/release build, verify contracts, and refresh the map | REMAINING (Flutter SDK unavailable in current shell) |
+| 18 | Residual parity + dead UI | owner schedule management UI (create contract fixed), product shipping, comment CRUD, buyer order/discount paths, business-card persistence, and remaining no-op callbacks | REMAINING |
+| 19 | Production verification | Flutter 3.44.6 installed locally; targeted schedule analyze passes. Full analyze/tests/release build and final contract verification remain | IN PROGRESS |
 
 Owner decision 2026-07-08: reservation, analytics, and affiliate are ALL in v1 —
 full feature parity with the backend, no reduced scope. Permanent engineering

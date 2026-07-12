@@ -53,13 +53,13 @@ class _WeekdayOpentimeState extends State<WeekdayOpentime> {
       // بازه 1
       final from1 = times[0];
       final to1 = times[1];
-      if (from1 != null) {
+      if (from1 != null && to1 != null) {
         schedules.add(
           MarketScheduleModel(
             market: marketID,
             day: day,
             start: _formatTime(from1),
-            end: to1 != null ? _formatTime(to1) : null,
+            end: _formatTime(to1),
           ),
         );
       }
@@ -67,13 +67,13 @@ class _WeekdayOpentimeState extends State<WeekdayOpentime> {
       // بازه 2
       final from2 = times[2];
       final to2 = times[3];
-      if (from2 != null) {
+      if (from2 != null && to2 != null) {
         schedules.add(
           MarketScheduleModel(
             market: marketID,
             day: day,
             start: _formatTime(from2),
-            end: to2 != null ? _formatTime(to2) : null,
+            end: _formatTime(to2),
           ),
         );
       }
@@ -113,19 +113,8 @@ class _WeekdayOpentimeState extends State<WeekdayOpentime> {
                         _buildTimeRow(
                           _timeRanges[day]![0],
                           _timeRanges[day]![1],
-                          (from) {
-                            setState(() => _timeRanges[day]![0] = from);
-
-                            final model = MarketScheduleModel(
-                              market: widget.marketId,
-                              day: _dayIndexMap[day]!.toString(),
-                              start: _formatTime(from),
-                              end: null,
-                            );
-                            BlocProvider.of<CreateWorkSpaceBloc>(
-                              context,
-                            ).add(SetMarketScheduleEvent(scheduleModel: model));
-                          },
+                          (from) =>
+                              setState(() => _timeRanges[day]![0] = from),
                           (to) {
                             if (_isToAfterFrom(_timeRanges[day]![0], to)) {
                               setState(() => _timeRanges[day]![1] = to);

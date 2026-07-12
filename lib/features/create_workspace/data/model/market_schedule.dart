@@ -2,13 +2,13 @@ class MarketScheduleModel {
   final String market;
   final String day;
   final String start;
-  final String? end;
+  final String end;
 
   MarketScheduleModel({
     required this.market,
     required this.day,
     required this.start,
-    this.end,
+    required this.end,
   });
 
   factory MarketScheduleModel.fromJson(Map<String, dynamic> json) {
@@ -16,7 +16,7 @@ class MarketScheduleModel {
       market: json['market'],
       day: json['day'],
       start: json['start'],
-      end: json['end'],
+      end: json['end'] as String,
     );
   }
 
@@ -25,7 +25,7 @@ class MarketScheduleModel {
       'market': market,
       'day': day,
       'start': start,
-      if (end != null) 'end': end,
+      'end': end,
     };
   }
 }

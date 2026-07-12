@@ -80,6 +80,14 @@ void main() {
       expect(result, isA<Success>());
       expect(((result as Success).response as Map)['quantity'], 2);
     });
+
+    test('empty 204 body is a Success', () {
+      final result = apiStatus(_response(null, 204));
+
+      expect(result, isA<Success>());
+      expect((result as Success).code, 204);
+      expect(result.response, isNull);
+    });
   });
 
   group('apiFailure (thrown errors)', () {

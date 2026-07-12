@@ -113,3 +113,11 @@ and detail URLs were also corrected to their GET views (they previously pointed
 at the POST-only create view and returned 405). Backend create now rejects a
 specialist who does not provide the reserve time's service, and the Flutter BLoC
 ignores stale specialist/time responses after rapid reselection.
+
+## Market schedules require complete intervals
+The backend schedule API now uses the real `MarketSchedule` model instead of
+fabricating a reservation service. `MarketScheduleModel.end` is therefore required,
+and `WeekdayOpentime` sends only after both start and end are selected. Do not
+reintroduce the earlier start-only POST: it creates incomplete UI state and the
+backend correctly rejects it. Delete returns HTTP 204 with no body; the shared
+`apiStatus` mapper treats empty successful responses as `Success`.

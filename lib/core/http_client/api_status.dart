@@ -46,6 +46,10 @@ dynamic apiStatus(Response response) {
   try {
     final res = response.data;
 
+    if (res == null || (res is String && res.isEmpty)) {
+      return Success(code: response.statusCode);
+    }
+
     if (res is List || (res is Map && !res.containsKey('success'))) {
       return Success(code: response.statusCode, response: res);
     }
