@@ -62,9 +62,4 @@ class ProductRepositoryImp implements ProductRepository {
       parentId: parentId,
     );
   }
-
-  @override
-  Future deleteMarketTheme(String themeId) {
-    return productApiService.deleteMarketTheme(themeId);
-  }
 }

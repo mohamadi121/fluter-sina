@@ -13,12 +13,11 @@ class MarketBloc extends Bloc<MarketEvent, MarketState> {
     on<AddTemplateEvent>(_addTemplate);
     on<ChangeTemplateEvent>(_changeTemplate);
     on<LoadTemplateEvent>(_loadTemplate);
-    on<RemoveTemplateEvent>(_removeTemplate);
     on<ShowTemplatesEvent>(_showTemplates);
   }
 
   _addTemplate(AddTemplateEvent event, Emitter<MarketState> emit) async {
-    emit(state.copyWith(status: CWSStatus.loading));
+    emit(state.copyWith(status: CWSStatus.loading, clearFeedback: true));
     try {
       final res = await productRepository.createMarketTheme(
         event.marketId,
@@ -26,22 +25,36 @@ class MarketBloc extends Bloc<MarketEvent, MarketState> {
       );
 
       if (res is Success) {
-        /// لود تم وقتی سیو انجام شد
-        await _loadTemplate(LoadTemplateEvent(marketId: event.marketId), emit);
+        await _loadTemplate(
+          LoadTemplateEvent(marketId: event.marketId),
+          emit,
+          'قالب با موفقیت اضافه شد',
+        );
         return;
-      } else {
-        emit(state.copyWith(status: CWSStatus.failure));
       }
-    } catch (e) {
-      emit(state.copyWith(status: CWSStatus.failure));
-    } finally {
-      emit(state.copyWith(status: CWSStatus.initial));
+      emit(
+        state.copyWith(
+          status: CWSStatus.failure,
+          feedback: res is Failure ? res.message : 'افزودن قالب ناموفق بود',
+        ),
+      );
+    } catch (e, st) {
+      AppLogger.error('market', 'addTemplate failed', e, st);
+      emit(
+        state.copyWith(
+          status: CWSStatus.failure,
+          feedback: 'افزودن قالب ناموفق بود',
+        ),
+      );
     }
-    emit(state.copyWith(status: CWSStatus.initial));
   }
 
-  _loadTemplate(LoadTemplateEvent event, Emitter<MarketState> emit) async {
-    emit(state.copyWith(status: CWSStatus.loading));
+  _loadTemplate(
+    LoadTemplateEvent event,
+    Emitter<MarketState> emit, [
+    String? successFeedback,
+  ]) async {
+    emit(state.copyWith(status: CWSStatus.loading, clearFeedback: true));
     try {
       final res = await productRepository.getMarketTheme(event.marketId);
 
@@ -55,24 +68,31 @@ class MarketBloc extends Bloc<MarketEvent, MarketState> {
             templateList: templateList,
             marketId: event.marketId,
             showTemplates: false,
+            feedback: successFeedback,
           ),
         );
       } else {
-        emit(state.copyWith(status: CWSStatus.failure));
+        emit(
+          state.copyWith(
+            status: CWSStatus.failure,
+            feedback:
+                res is Failure ? res.message : 'دریافت قالب‌ها ناموفق بود',
+          ),
+        );
       }
     } catch (e, st) {
       AppLogger.error('market', 'loadTemplate failed', e, st);
-      emit(state.copyWith(status: CWSStatus.failure));
+      emit(
+        state.copyWith(
+          status: CWSStatus.failure,
+          feedback: 'دریافت قالب‌ها ناموفق بود',
+        ),
+      );
     }
   }
 
   _changeTemplate(ChangeTemplateEvent event, Emitter<MarketState> emit) {
     emit(state.copyWith(templateIndex: event.template));
-  }
-
-  _removeTemplate(RemoveTemplateEvent event, Emitter<MarketState> emit) {
-    state.templateList.removeAt(event.index);
-    emit(state.copyWith(templateList: state.templateList));
   }
 
   _showTemplates(ShowTemplatesEvent event, Emitter<MarketState> emit) {

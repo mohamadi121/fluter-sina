@@ -18,5 +18,4 @@ abstract class ProductRepository {
     required String comment,
     int? parentId,
   });
-  Future<dynamic> deleteMarketTheme(String themeId);
 }

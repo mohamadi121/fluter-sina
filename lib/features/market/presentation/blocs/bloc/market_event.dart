@@ -28,9 +28,3 @@ class LoadTemplateEvent extends MarketEvent {
 
   const LoadTemplateEvent({required this.marketId});
 }
-
-class RemoveTemplateEvent extends MarketEvent {
-  final int index;
-
-  const RemoveTemplateEvent({required this.index});
-}

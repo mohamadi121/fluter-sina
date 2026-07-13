@@ -22,6 +22,7 @@ class _MemoryTokenStorage implements TokenStorage {
 class _RecordingDioClient extends DioClient {
   String? requestedPath;
   Map<String, dynamic>? requestedQuery;
+  Object? postedBody;
 
   _RecordingDioClient()
     : super(
@@ -47,6 +48,25 @@ class _RecordingDioClient extends DioClient {
       },
     );
   }
+
+  @override
+  Future<Response> postData(
+    String uri,
+    dynamic data, {
+    Map<String, dynamic>? headers,
+  }) async {
+    requestedPath = uri;
+    postedBody = data;
+    return Response(
+      requestOptions: RequestOptions(path: uri),
+      statusCode: 201,
+      data: {
+        'success': true,
+        'code': 201,
+        'data': {'name': 'layout-3', 'order': 3},
+      },
+    );
+  }
 }
 
 void main() {
@@ -65,5 +85,16 @@ void main() {
     expect(result, isA<Success>());
     final data = (result as Success).response as Map<String, dynamic>;
     expect(data['name'], 'Public product');
+  });
+
+  test('theme creation sends only the selected layout order', () async {
+    final client = _RecordingDioClient();
+    final service = ProductApiService(dioClient: client);
+
+    final result = await service.createMarketTheme('market-1', 3);
+
+    expect(client.requestedPath, 'owner/product/theme/create/market-1/');
+    expect(client.postedBody, {'order': 3});
+    expect(result, isA<Success>());
   });
 }

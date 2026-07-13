@@ -6,6 +6,7 @@ class MarketState {
   final bool showTemplates;
   final int templateIndex;
   final String marketId;
+  final String? feedback;
 
   const MarketState({
     required this.status,
@@ -13,6 +14,7 @@ class MarketState {
     required this.showTemplates,
     required this.templateIndex,
     required this.marketId,
+    this.feedback,
   });
 
   factory MarketState.initial() {
@@ -22,6 +24,7 @@ class MarketState {
       showTemplates: false,
       templateIndex: 0,
       marketId: '',
+      feedback: null,
     );
   }
 
@@ -31,6 +34,8 @@ class MarketState {
     bool? showTemplates,
     int? templateIndex,
     String? marketId,
+    String? feedback,
+    bool clearFeedback = false,
   }) {
     return MarketState(
       status: status ?? this.status,
@@ -38,6 +43,7 @@ class MarketState {
       showTemplates: showTemplates ?? this.showTemplates,
       templateIndex: templateIndex ?? this.templateIndex,
       marketId: marketId ?? this.marketId,
+      feedback: clearFeedback ? null : feedback ?? this.feedback,
     );
   }
 }

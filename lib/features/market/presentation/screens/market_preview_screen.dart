@@ -1436,7 +1436,6 @@ productView(String marketId, styleState, MarketBloc marketBloc) {
 //             //                     //     children: [
 //             //                     //       IconButton(
 //             //                     //         onPressed: (){
-//             //                     //           marketBloc.add(RemoveTemplateEvent(index: index));
 //             //                     //           // state.templateList.removeAt(index);
 //             //                     //         },
 //             //                     //         icon: const Icon(

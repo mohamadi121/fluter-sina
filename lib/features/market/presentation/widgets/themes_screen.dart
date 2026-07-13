@@ -26,15 +26,17 @@ class _MultiViewSliderScreenState extends State<MultiViewSliderScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     bloc = BlocProvider.of<MarketBloc>(context);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      // color: Colora.primaryColor,
+    return BlocListener<MarketBloc, MarketState>(
+      listenWhen:
+          (previous, current) =>
+              current.feedback != null && previous.feedback != current.feedback,
+      listener: (context, state) => showSnackBar(context, state.feedback!),
       child: SafeArea(
         child: Scaffold(
           backgroundColor: Colors.transparent,
@@ -195,14 +197,6 @@ class _MultiViewSliderScreenState extends State<MultiViewSliderScreen> {
                                           marketId: bloc.state.marketId,
                                           template: bloc.state.templateIndex,
                                         ),
-                                      );
-                                    }
-                                    if (bloc.state.status ==
-                                            CWSStatus.success &&
-                                        state.status != CWSStatus.loading) {
-                                      showSnackBar(
-                                        context,
-                                        "قالب با موفقیت اضافه شد",
                                       );
                                     }
                                   },

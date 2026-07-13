@@ -74,7 +74,7 @@ class ProductApiService {
     try {
       Response res = await dioClient.postData(
         "${Endpoints.ownerProductThemeCreate}$marketId/",
-        {"name": "test", "order": order},
+        {"order": order},
       );
 
       return apiStatus(res);
@@ -103,17 +103,6 @@ class ProductApiService {
       Response res = await dioClient.putData(
         "${Endpoints.ownerProductThemeUpdate}$themeId/",
         {"product": productId, "index": int.parse(themeIndex)},
-      );
-      return apiStatus(res);
-    } catch (e) {
-      return apiFailure(e);
-    }
-  }
-
-  Future deleteMarketTheme(String themeId) async {
-    try {
-      Response res = await dioClient.deleteData(
-        "${Endpoints.baseProduct}/theme/delete/$themeId/",
       );
       return apiStatus(res);
     } catch (e) {

@@ -186,3 +186,9 @@ The product screen now reads the public `/api/v1/products?id=` contract instead 
 owner-only detail route. Static discount/countdown content, local-only bookmark state
 and no-op edit/save/share/upload/list/carousel controls were removed. Comment identity
 comes from authentication, so discarded name/email fields are no longer shown.
+
+## Product themes no longer use placeholder writes
+Theme creation sends only the selected layout order; the backend owns the internal
+name. `MarketBloc` keeps authoritative success/failure state, reloads the server list
+after create, surfaces backend details through the screen listener, and no longer
+retains a fake local-only theme removal event/API.
