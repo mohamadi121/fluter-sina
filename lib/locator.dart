@@ -53,6 +53,7 @@ import 'package:asood/features/reservation/data/reservation_api_service.dart';
 import 'package:asood/features/analytics/data/analytics_api_service.dart';
 import 'package:asood/features/affiliate/data/affiliate_api_service.dart';
 import 'package:asood/features/referral/data/referral_api_service.dart';
+import 'package:asood/features/profile/data/profile_api_service.dart';
 import 'package:asood/features/bank_card/data/bank_api_service.dart';
 import 'package:asood/features/auth/data/repository/auth_repository_imp.dart';
 import 'package:asood/features/auth/domain/repository/auth_repository.dart';
@@ -131,6 +132,9 @@ locatorSetup() async {
   );
   locator.registerFactory(
     () => ReferralApiService(dioClient: locator<DioClient>()),
+  );
+  locator.registerFactory(
+    () => ProfileApiService(dioClient: locator<DioClient>()),
   );
   locator.registerFactory(
     () => BankApiService(dioClient: locator<DioClient>()),

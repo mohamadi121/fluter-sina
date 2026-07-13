@@ -120,21 +120,36 @@ String? _envelopeDetail(dynamic data) {
   }
   final error = data['error'];
   if (error is Map && error['detail'] != null) {
-    return error['detail'].toString();
+    return _readableDetail(error['detail']);
   }
   if (error is String && error.isNotEmpty) {
     return error;
   }
   if (error == true) {
-    final detail = data['message'] ?? data['details'];
-    if (detail != null) {
-      return detail.toString();
-    }
+    return _readableDetail(data['details']) ?? _readableDetail(data['message']);
   }
   if (data['detail'] != null) {
-    return data['detail'].toString();
+    return _readableDetail(data['detail']);
   }
   return null;
+}
+
+String? _readableDetail(dynamic value) {
+  if (value == null) return null;
+  if (value is String) return value.isEmpty ? null : value;
+  if (value is List) {
+    final parts = value.map(_readableDetail).whereType<String>().toList();
+    return parts.isEmpty ? null : parts.join('\n');
+  }
+  if (value is Map) {
+    final parts = <String>[];
+    for (final entry in value.entries) {
+      final detail = _readableDetail(entry.value);
+      if (detail != null) parts.add('${entry.key}: $detail');
+    }
+    return parts.isEmpty ? null : parts.join('\n');
+  }
+  return value.toString();
 }
 
 FailureKind _kindForStatus(int status) {

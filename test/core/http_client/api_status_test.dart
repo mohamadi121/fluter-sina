@@ -161,6 +161,29 @@ void main() {
       );
     });
 
+    test(
+      'DRF validation envelope prefers field details over generic message',
+      () {
+        final failure = apiFailure(
+          _dioError(
+            response: _response({
+              'error': true,
+              'message': 'Validation failed',
+              'details': {
+                'national_code': ['National code must contain 10 digits.'],
+              },
+            }, 400),
+          ),
+        );
+
+        expect(failure.kind, FailureKind.validation);
+        expect(
+          failure.errorResponse,
+          'national_code: National code must contain 10 digits.',
+        );
+      },
+    );
+
     test('string-valued error field is used as the detail', () {
       final result = apiStatus(
         _response({

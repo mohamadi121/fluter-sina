@@ -52,6 +52,7 @@ exists but connected to nothing.
 |---|---|---|
 | `POST user/pin/create/` | `AuthApiService.userAuth` | OK |
 | `POST user/pin/verify/` | `AuthApiService.verifyUser` | OK (but see C1/C3) |
+| `GET/PUT user/profile/` | `ProfileApiService` + `ProfileCubit` + `VendorProfileScreen` | OK — real self data; mobile/legacy IBAN are read-only, fake document controls removed |
 | `user/bank-info/list/`, `user/bank/info/*` (CRUD) | `bank_card` feature is UI-only, no data layer | SHELL |
 
 ### 2.2 Category (`api/v1/category/`)
@@ -180,7 +181,7 @@ business_card, customer, panel, profile, store_setting_screens
 **Mock/hardcoded data:**
 - `bookmarks_page.dart:23` — `bookmarks = [MarketModel()]`.
 - `add_product_bloc.dart:257` — `shipCost: 2000 // TODO: Update ship cost from backend` (hardcoded business value).
-- `store_card.dart`, `vendor_home.dart`, `profile.dart`, `market_preview_screen.dart`, `store_detail_screen.dart`, `store_appbar.dart` — contain mock/placeholder markers (verify per batch).
+- `store_card.dart`, `vendor_home.dart`, `market_preview_screen.dart`, `store_detail_screen.dart`, `store_appbar.dart` — contain mock/placeholder markers (verify per batch). `profile.dart` was repaired in Batch 5g.
 
 **Dead UI:** 26 `onPressed/onTap: () {}` or `onPressed: null` sites (buttons that do nothing).
 

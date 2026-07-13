@@ -135,3 +135,16 @@ backend endpoints. Repeated application of the same code is treated as success a
 backend conflict/throttle messages are surfaced. Referred-user mobile numbers are
 not returned or rendered. Do not add points, wallet balance or discount copy until
 the backend has an explicit incentive ledger and reversal policy.
+
+## Profile is now backed by the authenticated self endpoint
+`VendorProfileScreen` loads and saves through `ProfileApiService`/`ProfileCubit`.
+The mobile number is server-owned and read-only; national code, address and birth
+date are the rendered editable fields. The legacy IBAN field is intentionally absent
+because its backend column is incorrectly capped at 20 characters; do not expose it
+until the migration baseline is reconciled and the contract can store `IR` plus 24
+digits. The previous hardcoded person,
+placeholder picture/documents, fixed three-image gallery and no-op save/upload
+buttons were deleted. Document/KYC UI must stay absent until the backend exposes a
+real upload and review lifecycle. DRF validation envelopes are flattened from their
+field-level `details`, so profile and other forms show the actionable backend error
+instead of the generic "Validation failed" message.
