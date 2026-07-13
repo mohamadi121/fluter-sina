@@ -23,9 +23,11 @@ class ProductApiService {
 
   //get product by id
   Future getProductById(productId) async {
-    var uri = 'owner/product/detail/$productId/';
     try {
-      Response res = await dioClient.getData(uri);
+      Response res = await dioClient.getData(
+        Endpoints.publicProductDetail,
+        queryParameters: {'id': productId},
+      );
       return apiStatus(res);
     } catch (e) {
       return apiFailure(e);

@@ -80,6 +80,20 @@ void main() {
     expect(cubit.state.error, 'Product not found');
   });
 
+  test('comment load failure is not presented as an empty thread', () async {
+    repo.detailRes = Success(code: 200, response: {'name': 'p1'});
+    repo.commentsRes = Failure(
+      code: 503,
+      errorResponse: 'Comments unavailable',
+      kind: FailureKind.server,
+    );
+
+    await cubit.load('prod-1');
+
+    expect(cubit.state.status, ProductDetailStatus.ready);
+    expect(cubit.state.error, 'Comments unavailable');
+  });
+
   test('sendComment posts product comment and refreshes thread', () async {
     repo.detailRes = Success(code: 200, response: {'name': 'p1'});
     repo.commentsRes = Success(code: 200, response: []);

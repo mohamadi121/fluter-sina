@@ -77,10 +77,11 @@ exists but connected to nothing.
 | `GET bookmark/`, `PUT bookmark/{pk}/` | `BookmarkApiService` + `BookmarkCubit` + `bookmarks_page.dart` | OK — published/user-scoped list, idempotent state writes, optimistic rollback |
 | `report/{pk}/` | — | ABSENT |
 
-### 2.5 Product (`api/v1/owner/product/`, `api/v1/products/`)
+### 2.5 Product (`api/v1/owner/product/`, public `/api/v1/products`)
 | Backend | Frontend | Status |
 |---|---|---|
 | `create/`, `list/{pk}`, `theme/create|list|update` | `ProductApiService` (market feature) | OK; legacy `discount/create/{pk}` is explicit 409 and absent from Flutter |
+| public `GET /api/v1/products?id={uuid}` | `ProductDetailCubit` + product screen | OK — published product/market only, customer-safe fields, real loading/failure state |
 | `detail/{pk}/`, `ship/list|create/{pk}`, `theme/delete/{pk}` | shipping create intentionally absent; legacy list is backend-only | FAIL-CLOSED — customer-paid shipping requires order selection/snapshot first |
 | `GET products/` (public search w/ filters) | — | ABSENT — buyer-side product search missing; `features/product` bloc is an empty shell |
 
@@ -88,7 +89,8 @@ exists but connected to nothing.
 | Backend | Frontend | Status |
 |---|---|---|
 | `comments/product/{id}/` (list) | `ProductApiService.getProductComments` | OK |
-| `create/`, `update/{id}`, `delete/{id}`, `{id}/like/` | `CommentBloc` registered in locator but has no repository/API | SHELL |
+| `create/` | product detail comment/reply form | OK — authenticated identity is server-owned; only content and parent are submitted |
+| `update/{id}`, `delete/{id}`, `{id}/like/` | — | ABSENT |
 
 ### 2.7 Cart / orders (`api/v1/user/order/`, `api/v1/owner/order/`)
 | Backend | Frontend | Status |

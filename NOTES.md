@@ -180,3 +180,9 @@ old percentage/timed/group widget, its local state/events and repository/API met
 were deleted because they targeted a legacy backend model that permanently changed
 the base price and was never consumed by cart. Configure discounts only through the
 real store discount flow backed by the checkout discount ledger.
+
+## Public product detail is publication-scoped
+The product screen now reads the public `/api/v1/products?id=` contract instead of the
+owner-only detail route. Static discount/countdown content, local-only bookmark state
+and no-op edit/save/share/upload/list/carousel controls were removed. Comment identity
+comes from authentication, so discarded name/email fields are no longer shown.

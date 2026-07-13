@@ -50,6 +50,7 @@ class Endpoints {
   static String ownerProductThemeList = '$baseProduct/theme/list/';
   static String ownerProductThemeUpdate = '$baseProduct/theme/update/';
   //user
+  static String publicProductDetail = 'products';
   static String productCommentById = 'user/comment/comments/product';
 
   /// region

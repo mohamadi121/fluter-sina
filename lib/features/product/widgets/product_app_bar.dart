@@ -43,10 +43,7 @@ class ProductAppBar extends StatelessWidget {
             ),
           ),
 
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.menu_rounded, color: Colora.scaffold),
-          ),
+          const SizedBox(width: 48),
         ],
       ),
     );

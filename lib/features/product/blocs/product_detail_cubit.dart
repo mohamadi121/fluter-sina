@@ -6,10 +6,10 @@ import 'package:asood/features/market/domain/repository/product_repository.dart'
 
 part 'product_detail_state.dart';
 
-/// Product detail page state: owner product detail + its comment thread.
-/// Detail: GET owner/product/detail/{id}/ (envelope).
+/// Public product detail page state and its comment thread.
+/// Detail: GET /api/v1/products?id={id} (relative `products` under API_BASE_URL).
 /// Comments: GET user/comment/comments/product/{id}/ (bare list).
-/// Comment create: POST user/comment/create/ (bare {"message","id"}, 201).
+/// Comment create: POST user/comment/create/ with server-owned user identity.
 class ProductDetailCubit extends Cubit<ProductDetailState> {
   final ProductRepository repo;
 
@@ -56,7 +56,13 @@ class ProductDetailCubit extends Cubit<ProductDetailState> {
                   .toList(),
         ),
       );
+      return;
     }
+    emit(
+      state.copyWith(
+        error: res is Failure ? res.message : 'دریافت نظرهای محصول ناموفق بود',
+      ),
+    );
   }
 
   Future<void> sendComment(String text, {int? parentId}) async {
