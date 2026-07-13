@@ -114,6 +114,12 @@ at the POST-only create view and returned 405). Backend create now rejects a
 specialist who does not provide the reserve time's service, and the Flutter BLoC
 ignores stale specialist/time responses after rapid reselection.
 
+Backend reservation creation now rejects `is_paid`, unpublished Markets and a
+specialist outside the selected Service. The current Flutter payload already sends
+only `{reserve, specialist}` and remains compatible. Do not add a payment UI yet:
+the backend model has no appointment date, capacity, price, cancellation or refund
+lifecycle, so a truthful payment contract does not yet exist.
+
 ## Market schedules require complete intervals
 The backend schedule API now uses the real `MarketSchedule` model instead of
 fabricating a reservation service. `MarketScheduleModel.end` is therefore required,
