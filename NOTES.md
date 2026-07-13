@@ -148,3 +148,10 @@ buttons were deleted. Document/KYC UI must stay absent until the backend exposes
 real upload and review lifecycle. DRF validation envelopes are flattened from their
 field-level `details`, so profile and other forms show the actionable backend error
 instead of the generic "Validation failed" message.
+
+## Bookmarks use authoritative desired-state writes
+The bookmark list is loaded from `GET user/market/bookmark/`; no synthetic market
+is rendered. A change uses idempotent `PUT user/market/bookmark/{id}/` with an
+explicit boolean. Removal drops the row optimistically, disables duplicate writes
+for that market, and restores the row and ID if the request fails. The backend state
+in the response wins over the optimistic state. Load failures render a retry action.

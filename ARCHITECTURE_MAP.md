@@ -74,7 +74,7 @@ exists but connected to nothing.
 | Backend | Frontend | Status |
 |---|---|---|
 | `public/list/` (marketplace browsing), `list/`, `schedule/{pk}/` | — | ABSENT — the entire buyer-side market browsing is missing |
-| `POST/DELETE bookmark/` | `bookmarks_page.dart` renders hardcoded `[MarketModel()]` | SHELL + mock data |
+| `GET bookmark/`, `PUT bookmark/{pk}/` | `BookmarkApiService` + `BookmarkCubit` + `bookmarks_page.dart` | OK — published/user-scoped list, idempotent state writes, optimistic rollback |
 | `report/{pk}/` | — | ABSENT |
 
 ### 2.5 Product (`api/v1/owner/product/`, `api/v1/products/`)
@@ -174,12 +174,11 @@ DioClient + BLoC in its owning batch:
 `BusinessBloc`, `ProfileBloc`, `CustomerBloc`, `ThemeBloc`, `CommentBloc`.
 
 **Features with zero data layer (pure UI):**
-chat, notification, product, reservation, service, bookmarks, bank_card,
+chat, notification, product, reservation, service, bank_card,
 business_card, customer, panel, profile, store_setting_screens
 (vendor reuses create_workspace repo — partially real).
 
 **Mock/hardcoded data:**
-- `bookmarks_page.dart:23` — `bookmarks = [MarketModel()]`.
 - `add_product_bloc.dart:257` — `shipCost: 2000 // TODO: Update ship cost from backend` (hardcoded business value).
 - `store_card.dart`, `vendor_home.dart`, `market_preview_screen.dart`, `store_detail_screen.dart`, `store_appbar.dart` — contain mock/placeholder markers (verify per batch). `profile.dart` was repaired in Batch 5g.
 

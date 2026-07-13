@@ -43,8 +43,15 @@ class _MyBookmarksState extends State<MyBookmarks> {
             children: [
               Padding(
                 padding: EdgeInsets.only(top: Dimensions.height * 0.12),
-                child: BlocBuilder<BookmarkCubit, BookmarkState>(
+                child: BlocConsumer<BookmarkCubit, BookmarkState>(
                   bloc: _cubit,
+                  listener: (context, state) {
+                    if (state.error != null) {
+                      ScaffoldMessenger.of(context)
+                        ..clearSnackBars()
+                        ..showSnackBar(SnackBar(content: Text(state.error!)));
+                    }
+                  },
                   builder: (context, state) {
                     if (state.status == BookmarkStatus.loading ||
                         state.status == BookmarkStatus.initial) {
@@ -52,11 +59,21 @@ class _MyBookmarksState extends State<MyBookmarks> {
                     }
                     if (state.status == BookmarkStatus.failure) {
                       return Center(
-                        child: Text(
-                          state.error ?? 'خطا در دریافت علاقه‌مندی‌ها',
-                          style: const TextStyle(
-                            color: Colora.backgroundSwitch,
-                          ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              state.error ?? 'خطا در دریافت علاقه‌مندی‌ها',
+                              style: const TextStyle(
+                                color: Colora.backgroundSwitch,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            FilledButton(
+                              onPressed: _cubit.load,
+                              child: const Text('تلاش دوباره'),
+                            ),
+                          ],
                         ),
                       );
                     }
@@ -76,6 +93,9 @@ class _MyBookmarksState extends State<MyBookmarks> {
                       itemBuilder: (context, index) {
                         return _BookmarkTile(
                           market: state.markets[index],
+                          isPending: state.pendingIds.contains(
+                            state.markets[index].id.toString(),
+                          ),
                           onRemove:
                               () => _cubit.toggle(
                                 state.markets[index].id.toString(),
@@ -96,9 +116,14 @@ class _MyBookmarksState extends State<MyBookmarks> {
 }
 
 class _BookmarkTile extends StatelessWidget {
-  const _BookmarkTile({required this.market, required this.onRemove});
+  const _BookmarkTile({
+    required this.market,
+    required this.isPending,
+    required this.onRemove,
+  });
 
   final MarketModel market;
+  final bool isPending;
   final VoidCallback onRemove;
 
   @override
@@ -140,7 +165,7 @@ class _BookmarkTile extends StatelessWidget {
         ),
         trailing: IconButton(
           icon: const Icon(Icons.bookmark_remove, color: Colors.white),
-          onPressed: onRemove,
+          onPressed: isPending ? null : onRemove,
         ),
       ),
     );

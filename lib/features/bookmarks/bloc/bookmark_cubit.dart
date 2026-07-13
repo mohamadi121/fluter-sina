@@ -44,19 +44,66 @@ class BookmarkCubit extends Cubit<BookmarkState> {
   }
 
   Future<void> toggle(String marketId) async {
-    final wasBookmarked = state.bookmarkedIds.contains(marketId);
-    // Optimistic flip; reverted if the call fails.
-    emit(state.copyWith(bookmarkedIds: _flipped(marketId, !wasBookmarked)));
+    if (state.pendingIds.contains(marketId)) return;
 
-    final res = await api.toggle(marketId);
+    final wasBookmarked = state.bookmarkedIds.contains(marketId);
+    final desired = !wasBookmarked;
+    final originalMarkets = state.markets;
+    final removedIndex = originalMarkets.indexWhere(
+      (market) => market.id.toString() == marketId,
+    );
+    final removedMarket =
+        removedIndex == -1 ? null : originalMarkets[removedIndex];
+    final pending = Set<String>.from(state.pendingIds)..add(marketId);
+    emit(
+      state.copyWith(
+        markets:
+            desired
+                ? originalMarkets
+                : originalMarkets
+                    .where((market) => market.id.toString() != marketId)
+                    .toList(),
+        bookmarkedIds: _flipped(marketId, desired),
+        pendingIds: pending,
+        error: null,
+      ),
+    );
+
+    final res = await api.setBookmarked(marketId, desired);
+    final settledPending = Set<String>.from(state.pendingIds)..remove(marketId);
     if (res is! Success) {
       emit(
         state.copyWith(
+          markets:
+              desired
+                  ? state.markets
+                  : _restoredMarket(state.markets, removedMarket, removedIndex),
           bookmarkedIds: _flipped(marketId, wasBookmarked),
+          pendingIds: settledPending,
           error: res is Failure ? res.message : 'خطای نامشخص',
         ),
       );
+      return;
     }
+
+    final data = res.response;
+    final authoritative =
+        data is Map && data['bookmarked'] is bool
+            ? data['bookmarked'] as bool
+            : desired;
+    emit(
+      state.copyWith(
+        markets:
+            authoritative
+                ? _restoredMarket(state.markets, removedMarket, removedIndex)
+                : state.markets
+                    .where((market) => market.id.toString() != marketId)
+                    .toList(),
+        bookmarkedIds: _flipped(marketId, authoritative),
+        pendingIds: settledPending,
+        error: null,
+      ),
+    );
   }
 
   Set<String> _flipped(String marketId, bool bookmarked) {
@@ -67,5 +114,19 @@ class BookmarkCubit extends Cubit<BookmarkState> {
       ids.remove(marketId);
     }
     return ids;
+  }
+
+  List<MarketModel> _restoredMarket(
+    List<MarketModel> current,
+    MarketModel? market,
+    int originalIndex,
+  ) {
+    if (market == null ||
+        current.any((item) => item.id.toString() == market.id.toString())) {
+      return current;
+    }
+    final restored = List<MarketModel>.from(current);
+    restored.insert(originalIndex.clamp(0, restored.length), market);
+    return restored;
   }
 }
