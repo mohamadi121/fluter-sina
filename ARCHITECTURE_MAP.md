@@ -181,9 +181,13 @@ business_card, customer, panel, profile, store_setting_screens
 (vendor reuses create_workspace repo — partially real).
 
 **Mock/hardcoded data:**
-- `store_card.dart`, `vendor_home.dart`, `market_preview_screen.dart`, `store_detail_screen.dart`, `store_appbar.dart` — contain mock/placeholder markers (verify per batch). `profile.dart` was repaired in Batch 5g.
+- `store_card.dart` and `store_appbar.dart` retain legacy placeholder markers and
+  require verification. `vendor_home.dart`, `market_preview_screen.dart`,
+  `store_detail_screen.dart`, and `profile.dart` have had their visible synthetic
+  data and unsupported controls removed.
 
-**Dead UI:** 26 `onPressed/onTap: () {}` or `onPressed: null` sites (buttons that do nothing).
+**Dead UI:** residual empty callbacks remain tracked under batch 18; market detail
+toolbars and dead AppBar/dashboard/demo surfaces have been cleaned.
 
 **Fake error handling:** every `catch (e) { return customApiStatus(); }` collapses
 all failures (401 vs 500 vs offline) into "no connection"; 4 fully empty
@@ -194,14 +198,14 @@ all failures (401 vs 500 vs offline) into "no connection"; 4 fully empty
 logic + app exit (`profile_menu_widget.dart:34,49`), product-details navigation
 (`themes_screen.dart:622`).
 
-**Tests:** only the default `test/widget_test.dart`. No real tests exist.
+**Tests:** 120 Flutter tests currently pass, including API/BLoC, session, routing
+menu, and market-detail contract coverage.
 
 ## 4. Build health
 
-- Flutter 3.44.4 installed locally. `flutter analyze` baseline (2026-07-08):
-  **257 issues — 18 errors** (17 in the stale default `test/widget_test.dart`,
-  1 real: `wallet_bloc.dart:34` `Object?` → `Map<String, dynamic>` type error),
-  rest lints/infos. Production code otherwise compiles.
+- Flutter 3.44.6 is installed locally. `flutter analyze` (2026-07-12) reports
+  **38 info-level legacy/deprecation lints, 0 warnings and 0 errors**. The full
+  120-test suite passes.
 - `pubspec.yaml` version fixed at `1.0.0+1` (CI must derive from git tag later).
 
 ## 5. Backend infra inventory (cleanup batch scope — behavior must not change)
@@ -271,6 +275,7 @@ logic + app exit (`profile_menu_widget.dart:34,49`), product-details navigation
 | 17 | Analytics + owner SMS completion | expose production-relevant analytics reports and owner line/template/bulk/pattern SMS workflows | REMAINING |
 | 18 | Residual parity + dead UI | owner schedule management UI, product shipping, comment CRUD, buyer order/discount paths, and remaining no-op callbacks | REMAINING |
 | 19 | Production verification | Flutter 3.44.6 installed locally; targeted schedule analyze passes. Full analyze/tests/release build and final contract verification remain | IN PROGRESS |
+| 20 | Market storefront truthfulness | remove fake specials/contact data and no-op toolbars from owner/public detail; use real market name, authoritative bookmark, and secure platform sharing; harden cancelled image selection | DONE (2026-07-12; independently verified) |
 
 Owner decision 2026-07-08: reservation, analytics, and affiliate are ALL in v1 —
 full feature parity with the backend, no reduced scope. Permanent engineering

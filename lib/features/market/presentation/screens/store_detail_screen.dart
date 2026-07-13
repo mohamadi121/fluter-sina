@@ -3,10 +3,8 @@ import 'dart:io';
 import 'package:asood/core/constants/constants.dart';
 import 'package:asood/core/helper/snack_bar_util.dart';
 import 'package:asood/core/http_client/api_status.dart';
-import 'package:asood/core/models/location_model.dart';
 import 'package:asood/core/models/market_model.dart';
 import 'package:asood/core/widgets/custom_bottom_navbar.dart';
-import 'package:asood/core/widgets/map_widget_2.dart';
 import 'package:asood/features/market/data/model/theme_model_model.dart';
 import 'package:asood/features/market/presentation/blocs/bloc/market_bloc.dart';
 import 'package:asood/features/market/presentation/widgets/comment_messagebox_widget.dart';
@@ -33,11 +31,13 @@ class StoreDetailScreen extends StatefulWidget {
   State<StoreDetailScreen> createState() => _StoreDetailScreenState();
 }
 
+const List<String> ownerMarketDetailTabs = ["محصولات", "نظرات"];
+
 class _StoreDetailScreenState extends State<StoreDetailScreen> {
   late VendorBloc bloc;
   late MarketBloc marketBloc;
 
-  List<String> buttonTitles = ["محصولات", "ویژه ها", "نظرات", "ارتباط با ما"];
+  final List<String> buttonTitles = ownerMarketDetailTabs;
 
   int selectedIndex = 0;
 
@@ -54,7 +54,6 @@ class _StoreDetailScreenState extends State<StoreDetailScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     bloc = BlocProvider.of<VendorBloc>(context);
     marketBloc = BlocProvider.of<MarketBloc>(context)
@@ -248,17 +247,23 @@ class _StoreDetailScreenState extends State<StoreDetailScreen> {
                                       var maxFileSizeInBytes = 5 * 1048576;
 
                                       final ImagePicker picker = ImagePicker();
-                                      image = await picker.pickImage(
-                                        source: ImageSource.gallery,
-                                      );
+                                      final selectedImage = await picker
+                                          .pickImage(
+                                            source: ImageSource.gallery,
+                                          );
+                                      if (selectedImage == null || !mounted) {
+                                        return;
+                                      }
 
-                                      var imagePath =
-                                          await image!.readAsBytes();
-                                      var fileSize = imagePath.length;
+                                      final imageBytes =
+                                          await selectedImage.readAsBytes();
+                                      if (!mounted || !context.mounted) return;
+                                      final fileSize = imageBytes.length;
 
                                       if (fileSize <= maxFileSizeInBytes) {
                                         setState(() {
-                                          preview = image!.path;
+                                          image = selectedImage;
+                                          preview = selectedImage.path;
                                         });
                                       } else {
                                         showSnackBar(
@@ -490,7 +495,7 @@ class _StoreDetailScreenState extends State<StoreDetailScreen> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvoked: (bool didPop) async {
+      onPopInvokedWithResult: (bool didPop, Object? result) async {
         if (didPop) {
           return;
         }
@@ -1045,6 +1050,7 @@ class _StoreDetailScreenState extends State<StoreDetailScreen> {
                                   child: selectPageView(
                                     selectedIndex,
                                     widget.market.id!,
+                                    widget.market.name ?? '',
                                     state,
                                     marketBloc,
                                   ),
@@ -1093,91 +1099,22 @@ class _StoreDetailScreenState extends State<StoreDetailScreen> {
                               ],
                             ),
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                //edit
-                                InkWell(
-                                  onTap: () {},
-                                  // padding: const EdgeInsets.all(0),
-                                  child: Transform(
-                                    alignment: Alignment.center,
-                                    transform:
-                                        Matrix4.identity()
-                                          ..scale(-1.0, 1.0, 1.0),
-                                    child: Icon(
-                                      Icons.help_outline,
-                                      // Icons.edit,
-                                      color: state.fontColor,
-                                      size: Dimensions.width * 0.055,
-                                    ),
-                                  ),
-                                ),
-
-                                //save
-                                InkWell(
-                                  onTap: () {},
-                                  child: Icon(
-                                    Icons.favorite_border,
-                                    // Icons.save,
-                                    color: state.fontColor,
-                                    size: Dimensions.width * 0.055,
-                                  ),
-                                ),
-
-                                //mark
-                                InkWell(
-                                  onTap: () {},
-                                  child: Icon(
-                                    Icons.question_answer,
-                                    // Icons.bookmark,
-                                    color: state.fontColor,
-                                    size: Dimensions.width * 0.055,
-                                  ),
-                                ),
-
-                                //share
-                                InkWell(
-                                  onTap: () {
-                                    ShareStore.share(
-                                      widget.market.businessId.toString(),
-                                    );
-                                  },
-                                  child: Icon(
-                                    Icons.remove_red_eye,
-                                    // Icons.share,
-                                    color: state.fontColor,
-                                    size: Dimensions.width * 0.055,
-                                  ),
-                                ),
-
-                                //upload
-                                InkWell(
-                                  onTap: () {},
-                                  child: Icon(
-                                    Icons.bookmark,
-                                    // Icons.upload_file_outlined,
-                                    color: state.fontColor,
-                                    size: Dimensions.width * 0.055,
-                                  ),
-                                ),
-
-                                //list
-                                InkWell(
-                                  onTap: () {},
-                                  child: Icon(
-                                    Icons.share,
-                                    // Icons.list_alt,
-                                    color: state.fontColor,
-                                    size: Dimensions.width * 0.055,
-                                  ),
-                                ),
                                 InkWell(
                                   onTap: () async {
-                                    // Token
+                                    final didShare = await ShareStore.share(
+                                      widget.market.businessId.toString(),
+                                    );
+                                    if (!didShare && context.mounted) {
+                                      showSnackBar(
+                                        context,
+                                        'امکان اشتراک‌گذاری فروشگاه وجود ندارد',
+                                      );
+                                    }
                                   },
                                   child: Icon(
-                                    Icons.report,
-                                    // Icons.list_alt,
+                                    Icons.share,
                                     color: state.fontColor,
                                     size: Dimensions.width * 0.055,
                                   ),
@@ -1285,21 +1222,29 @@ class _ScrollableButtonListState extends State<ScrollableButtonList> {
   }
 }*/
 
-selectPageView(index, String marketId, styleState, MarketBloc marketBloc) {
+selectPageView(
+  index,
+  String marketId,
+  String marketName,
+  styleState,
+  MarketBloc marketBloc,
+) {
   switch (index) {
     case 0:
-      return productView(marketId, styleState, marketBloc);
+      return productView(marketId, marketName, styleState, marketBloc);
     case 1:
-      return specialView(styleState);
-    case 2:
       return commentView(styleState);
-    case 3:
-      return contactUsView(styleState);
     default:
+      return const SizedBox.shrink();
   }
 }
 
-productView(String marketId, styleState, MarketBloc marketBloc) {
+productView(
+  String marketId,
+  String marketName,
+  styleState,
+  MarketBloc marketBloc,
+) {
   Widget templateWidget(
     int template,
     String themeId,
@@ -1474,7 +1419,7 @@ productView(String marketId, styleState, MarketBloc marketBloc) {
                     child: FittedBox(
                       fit: BoxFit.scaleDown,
                       child: Text(
-                        "فروش ابزار یراق",
+                        marketName,
                         style: TextStyle(
                           color: styleState.topColor,
                           fontWeight: FontWeight.bold,
@@ -1521,44 +1466,6 @@ productView(String marketId, styleState, MarketBloc marketBloc) {
                           child: IntrinsicHeight(
                             child: Column(
                               children: [
-                                if (state.templateList.isNotEmpty)
-                                  Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Container(
-                                      width: Dimensions.width * 0.25,
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: Dimensions.width * 0.03,
-                                        vertical: Dimensions.height * 0.005,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(20),
-                                        color: styleState.topColor,
-                                      ),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          Icon(
-                                            Iconsax.eye,
-                                            // Icons.visibility,
-                                            color: styleState.fontColor,
-                                          ),
-                                          Icon(
-                                            Iconsax.trash,
-                                            // Icons.delete,
-                                            color: styleState.fontColor,
-                                          ),
-                                          Icon(
-                                            Iconsax.setting,
-                                            // Icons.settings,
-                                            color: styleState.fontColor,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
                                 Flexible(
                                   child: templateWidget(
                                     state.templateList[index].order,
@@ -1580,12 +1487,6 @@ productView(String marketId, styleState, MarketBloc marketBloc) {
             SizedBox(height: Dimensions.height * 0.05),
           ],
         ),
-  );
-}
-
-specialView(styleState) {
-  return const SingleChildScrollView(
-    child: Column(children: [Center(child: Text("ویژه‌ها"))]),
   );
 }
 
@@ -1663,175 +1564,6 @@ commentView(styleState) {
               messageText: comment.comment ?? '',
             ),
           ),
-      ],
-    ),
-  );
-}
-
-contactUsView(styleState) {
-  return SingleChildScrollView(
-    child: Column(
-      children: [
-        //title
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Container(
-              height: 2,
-              width: Dimensions.width * 0.3,
-              color: styleState.topColor,
-            ),
-            SizedBox(
-              width: Dimensions.width * 0.3,
-              child: Center(
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text(
-                    "فروش ابزار یراق",
-                    style: TextStyle(
-                      color: styleState.topColor,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: styleState.fontFamily,
-                      fontSize: Dimensions.width * 0.035,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Container(
-              height: 2,
-              width: Dimensions.width * 0.3,
-              color: styleState.topColor,
-            ),
-          ],
-        ),
-
-        SizedBox(height: Dimensions.height * 0.01),
-
-        //contact
-        Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            //title
-            Align(
-              alignment: Alignment.centerRight,
-              child: Text(
-                'راه های ارتباطی:',
-                style: TextStyle(
-                  color: styleState.topColor,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: styleState.fontFamily,
-                  fontSize: Dimensions.width * 0.044,
-                ),
-              ),
-            ),
-
-            SizedBox(height: Dimensions.height * 0.01),
-
-            //phone
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Text(
-                  "۰۹۱۹۱۲۳۴۵۶۲",
-                  style: TextStyle(
-                    color: styleState.fontColor,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: styleState.fontFamily,
-                    fontSize: Dimensions.width * 0.044,
-                  ),
-                ),
-                Icon(Icons.phone, color: styleState.fontColor),
-              ],
-            ),
-          ],
-        ),
-
-        SizedBox(height: Dimensions.height * 0.01),
-
-        //social networks
-        Align(
-          alignment: Alignment.centerRight,
-          child: Text(
-            'شبکه‌های اجتماعی:',
-            style: TextStyle(
-              color: styleState.topColor,
-              fontWeight: FontWeight.bold,
-              fontFamily: styleState.fontFamily,
-              fontSize: Dimensions.width * 0.044,
-            ),
-          ),
-        ),
-        Align(
-          alignment: Alignment.topCenter,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              IconButton(
-                onPressed: () {},
-                icon: Icon(Icons.telegram, color: styleState.fontColor),
-              ),
-              IconButton(
-                onPressed: () {},
-                icon: Icon(Icons.telegram, color: styleState.fontColor),
-              ),
-              IconButton(
-                onPressed: () {},
-                icon: Icon(Icons.telegram, color: styleState.fontColor),
-              ),
-            ],
-          ),
-        ),
-
-        SizedBox(height: Dimensions.height * 0.01),
-
-        //map
-        Container(
-          height: 200,
-          width: Dimensions.width,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            color: Colora.scaffold,
-            border: Border.all(color: styleState.topColor, width: 3),
-          ),
-          child: Center(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(20),
-              child: const MapScreen(
-                isSelecting: false,
-                initialLocation: LocationModel(lat: 35.6783, lon: 51.4161),
-              ),
-            ),
-          ),
-        ),
-
-        SizedBox(height: Dimensions.height * 0.01),
-
-        //address
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'آدرس : ',
-              style: TextStyle(
-                color: styleState.topColor,
-                fontFamily: styleState.fontFamily,
-                fontSize: Dimensions.width * 0.044,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Text(
-              'زنجان',
-              style: TextStyle(
-                color: styleState.fontColor,
-                fontSize: 12,
-                fontFamily: styleState.fontFamily,
-              ),
-            ),
-          ],
-        ),
-
-        SizedBox(height: Dimensions.height * 0.05),
       ],
     ),
   );

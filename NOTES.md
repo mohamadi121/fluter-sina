@@ -208,3 +208,14 @@ backend sending is intentionally disabled. The unpersisted business-card feature
 its global BLoC/provider and deep link were also removed. The shared market/product
 bottom sheet no longer shows no-op calendar/card controls or claims cart success
 before the backend responds.
+
+## Market detail screens expose only real capabilities
+The owner and public market-detail screens now show only products and comments;
+the placeholder specials section and the hardcoded contact title, phone, Telegram
+buttons, Zanjan address and fixed map coordinates were removed. Public controls are
+limited to authoritative bookmarks and sharing, while the owner toolbar exposes only
+sharing. Store sharing uses the platform share sheet with a canonical HTTPS
+`<business-id>.asoud.ir` URL and rejects empty or malformed host labels. Product
+section headings use the current market name instead of the former sample hardware
+store. Do not restore contact or specials UI until it consumes the corresponding
+backend detail contract.
