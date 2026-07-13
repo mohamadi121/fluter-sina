@@ -199,3 +199,12 @@ with no route, the self-recursive vendor-dashboard link, the disabled SMS surfac
 the unpersisted business-card shortcut were removed. The buyer-discovery destination
 now contains only the real public-market search/list with retry behavior; its ten
 synthetic orders, named sample store and empty statistics tab were deleted.
+
+## Dead demo routes and fail-closed SMS UI are removed
+The AppBar menu contains only registered, implemented routes and logout clears the
+real `AuthSession`; dead screen-list/settings routes, no-action items and app-process
+exit were removed. The sample SMS inbox/config UI and its routes are absent because
+backend sending is intentionally disabled. The unpersisted business-card feature,
+its global BLoC/provider and deep link were also removed. The shared market/product
+bottom sheet no longer shows no-op calendar/card controls or claims cart success
+before the backend responds.

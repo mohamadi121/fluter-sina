@@ -47,10 +47,10 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
 
   @override
   void initState() {
-    if (widget.marketId!.startsWith('ProductID=')) {
-      productId = widget.marketId!.substring(10);
+    final marketId = widget.marketId;
+    if (marketId != null && marketId.startsWith('ProductID=')) {
+      productId = marketId.substring(10);
     }
-    // TODO: implement initState
     super.initState();
     bloc = BlocProvider.of<VendorBloc>(context);
     marketBloc = BlocProvider.of<MarketBloc>(context);
@@ -159,16 +159,6 @@ void showBottomSheet(
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                //calendar
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(
-                    Iconsax.calendar5,
-                    // Icons.calendar_today_rounded,
-                    color: Colors.white,
-                  ),
-                ),
-
                 //messenger
                 IconButton(
                   onPressed: () {
@@ -184,18 +174,11 @@ void showBottomSheet(
                 //shopping cart
                 IconButton(
                   onPressed: () {
-                    if (productId == '') {
-                      return;
+                    if (productId.isNotEmpty) {
+                      context.read<CartBloc>().add(
+                        AddItemToCart({'product_id': productId, 'quantity': 1}),
+                      );
                     }
-                    context.read<CartBloc>().add(
-                      AddItemToCart({'product_id': productId, 'quantity': 1}),
-                    );
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        backgroundColor: Colors.green,
-                        content: Text('محصول به سبد خرید شما اضافه شد'),
-                      ),
-                    );
                     context.push(AppRoutes.shoppingCart);
                   },
                   icon: const Icon(
@@ -231,12 +214,6 @@ void showBottomSheet(
                       ); */
                     },
                     icon: const Icon(Icons.settings, color: Colors.white),
-                  ),
-
-                  //credit card
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.credit_card, color: Colors.white),
                   ),
 
                   //font

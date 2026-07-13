@@ -148,7 +148,7 @@ Was wired via raw `http` in `terms_conditions.dart` with a **hardcoded real DRF
 token** (removed in batch 0; screen now uses DioClient). Root cause: backend
 view inherited `IsAuthenticated`, but terms must be readable pre-login — fixed
 in backend (`apps/information/views/user_views.py`, `AllowAny`).
-### 2.22 `apps.flutter` share/visit-card views (`/markets`, `/products`, `/visit/{id}`, `bank/share/{pk}`) — server-rendered share pages; `business_card`/`bank_card` frontend features are UI shells not linked to them.
+### 2.22 `apps.flutter` share/visit-card views (`/markets`, `/products`, `/visit/{id}`, `bank/share/{pk}`) — server-rendered share pages; unsupported local business-card creation UI is absent.
 
 ## 2.5b Raw-http shadow layer (discovered during batch 0)
 
@@ -269,7 +269,7 @@ logic + app exit (`profile_menu_widget.dart:34,49`), product-details navigation
 | 15 | Reservation completion | user list/detail and service -> specialist -> time booking are wired; backend now owns paid state and hardens publication/ownership/history. Owner CRUD UI and a product-defined date/capacity/price/payment lifecycle remain | IN PROGRESS (access contract hardened 2026-07-13) |
 | 16 | Affiliate/referral/advertise completion | referral create/list is DONE; affiliate detail/update/theme/create and advertise detail/update/delete/payment surfaces remain | IN PROGRESS |
 | 17 | Analytics + owner SMS completion | expose production-relevant analytics reports and owner line/template/bulk/pattern SMS workflows | REMAINING |
-| 18 | Residual parity + dead UI | owner schedule management UI (create contract fixed), product shipping, comment CRUD, buyer order/discount paths, business-card persistence, and remaining no-op callbacks | REMAINING |
+| 18 | Residual parity + dead UI | owner schedule management UI, product shipping, comment CRUD, buyer order/discount paths, and remaining no-op callbacks | REMAINING |
 | 19 | Production verification | Flutter 3.44.6 installed locally; targeted schedule analyze passes. Full analyze/tests/release build and final contract verification remain | IN PROGRESS |
 
 Owner decision 2026-07-08: reservation, analytics, and affiliate are ALL in v1 —

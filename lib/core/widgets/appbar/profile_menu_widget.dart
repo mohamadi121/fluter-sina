@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -9,6 +8,12 @@ import 'package:asood/features/auth/presentation/blocs/auth_bloc.dart';
 
 class ProfileMenuDialog extends StatelessWidget {
   const ProfileMenuDialog({super.key});
+
+  void _open(BuildContext context, String route) {
+    final router = GoRouter.of(context);
+    Navigator.of(context).pop();
+    router.push(route);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,22 +32,13 @@ class ProfileMenuDialog extends StatelessWidget {
           _buildMenuItem(
             context,
             label: 'پروفایل',
-            onTap: () => context.push(AppRoutes.vendorProfile),
-          ),
-          _buildMenuItem(
-            context,
-            label: 'تماس با ما',
-            onTap: () {
-              // TODO: Add contact logic
-            },
+            onTap: () => _open(context, AppRoutes.vendorProfile),
           ),
           _buildMenuItem(
             context,
             label: 'دعوت دوستان',
             onTap: () {
-              final router = GoRouter.of(context);
-              Navigator.of(context).pop();
-              router.push(AppRoutes.referral);
+              _open(context, AppRoutes.referral);
             },
           ),
           _buildMenuItem(
@@ -54,11 +50,6 @@ class ProfileMenuDialog extends StatelessWidget {
               context.read<AuthBloc>().add(Logout());
               Navigator.of(context).pop();
             },
-          ),
-          _buildMenuItem(
-            context,
-            label: 'خروج از برنامه',
-            onTap: () => SystemNavigator.pop(),
           ),
         ],
       ),

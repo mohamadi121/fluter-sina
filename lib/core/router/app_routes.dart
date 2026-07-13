@@ -6,7 +6,6 @@ abstract class AppRoutes {
   static const otp = "/otp";
 
   static const vendorHome = "/vendor_home";
-  static const vendorDashboard = "/vendor_dashboard";
   static const vendorProfile = "/vendor_profile";
   static const customerDashboard = "/customer_dashboard";
   static const createWorkSpace = "/create_workspace";
@@ -35,18 +34,11 @@ abstract class AppRoutes {
   static const affiliate = "/affiliate";
   static const referral = "/referral";
   static const takhfif = "/takhfif";
-  static const screenLists = "/screen_lists";
-  static const settings = "/settings_page";
   static const colorSettings = "/color_settings";
   static const fontColorSettings = "/font_color_settings";
   static const jobManagement = "/job_management";
   static const createProduct = "/create_product";
   static const product = "/product";
-  static const panelConfig = "/panel_config";
-  static const panelInbox = "/panel_inbox";
-  static const createBusinessCard = "/create_business_card";
-  static const businessCard = "/business_card";
-  static const business = "/business";
   static const finance = "/finance";
   static const bankCardList = "/bank_card_list";
   static const bookmarks = "/bookmarks";

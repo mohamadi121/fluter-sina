@@ -6,7 +6,6 @@ import 'package:asood/features/auth/presentation/screen/otp_screen.dart';
 import 'package:asood/features/bank_card/screens/bank_card_list.dart';
 import 'package:asood/features/bank_card/screens/finance_part.dart';
 import 'package:asood/features/bookmarks/bookmarks_page.dart';
-import 'package:asood/features/business_card/presentation/screens/business_part.dart';
 import 'package:asood/features/cart/presentation/screen/cart_screen.dart';
 import 'package:asood/features/chat/screens/chat_list.dart';
 import 'package:asood/features/chat/screens/support_tickets_screen.dart';
@@ -29,8 +28,6 @@ import 'package:asood/features/market/presentation/screens/pages/product/create_
 import 'package:asood/features/market/presentation/screens/edit_store.dart';
 import 'package:asood/features/market/presentation/screens/store_detail_screen.dart';
 import 'package:asood/features/market/presentation/screens/store_info.dart';
-import 'package:asood/features/panel/screens/panel_config_screen.dart';
-import 'package:asood/features/panel/screens/panel_inbox_screen.dart';
 import 'package:asood/features/product/screens/product_screen.dart';
 import 'package:asood/features/profile/screens/profile.dart';
 import 'package:asood/features/splash/screens/splash.dart';
@@ -193,14 +190,6 @@ class AppRouter {
         path: AppRoutes.markets,
         builder: (context, state) => MarketsScreen(),
       ),
-      // GoRoute(
-      //   path: AppRoutes.createBusinessCard,
-      //   builder: (context, state) => CreateBusinessCard(isEdit: false),
-      // ),
-      GoRoute(
-        path: AppRoutes.business,
-        builder: (context, state) => BusinessPart(),
-      ),
       GoRoute(path: AppRoutes.finance, builder: (context, state) => Finance()),
       GoRoute(
         path: AppRoutes.bankCardList,
@@ -210,20 +199,6 @@ class AppRouter {
         path: AppRoutes.customerDashboard,
         builder: (context, state) => CustomerDashboardScreen(),
       ),
-      GoRoute(
-        path: AppRoutes.vendorDashboard,
-        builder: (context, state) => VendorHomeScreen(),
-      ),
-
-      GoRoute(
-        path: AppRoutes.panelConfig,
-        builder: (context, state) => PanelConfigScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.panelInbox,
-        builder: (context, state) => PanelInboxScreen(),
-      ),
-
       GoRoute(
         path: AppRoutes.takhfif,
         builder: (context, state) {

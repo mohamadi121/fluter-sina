@@ -3,7 +3,6 @@ import 'package:asood/core/constants/constants.dart';
 import 'package:asood/core/logging/app_bloc_observer.dart';
 import 'package:asood/core/router/app_routers.dart';
 import 'package:asood/features/auth/presentation/blocs/auth_bloc.dart';
-import 'package:asood/features/business_card/presentation/bloc/business_bloc.dart';
 import 'package:asood/features/create_workspace/presentation/bloc/create_workspace_bloc.dart';
 import 'package:asood/features/job_managment/presentation/bloc/jobmanagment_bloc.dart';
 import 'package:asood/features/market/presentation/blocs/add_product/add_product_bloc.dart';
@@ -63,7 +62,6 @@ class Asood extends StatelessWidget {
           BlocProvider(create: (context) => locator<AddProductBloc>()),
           BlocProvider(create: (context) => locator<ThemeBloc>()),
           BlocProvider(create: (context) => locator<MarketBloc>()),
-          BlocProvider(create: (context) => locator<BusinessBloc>()),
           BlocProvider(create: (context) => locator<CartBloc>()),
           BlocProvider(create: (context) => locator<WalletBloc>()),
           BlocProvider(create: (context) => locator<PaymentBloc>()),

@@ -1,70 +1,73 @@
-import 'package:asood/core/router/app_routers.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+
+import 'package:asood/core/auth/auth_session.dart';
+import 'package:asood/core/router/app_routers.dart';
+import 'package:asood/locator.dart';
 
 class MenuDialog extends StatelessWidget {
   const MenuDialog({super.key});
 
+  void _open(BuildContext context, String route) {
+    final router = GoRouter.of(context);
+    Navigator.of(context).pop();
+    router.push(route);
+  }
+
+  Future<void> _logout(BuildContext context) async {
+    Navigator.of(context).pop();
+    await locator<AuthSession>().clear();
+  }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text("منو"),
+      title: const Text('منو'),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _buildMenuItem(
-              context,
-              title: "خانه",
-              onTap: () => context.push(AppRoutes.vendorHome, extra: "home"),
+            _MenuItem(
+              title: 'خانه',
+              onTap: () => _open(context, AppRoutes.vendorHome),
             ),
-            _buildMenuItem(
-              context,
-              title: "لیست صفحات",
-              onTap: () => context.push(AppRoutes.screenLists),
+            _MenuItem(
+              title: 'پروفایل',
+              onTap: () => _open(context, AppRoutes.vendorProfile),
             ),
-            _buildMenuItem(
-              context,
-              title: "داشبورد فروشنده",
-              onTap: () => context.push(AppRoutes.vendorDashboard),
+            _MenuItem(
+              title: 'رهیابی خرید',
+              onTap: () => _open(context, AppRoutes.customerDashboard),
             ),
-            _buildMenuItem(
-              context,
-              title: "داشبورد خریدار",
-              onTap: () => context.push(AppRoutes.customerDashboard),
+            _MenuItem(
+              title: 'اعلان‌ها',
+              onTap: () => _open(context, AppRoutes.notifications),
             ),
-            _buildMenuItem(
-              context,
-              title: "تنظیمات",
-              onTap: () => context.push(AppRoutes.settings),
+            _MenuItem(
+              title: 'پشتیبانی',
+              onTap: () => _open(context, AppRoutes.support),
             ),
-            const MenuItem(title: "درباره ما"), // بدون action
-            _buildMenuItem(
-              context,
-              title: "خروج",
-              onTap: () => SystemNavigator.pop(),
+            _MenuItem(
+              title: 'علاقه‌مندی‌ها',
+              onTap: () => _open(context, AppRoutes.bookmarks),
             ),
+            _MenuItem(
+              title: 'امور مالی',
+              onTap: () => _open(context, AppRoutes.finance),
+            ),
+            _MenuItem(title: 'خروج', onTap: () => _logout(context)),
           ],
         ),
       ),
     );
   }
-
-  Widget _buildMenuItem(
-    BuildContext context, {
-    required String title,
-    required VoidCallback onTap,
-  }) {
-    return MenuItem(title: title, onTap: onTap);
-  }
 }
 
-class MenuItem extends StatelessWidget {
+class _MenuItem extends StatelessWidget {
   final String title;
-  final VoidCallback? onTap;
+  final VoidCallback onTap;
 
-  const MenuItem({super.key, required this.title, this.onTap});
+  const _MenuItem({required this.title, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
