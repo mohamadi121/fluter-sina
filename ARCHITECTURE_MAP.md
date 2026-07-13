@@ -127,7 +127,10 @@ exists but connected to nothing.
 | `self/`, `{id}/`, `create/`, `payment/`, `update/`, `delete/` | — | ABSENT |
 
 ### 2.15 Affiliate (`api/v1/user|owner/affiliate/…`) — ABSENT entirely.
-### 2.16 Referral (`api/v1/user/referral/`) — ABSENT entirely.
+### 2.16 Referral (`api/v1/user/referral/`)
+`features/referral` now provides a real API service, Cubit, authenticated screen,
+profile-menu entry, create-code flow and self summary. The UI intentionally claims
+no reward because the backend exposes a relationship only, not an incentive ledger.
 ### 2.17 Region (`api/v1/region/`)
 `country/province/city list` OK (create_workspace). `search/`, `details/{id}` ABSENT (fine for v1).
 ### 2.18 Price inquiry (`api/v1/user|owner/inquiries/`)
@@ -263,7 +266,7 @@ logic + app exit (`profile_menu_widget.dart:34,49`), product-details navigation
 | 13 | Final audit | ALL raw-http eliminated: bank_card (BankApiService, Token) + business_card migrated off package:http/Bearer (both were broken — Bearer not accepted by this backend); hardcoded mock bank card removed; withOpacity->withValues sweep; 87 tests, analyze 0 err/0 warn (remaining ~53 infos are tolerated legacy deprecations, CI --no-fatal-infos). App is raw-http/Bearer/SecureStorage-in-screens free | DONE (2026-07-10) |
 | 14 | Fake/empty BLoC cleanup | remove duplicate empty cart/payment trees, unused empty profile/customer blocs, synthetic CustomerBloc success paths, catch-all no-op handlers, an unused empty product event, and fake business-card location persistence; correct selected-location and product-price state | DONE (2026-07-12; independently verified: all 21 AddProduct events have handlers) |
 | 15 | Reservation completion | user list/detail and service -> specialist -> time booking are wired; backend now owns paid state and hardens publication/ownership/history. Owner CRUD UI and a product-defined date/capacity/price/payment lifecycle remain | IN PROGRESS (access contract hardened 2026-07-13) |
-| 16 | Affiliate/referral/advertise completion | affiliate detail/update/theme and create UI, referral create/list, advertise detail/update/delete/payment surfaces | REMAINING |
+| 16 | Affiliate/referral/advertise completion | referral create/list is DONE; affiliate detail/update/theme/create and advertise detail/update/delete/payment surfaces remain | IN PROGRESS |
 | 17 | Analytics + owner SMS completion | expose production-relevant analytics reports and owner line/template/bulk/pattern SMS workflows | REMAINING |
 | 18 | Residual parity + dead UI | owner schedule management UI (create contract fixed), product shipping, comment CRUD, buyer order/discount paths, business-card persistence, and remaining no-op callbacks | REMAINING |
 | 19 | Production verification | Flutter 3.44.6 installed locally; targeted schedule analyze passes. Full analyze/tests/release build and final contract verification remain | IN PROGRESS |

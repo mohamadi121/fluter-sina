@@ -38,6 +38,15 @@ class ProfileMenuDialog extends StatelessWidget {
           ),
           _buildMenuItem(
             context,
+            label: 'دعوت دوستان',
+            onTap: () {
+              final router = GoRouter.of(context);
+              Navigator.of(context).pop();
+              router.push(AppRoutes.referral);
+            },
+          ),
+          _buildMenuItem(
+            context,
             label: 'خروج از حساب کاربری',
             onTap: () {
               // Router redirects to login automatically once the

@@ -127,3 +127,11 @@ and `WeekdayOpentime` sends only after both start and end are selected. Do not
 reintroduce the earlier start-only POST: it creates incomplete UI state and the
 backend correctly rejects it. Delete returns HTTP 204 with no body; the shared
 `apiStatus` mapper treats empty successful responses as `Success`.
+
+## Referral is a relationship, not a reward promise
+The authenticated `/referral` screen is reachable from the profile menu. Its Cubit
+loads the self-scoped count and applies a referrer's mobile number through the real
+backend endpoints. Repeated application of the same code is treated as success and
+backend conflict/throttle messages are surfaced. Referred-user mobile numbers are
+not returned or rendered. Do not add points, wallet balance or discount copy until
+the backend has an explicit incentive ledger and reversal policy.

@@ -33,6 +33,7 @@ abstract class AppRoutes {
   static const reservation = "/reservation";
   static const analytics = "/analytics";
   static const affiliate = "/affiliate";
+  static const referral = "/referral";
   static const takhfif = "/takhfif";
   static const screenLists = "/screen_lists";
   static const settings = "/settings_page";

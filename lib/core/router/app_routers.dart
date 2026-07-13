@@ -15,6 +15,7 @@ import 'package:asood/features/cart/presentation/screen/owner_orders_screen.dart
 import 'package:asood/features/reservation/screens/reservation_screen.dart';
 import 'package:asood/features/analytics/screens/analytics_dashboard_screen.dart';
 import 'package:asood/features/affiliate/screens/affiliate_products_screen.dart';
+import 'package:asood/features/referral/screens/referral_screen.dart';
 import 'package:asood/features/create_workspace/presentation/screen/create_workspace.dart';
 import 'package:asood/features/customer/presentation/screens/customer_dashboard_screen.dart';
 import 'package:asood/features/inquiry/presentation/screens/inquiry_requests.dart';
@@ -145,6 +146,10 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.affiliate,
         builder: (context, state) => const AffiliateProductsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.referral,
+        builder: (context, state) => const ReferralScreen(),
       ),
       GoRoute(
         path: AppRoutes.storeInfo,
