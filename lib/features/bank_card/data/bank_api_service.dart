@@ -40,6 +40,18 @@ class BankApiService {
     }
   }
 
+  Future update(String id, Map<String, dynamic> body) async {
+    try {
+      final Response res = await dioClient.putData(
+        'user/bank/info/update/$id/',
+        body,
+      );
+      return apiStatus(res);
+    } catch (e) {
+      return apiFailure(e);
+    }
+  }
+
   Future delete(String id) async {
     try {
       final Response res = await dioClient.deleteData(

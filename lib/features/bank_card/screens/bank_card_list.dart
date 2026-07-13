@@ -1,12 +1,11 @@
-import 'package:asood/core/constants/constants.dart';
-import 'package:asood/core/http_client/api_status.dart';
-import 'package:asood/core/widgets/appbar/default_appbar.dart';
-import 'package:asood/features/bank_card/data/bank_api_service.dart';
-import 'package:asood/features/bank_card/screens/bank_card_sharing_screen.dart';
-import 'package:asood/features/bank_card/screens/card_sample.dart';
-import 'package:asood/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'package:asood/core/widgets/appbar/default_appbar.dart';
+import 'package:asood/features/bank_card/bloc/bank_info_cubit.dart';
+import 'package:asood/features/bank_card/domain/bank_validators.dart';
+import 'package:asood/locator.dart';
 
 class BankCardListScreen extends StatefulWidget {
   const BankCardListScreen({super.key});
@@ -16,1095 +15,449 @@ class BankCardListScreen extends StatefulWidget {
 }
 
 class _BankCardListScreenState extends State<BankCardListScreen> {
-  String bankInfo = '';
-  String cardNumber = '';
-  String accountNumber = '';
-  String branchId = '';
-  String branchName = '';
-  String fullName = '';
-
-  final BankApiService _api = locator<BankApiService>();
-
-  List<Map<String, dynamic>> bankCards = [];
-
-  List<dynamic> banks = [];
-
-  int whichExpanded = -1;
-
-  void getBanks() async {
-    final res = await _api.banks();
-    if (!mounted || res is! Success) {
-      return;
-    }
-    setState(() {
-      banks = res.response is List ? res.response as List : [];
-    });
-  }
-
-  void getBankCards() async {
-    final res = await _api.myBankInfos();
-    if (!mounted || res is! Success) {
-      return;
-    }
-    setState(() {
-      bankCards =
-          res.response is List
-              ? (res.response as List)
-                  .whereType<Map>()
-                  .map((e) => Map<String, dynamic>.from(e))
-                  .toList()
-              : [];
-    });
-    getBanks();
-  }
-
-  void sendBankCard(
-    info,
-    card,
-    account,
-    name,
-    branchId,
-    branchName,
-    description,
-  ) async {
-    final res = await _api.create({
-      "bank_info": info,
-      "card_number": card,
-      "account_number": account,
-      "full_name": name,
-      "branch_id": int.tryParse(branchId.toString()) ?? 0,
-      "branch_name": branchName,
-      "description": "",
-    });
-    if (!mounted) {
-      return;
-    }
-
-    if (res is Success) {
-      Navigator.pop(context);
-      setState(() {
-        getBankCards();
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Colors.green,
-          content: Text('کارت بانکی با موفقیت اضافه شد'),
-        ),
-      );
-    }
-  }
+  late final BankInfoCubit _cubit;
 
   @override
   void initState() {
-    getBankCards();
     super.initState();
+    _cubit = locator<BankInfoCubit>()..load();
   }
 
-  void addCart() {
-    showDialog(
+  @override
+  void dispose() {
+    _cubit.close();
+    super.dispose();
+  }
+
+  Future<void> _openEditor(
+    BankInfoState state, [
+    Map<String, dynamic>? existing,
+  ]) async {
+    if (state.banks.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('فهرست بانک‌ها در دسترس نیست')),
+      );
+      return;
+    }
+
+    final formKey = GlobalKey<FormState>();
+    var selectedBankId =
+        existing?['bank_info_id']?.toString() ??
+        state.banks.first['id'].toString();
+    if (!state.banks.any((bank) => bank['id'].toString() == selectedBankId)) {
+      selectedBankId = state.banks.first['id'].toString();
+    }
+    final fullName = TextEditingController(
+      text: existing?['full_name']?.toString(),
+    );
+    final card = TextEditingController(
+      text: existing?['card_number']?.toString(),
+    );
+    final account = TextEditingController(
+      text: existing?['account_number']?.toString(),
+    );
+    final iban = TextEditingController(text: existing?['iban']?.toString());
+    final branchId = TextEditingController(
+      text: existing?['branch_id']?.toString(),
+    );
+    final branchName = TextEditingController(
+      text: existing?['branch_name']?.toString(),
+    );
+    final description = TextEditingController(
+      text: existing?['description']?.toString(),
+    );
+
+    final saved = await showDialog<bool>(
       context: context,
       barrierDismissible: false,
-      barrierColor: Colora.primaryColor.withValues(alpha: 0.7),
       builder:
-          (context) => StatefulBuilder(
-            builder: (context, setState) {
-              return AlertDialog(
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: Dimensions.width * 0.03,
-                ),
-                content: SizedBox(
-                  width: Dimensions.width * 0.8,
-                  height: Dimensions.height * 0.55,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      const Text(
-                        'مشخصات حساب بانکی',
-                        style: TextStyle(
-                          color: Colora.primaryColor,
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const Divider(color: Colora.primaryColor),
-                      Container(
-                        width: Dimensions.width * 0.8,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(29),
-                          border: Border.all(color: Colora.lightBlue, width: 9),
-                        ),
-                        child: Row(
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.symmetric(
-                                vertical: Dimensions.height * 0.01,
-                                horizontal: Dimensions.width * 0.01,
-                              ),
-                              child: const Text(
-                                'انتخاب بانک : ',
-                                style: TextStyle(
-                                  color: Colora.primaryColor,
-                                  fontSize: 11,
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(
-                                top: Dimensions.height * 0.05,
-                              ),
-                              child: SizedBox(
-                                height: Dimensions.height * 0.11,
-                                width: Dimensions.width * 0.4,
-                                child: DropdownButtonFormField<String>(
-                                  style: TextStyle(color: Colors.white),
-                                  // hint: Text(''),
-                                  initialValue: banks[0]['name'],
-                                  decoration: InputDecoration(
-                                    filled: true,
-                                    fillColor: Colora.primaryColor,
-
-                                    contentPadding: EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                    ),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        Dimensions.twenty,
-                                      ),
-                                    ),
-                                  ),
-                                  borderRadius: BorderRadius.circular(
-                                    Dimensions.twenty,
-                                  ),
-                                  dropdownColor: Colora.primaryColor,
-                                  iconEnabledColor: Colors.white,
-                                  // value: 'selectedPlatform',
-                                  items:
-                                      banks.map((bank) {
-                                        return DropdownMenuItem<String>(
-                                          value: bank['name'],
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceEvenly,
-                                            children: [
-                                              Text(
-                                                bank['name'],
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                ),
-                                              ),
-                                              SizedBox(width: 30),
-                                              ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(5),
-                                                child: Image.network(
-                                                  'https://asoud.ir/${bank['logo']}',
-                                                  height: 30,
-                                                  width: 30,
-                                                  fit: BoxFit.fill,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        );
-                                      }).toList(),
-                                  onChanged: (value) {
-                                    // log(value.toString());
-                                    for (var bank in banks) {
-                                      if (value == bank['name']) {
-                                        setState(() {
-                                          bankInfo = '${bank['id']}';
-                                        });
-                                      }
-                                    }
-                                  },
-                                ),
-                              ),
-                            ),
-                            // DropdownButtonHideUnderline(
-                            //   child: DropdownButton<DiscountType>(
-                            //     dropdownColor: Colora.primaryColor,
-                            //     iconEnabledColor: Colora.primaryColor,
-                            //     borderRadius: BorderRadius.circular(15),
-                            //     value: DiscountType.none,
-                            //     hint: Text(
-                            //       'انتخاب نمایید',
-                            //       style: TextStyle(
-                            //         color: Colora.scaffold,
-                            //         fontSize: Dimensions.width * 0.03,
-                            //       ),
-                            //     ),
-                            //     items:
-                            //         banks.map((bank) {
-                            //           return DropdownMenuItem<DiscountType>(
-                            //             value: bank['name'],
-                            //             child: Text(
-                            //               bank['name'],
-                            //               style: const TextStyle(
-                            //                 color: Colors.white,
-                            //               ),
-                            //             ),
-                            //           );
-                            //         }).toList(),
-                            //     onChanged: (value) {
-                            //       if (value != null) {
-                            //         context.read<AddProductBloc>().add(
-                            //           DiscountTypeEvent(type: value),
-                            //         );
-                            //       }
-                            //     },
-                            //   ),
-                            // ),
-                            // Container(
-                            //   width: Dimensions.width * 0.45,
-                            //   height: Dimensions.height * 0.045,
-                            //   margin: EdgeInsets.symmetric(
-                            //     vertical: Dimensions.height * 0.005,
-                            //   ),
-                            //   decoration: BoxDecoration(
-                            //     color: Colora.primaryColor,
-                            //     borderRadius: BorderRadius.circular(29),
-                            //   ),
-                            //   child: const Row(
-                            //     mainAxisAlignment:
-                            //         MainAxisAlignment.spaceAround,
-                            //     children: [
-                            //       Text(
-                            //         'بانک ملت',
-                            //         style: TextStyle(
-                            //           color: Colora.scaffold,
-                            //           fontSize: 10,
-                            //         ),
-                            //       ),
-                            //       Icon(Icons.food_bank, color: Colora.scaffold),
-                            //     ],
-                            //   ),
-                            // ),
-                          ],
-                        ),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          SizedBox(
-                            width: Dimensions.width * 0.25,
-                            height: Dimensions.height * 0.05,
-                            child: TextField(
-                              keyboardType: TextInputType.number,
-                              style: const TextStyle(
-                                color: Colora.primaryColor,
-                              ),
-                              inputFormatters: <TextInputFormatter>[
-                                FilteringTextInputFormatter.allow(
-                                  RegExp('[0-9۰-۹]'),
-                                ),
-                              ],
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(29),
-                                  borderSide: const BorderSide(
-                                    color: Colora.primaryColor,
-                                  ),
-                                ),
-                                hintText: 'کد شعبه',
-
-                                hintStyle: const TextStyle(
-                                  color: Colora.primaryColor,
-                                  fontSize: 11,
-                                ),
-                              ),
-                              onChanged: (value) {
-                                setState(() {
-                                  branchId = value;
-                                });
-                              },
-                            ),
-                          ),
-                          SizedBox(
-                            width: Dimensions.width * 0.45,
-                            height: Dimensions.height * 0.05,
-                            child: TextField(
-                              style: const TextStyle(
-                                color: Colora.primaryColor,
-                              ),
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(29),
-                                  borderSide: const BorderSide(
-                                    color: Colora.primaryColor,
-                                  ),
-                                ),
-                                hintText: 'نام شعبه',
-                                hintStyle: const TextStyle(
-                                  color: Colora.primaryColor,
-                                  fontSize: 11,
-                                ),
-                              ),
-                              onChanged: (value) {
-                                setState(() {
-                                  branchName = value;
-                                });
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        width: Dimensions.width * 0.75,
-                        height: Dimensions.height * 0.05,
-                        child: TextField(
-                          keyboardType: TextInputType.number,
-                          style: const TextStyle(color: Colora.primaryColor),
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(29),
-                              borderSide: const BorderSide(
-                                color: Colora.primaryColor,
-                              ),
-                            ),
-                            hintText: 'شماره حساب',
-                            hintStyle: const TextStyle(
-                              color: Colora.primaryColor,
-                              fontSize: 11,
-                            ),
-                          ),
-                          onChanged: (value) {
-                            setState(() {
-                              accountNumber = value;
-                            });
-                          },
-                        ),
-                      ),
-                      SizedBox(
-                        width: Dimensions.width * 0.75,
-                        height: Dimensions.height * 0.05,
-                        child: TextField(
-                          keyboardType: TextInputType.number,
-                          textDirection: TextDirection.ltr,
-                          style: const TextStyle(color: Colora.primaryColor),
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(29),
-                              borderSide: const BorderSide(
-                                color: Colora.primaryColor,
-                              ),
-                            ),
-                            hintText: 'شماره شبا',
-                            hintStyle: const TextStyle(
-                              color: Colora.primaryColor,
-                              fontSize: 11,
-                            ),
-                            suffixText: 'IR',
-                            suffixStyle: const TextStyle(
-                              color: Colora.primaryColor,
-                              fontSize: 11,
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        width: Dimensions.width * 0.75,
-                        height: Dimensions.height * 0.05,
-                        child: TextField(
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly,
-                            CardNumberFormatter(),
-                          ],
-                          // textInputAction: TextInputAction.done,
-                          keyboardType: TextInputType.number,
-                          textDirection: TextDirection.ltr,
-                          style: const TextStyle(color: Colora.primaryColor),
-                          decoration: InputDecoration(
-                            contentPadding: EdgeInsets.only(
-                              left: Dimensions.width * 0.09,
-                              right: Dimensions.width * 0.04,
-                            ),
-                            // prefixIcon: Padding(
-                            //   padding: const EdgeInsets.all(8.0),
-                            //   child: Image.network(
-                            //     'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/800px-Mastercard-logo.svg.png',
-                            //     height: 30,
-                            //     width: 30,
-                            //   ),
-                            // ),
-                            // suffixIcon: const Padding(
-                            //   padding: EdgeInsets.all(8.0),
-                            //   child: Text(
-                            //     'Change',
-                            //     style: TextStyle(color: Colors.green),
-                            //   ),
-                            // ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(29),
-                              borderSide: const BorderSide(
-                                color: Colora.primaryColor,
-                              ),
-                            ),
-                            hintText: 'شماره کارت',
-
-                            hintStyle: const TextStyle(
-                              color: Colora.primaryColor,
-                              fontSize: 11,
-                            ),
-                            // labelText: 'Card Number',
-                            counterText: "",
-                          ),
-                          maxLength: 19,
-                          onChanged: (value) {
-                            setState(() {
-                              cardNumber = value;
-                            });
-                          },
-                        ),
-                      ),
-                      SizedBox(
-                        width: Dimensions.width * 0.75,
-                        height: Dimensions.height * 0.05,
-                        child: TextField(
-                          style: const TextStyle(
-                            color: Colora.primaryColor,
-                            // fontSize: 11
-                          ),
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(29),
-                              borderSide: const BorderSide(
-                                color: Colora.primaryColor,
-                              ),
-                            ),
-                            hintText: 'نام صاحب حساب',
-                            hintStyle: const TextStyle(
-                              color: Colora.primaryColor,
-                              fontSize: 11,
-                            ),
-                          ),
-                          onChanged: (value) {
-                            setState(() {
-                              fullName = value;
-                            });
-                          },
-                        ),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Container(
-                            width: Dimensions.width * 0.35,
-                            height: Dimensions.height * 0.05,
-                            margin: EdgeInsets.only(
-                              top: Dimensions.height * 0.01,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colora.primaryColor,
-                              borderRadius: BorderRadius.circular(29),
-                            ),
-                            child: MaterialButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              child: const Text(
-                                'لغو',
-                                style: TextStyle(
-                                  color: Colora.scaffold,
-                                  fontSize: 18,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Container(
-                            width: Dimensions.width * 0.35,
-                            height: Dimensions.height * 0.05,
-                            margin: EdgeInsets.only(
-                              top: Dimensions.height * 0.01,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colora.primaryColor,
-                              borderRadius: BorderRadius.circular(29),
-                            ),
-                            child: MaterialButton(
-                              onPressed: () {
-                                sendBankCard(
-                                  bankInfo,
-                                  cardNumber,
-                                  accountNumber,
-                                  fullName,
-                                  branchId,
-                                  branchName,
-                                  '',
-                                );
-                              },
-                              child: const Text(
-                                'ذخیره',
-                                style: TextStyle(
-                                  color: Colora.scaffold,
-                                  fontSize: 18,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+          (dialogContext) => StatefulBuilder(
+            builder:
+                (context, setDialogState) => AlertDialog(
+                  title: Text(
+                    existing == null
+                        ? 'افزودن اطلاعات بانکی'
+                        : 'ویرایش اطلاعات بانکی',
                   ),
+                  content: SizedBox(
+                    width: 520,
+                    child: Form(
+                      key: formKey,
+                      child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            DropdownButtonFormField<String>(
+                              initialValue: selectedBankId,
+                              decoration: const InputDecoration(
+                                labelText: 'بانک',
+                                border: OutlineInputBorder(),
+                              ),
+                              items:
+                                  state.banks
+                                      .map(
+                                        (bank) => DropdownMenuItem(
+                                          value: bank['id'].toString(),
+                                          child: Text(
+                                            bank['name']?.toString() ?? '',
+                                          ),
+                                        ),
+                                      )
+                                      .toList(),
+                              onChanged:
+                                  (value) => setDialogState(
+                                    () =>
+                                        selectedBankId =
+                                            value ?? selectedBankId,
+                                  ),
+                            ),
+                            const SizedBox(height: 12),
+                            _field(
+                              controller: fullName,
+                              label: 'نام صاحب حساب',
+                              validator: _required,
+                            ),
+                            const SizedBox(height: 12),
+                            _field(
+                              controller: card,
+                              label: 'شماره کارت ۱۶ رقمی',
+                              keyboardType: TextInputType.number,
+                              formatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                              ],
+                              validator:
+                                  (value) =>
+                                      isValidBankCardNumber(value ?? '')
+                                          ? null
+                                          : 'شماره کارت یا رقم کنترل آن معتبر نیست',
+                            ),
+                            const SizedBox(height: 12),
+                            _field(
+                              controller: account,
+                              label: 'شماره حساب',
+                              keyboardType: TextInputType.number,
+                              formatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                              ],
+                              validator:
+                                  (value) =>
+                                      RegExp(
+                                            r'^\d{1,32}$',
+                                          ).hasMatch(value ?? '')
+                                          ? null
+                                          : 'شماره حساب معتبر وارد کنید',
+                            ),
+                            const SizedBox(height: 12),
+                            _field(
+                              controller: iban,
+                              label: 'شبا (اختیاری، IR + ۲۴ رقم)',
+                              textCapitalization: TextCapitalization.characters,
+                              validator: (value) {
+                                final normalized =
+                                    (value ?? '')
+                                        .replaceAll(' ', '')
+                                        .toUpperCase();
+                                if (normalized.isEmpty) return null;
+                                return isValidIranianIban(normalized)
+                                    ? null
+                                    : 'ساختار یا رقم کنترل شبا معتبر نیست';
+                              },
+                            ),
+                            const SizedBox(height: 12),
+                            _field(
+                              controller: branchId,
+                              label: 'کد شعبه',
+                              keyboardType: TextInputType.number,
+                              formatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                              ],
+                              validator:
+                                  (value) =>
+                                      int.tryParse(value ?? '') != null
+                                          ? null
+                                          : 'کد شعبه الزامی است',
+                            ),
+                            const SizedBox(height: 12),
+                            _field(
+                              controller: branchName,
+                              label: 'نام شعبه',
+                              validator: _required,
+                            ),
+                            const SizedBox(height: 12),
+                            _field(
+                              controller: description,
+                              label: 'توضیحات (اختیاری)',
+                              maxLines: 2,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(dialogContext, false),
+                      child: const Text('انصراف'),
+                    ),
+                    FilledButton(
+                      onPressed: () async {
+                        if (!formKey.currentState!.validate()) return;
+                        final ok = await _cubit.save(
+                          id: existing?['id']?.toString(),
+                          body: {
+                            'bank_info': selectedBankId,
+                            'full_name': fullName.text.trim(),
+                            'card_number': card.text,
+                            'account_number': account.text,
+                            'iban':
+                                iban.text.trim().isEmpty
+                                    ? null
+                                    : iban.text
+                                        .replaceAll(' ', '')
+                                        .toUpperCase(),
+                            'branch_id': int.parse(branchId.text),
+                            'branch_name': branchName.text.trim(),
+                            'description': description.text.trim(),
+                          },
+                        );
+                        if (dialogContext.mounted && ok) {
+                          Navigator.pop(dialogContext, true);
+                        }
+                      },
+                      child: const Text('ذخیره'),
+                    ),
+                  ],
                 ),
-              );
-            },
           ),
     );
+
+    for (final controller in [
+      fullName,
+      card,
+      account,
+      iban,
+      branchId,
+      branchName,
+      description,
+    ]) {
+      controller.dispose();
+    }
+    if (saved == true && mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('اطلاعات بانکی ذخیره شد')));
+    }
+  }
+
+  TextFormField _field({
+    required TextEditingController controller,
+    required String label,
+    TextInputType? keyboardType,
+    List<TextInputFormatter>? formatters,
+    String? Function(String?)? validator,
+    TextCapitalization textCapitalization = TextCapitalization.none,
+    int maxLines = 1,
+  }) {
+    return TextFormField(
+      controller: controller,
+      keyboardType: keyboardType,
+      inputFormatters: formatters,
+      validator: validator,
+      textCapitalization: textCapitalization,
+      maxLines: maxLines,
+      decoration: InputDecoration(
+        labelText: label,
+        border: const OutlineInputBorder(),
+      ),
+    );
+  }
+
+  String? _required(String? value) =>
+      value == null || value.trim().isEmpty ? 'این فیلد الزامی است' : null;
+
+  Future<void> _delete(Map<String, dynamic> info) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('حذف اطلاعات بانکی'),
+            content: const Text('این مورد برای همیشه حذف شود؟'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('انصراف'),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('حذف'),
+              ),
+            ],
+          ),
+    );
+    if (confirmed != true) return;
+    final deleted = await _cubit.delete(info['id'].toString());
+    if (deleted && mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('اطلاعات بانکی حذف شد')));
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      appBar: DefaultAppBar(title: 'لیست مشخصات بانکی'),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          addCart();
-        },
-        backgroundColor: Colora.primaryColor,
-        child: Icon(Icons.add, color: Colora.scaffold),
-      ),
-      body:
-          bankCards.isEmpty
-              // : true
-              ? Column(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(
-                      left: 20,
-                      right: 20,
-                      top: Dimensions.height * 0.05,
-                    ),
-                    child: Text(
-                      'لیست کارت بانکی های شما خالی است، یک کارت مثل نمونه پایین اضافه کنید:',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colora.backgroundDialog,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: Dimensions.height * 0.1),
-
-                  BankSample(),
-                ],
-              )
-              : bankCards[0]['id'] == 'noId'
-              ? Center(
-                child: SizedBox(
-                  height: Dimensions.width * 0.1,
-                  width: Dimensions.width * 0.1,
-                  child: CircularProgressIndicator(
-                    color: Colora.backgroundDialog,
-                  ),
-                ),
-              )
-              : Padding(
-                padding: EdgeInsets.only(
-                  left: 20,
-                  right: 20,
-                  top: Dimensions.height * 0.05,
-                  bottom: Dimensions.height * 0.05,
-                ),
-                child: ListView.builder(
-                  itemBuilder: (context, index) {
-                    return Container(
-                      width: Dimensions.width,
-                      padding: EdgeInsets.only(
-                        bottom: Dimensions.width * 0.015,
-                      ),
-                      margin: EdgeInsets.symmetric(
-                        vertical: Dimensions.height * 0.01,
-                        horizontal: Dimensions.width * 0.03,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colora.primaryColor,
-                        border: Border.all(
-                          color: Colora.primaryColor,
-                          width: 2,
-                        ),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colora.scaffold,
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        child: Column(
-                          // crossAxisAlignment: CrossAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Container(
-                              width: Dimensions.width,
-                              height: Dimensions.height * 0.06,
-                              decoration: const BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(
-                                    color: Colora.primaryColor,
-                                    width: 2,
-                                  ),
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  SizedBox(width: Dimensions.width * 0.1),
-                                  Text(
-                                    'بانک ${bankCards[index]['bank_info']}',
-                                    style: TextStyle(
-                                      color: Colora.primaryColor,
-                                      fontSize: 15,
-                                    ),
-                                  ),
-                                  IconButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        // isExpanded = !isExpanded;
-                                        if (whichExpanded == index) {
-                                          whichExpanded = -1;
-                                        } else {
-                                          whichExpanded = index;
-                                        }
-                                      });
-                                    },
-                                    icon: const Icon(
-                                      Icons.swap_vert_rounded,
-                                      color: Colora.primaryColor,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-
-                            //bank
-                            Padding(
-                              padding: EdgeInsets.only(
-                                top: Dimensions.height * 0.015,
-                                right: Dimensions.width * 0.05,
-                              ),
-                              child: Text(
-                                'نام شعبه : ${bankCards[index]['branch_name']}',
-                                style: TextStyle(
-                                  color: Colora.primaryColor,
-                                  fontSize: 11,
-                                ),
-                              ),
-                            ),
-
-                            //account
-                            Padding(
-                              padding: EdgeInsets.only(
-                                right: Dimensions.width * 0.05,
-                                left: Dimensions.width * 0.02,
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    'کد شعبه : ${bankCards[index]['branch_id']}',
-                                    style: TextStyle(
-                                      color: Colora.primaryColor,
-                                      fontSize: 11,
-                                    ),
-                                  ),
-                                  Text(
-                                    '${bankCards[index]['account_number']}',
-                                    style: TextStyle(
-                                      color: Colora.primaryColor,
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-
-                            //shaba
-                            Container(
-                              width: Dimensions.width,
-                              alignment: Alignment.centerLeft,
-                              padding: EdgeInsets.only(
-                                left: Dimensions.width * 0.02,
-                              ),
-                              child: Text(
-                                // 'IR52 2522 3547 6584 9824 9014 24',
-                                '${bankCards[index]['iban']}' == 'null'
-                                    ? ''
-                                    : '${bankCards[index]['iban']}',
-                                style: TextStyle(
-                                  color: Colora.primaryColor,
-                                  fontSize: 11,
-                                ),
-                              ),
-                            ),
-
-                            //cart number
-                            Container(
-                              width: Dimensions.width,
-                              alignment: Alignment.center,
-                              padding: EdgeInsets.symmetric(
-                                vertical: Dimensions.height * 0.01,
-                              ),
-                              child: Text(
-                                '${bankCards[index]['card_number']}',
-                                textDirection: TextDirection.ltr,
-                                style: TextStyle(
-                                  color: Colora.primaryColor,
-                                  fontSize: 25,
-                                  fontFamily: 't',
-                                ),
-                              ),
-                            ),
-
-                            //name
-                            Padding(
-                              padding: EdgeInsets.only(
-                                top: Dimensions.height * 0.01,
-                                right: Dimensions.width * 0.03,
-                                bottom: Dimensions.height * 0.01,
-                              ),
-                              child: Text(
-                                '${bankCards[index]['full_name']}',
-                                style: TextStyle(
-                                  color: Colora.primaryColor,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-
-                            //buttons
-                            Container(
-                              color: Colora.primaryColor,
-                              child:
-                                  whichExpanded == index
-                                      ? Column(
-                                        children: [
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceEvenly,
-                                            children: [
-                                              SizedBox(
-                                                width: Dimensions.width * 0.4,
-                                                child: CheckboxListTile(
-                                                  title: const Padding(
-                                                    padding: EdgeInsets.only(
-                                                      top: 5.0,
-                                                    ),
-                                                    child: FittedBox(
-                                                      fit: BoxFit.scaleDown,
-                                                      child: Text(
-                                                        'شماره حساب',
-                                                        style: TextStyle(
-                                                          color:
-                                                              Colora.scaffold,
-                                                          fontSize: 15,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  value: false,
-                                                  onChanged: (newValue) {
-                                                    // setState(() {
-                                                    //   // checkedValue = newValue;
-                                                    // });
-                                                  },
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          20,
-                                                        ),
-                                                  ),
-                                                  side: const BorderSide(
-                                                    color: Colora.scaffold,
-                                                  ),
-                                                  fillColor:
-                                                      WidgetStateProperty.all(
-                                                        Colora.scaffold,
-                                                      ),
-                                                  activeColor: Colora.scaffold,
-                                                  checkColor:
-                                                      Colora.primaryColor,
-                                                  contentPadding:
-                                                      EdgeInsets.zero,
-                                                  controlAffinity:
-                                                      ListTileControlAffinity
-                                                          .leading,
-                                                ),
-                                              ),
-                                              SizedBox(
-                                                width: Dimensions.width * 0.4,
-                                                child: CheckboxListTile(
-                                                  title: const Padding(
-                                                    padding: EdgeInsets.only(
-                                                      top: 5.0,
-                                                    ),
-                                                    child: FittedBox(
-                                                      fit: BoxFit.scaleDown,
-                                                      child: Text(
-                                                        'شماره شبا',
-                                                        style: TextStyle(
-                                                          color:
-                                                              Colora.scaffold,
-                                                          fontSize: 15,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  value: false,
-                                                  onChanged: (newValue) {
-                                                    // bloc.add(IsMarketerEvent(isMarketer: !state.isMarketer));
-                                                  },
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          20,
-                                                        ),
-                                                  ),
-                                                  side: const BorderSide(
-                                                    color: Colora.scaffold,
-                                                  ),
-                                                  activeColor: Colora.scaffold,
-                                                  fillColor:
-                                                      WidgetStateProperty.all(
-                                                        Colora.scaffold,
-                                                      ),
-                                                  checkColor:
-                                                      Colora.primaryColor,
-                                                  contentPadding:
-                                                      EdgeInsets.zero,
-                                                  controlAffinity:
-                                                      ListTileControlAffinity
-                                                          .leading,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceEvenly,
-                                            children: [
-                                              SizedBox(
-                                                width: Dimensions.width * 0.4,
-                                                child: CheckboxListTile(
-                                                  title: const Padding(
-                                                    padding: EdgeInsets.only(
-                                                      top: 5.0,
-                                                    ),
-                                                    child: FittedBox(
-                                                      fit: BoxFit.scaleDown,
-                                                      child: Text(
-                                                        'شماره کارت',
-                                                        style: TextStyle(
-                                                          color:
-                                                              Colora.scaffold,
-                                                          fontSize: 15,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  value: false,
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          20,
-                                                        ),
-                                                  ),
-                                                  side: const BorderSide(
-                                                    color: Colora.scaffold,
-                                                  ),
-                                                  fillColor:
-                                                      WidgetStateProperty.all(
-                                                        Colora.scaffold,
-                                                      ),
-                                                  activeColor: Colora.scaffold,
-                                                  checkColor:
-                                                      Colora.primaryColor,
-                                                  contentPadding:
-                                                      EdgeInsets.zero,
-                                                  controlAffinity:
-                                                      ListTileControlAffinity
-                                                          .leading,
-                                                  onChanged: (bool? value) {},
-                                                ),
-                                              ),
-                                              SizedBox(
-                                                width: Dimensions.width * 0.4,
-                                                child: CheckboxListTile(
-                                                  title: const Padding(
-                                                    padding: EdgeInsets.only(
-                                                      top: 5.0,
-                                                    ),
-                                                    child: FittedBox(
-                                                      fit: BoxFit.scaleDown,
-                                                      child: Text(
-                                                        'نام صاحب حساب',
-                                                        style: TextStyle(
-                                                          color:
-                                                              Colora.scaffold,
-                                                          fontSize: 15,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  value: false,
-                                                  onChanged: (newValue) {
-                                                    // bloc.add(IsMarketerEvent(isMarketer: !state.isMarketer));
-                                                  },
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          20,
-                                                        ),
-                                                  ),
-                                                  side: const BorderSide(
-                                                    color: Colora.scaffold,
-                                                  ),
-                                                  activeColor: Colora.scaffold,
-                                                  fillColor:
-                                                      WidgetStateProperty.all(
-                                                        Colora.scaffold,
-                                                      ),
-                                                  checkColor:
-                                                      Colora.primaryColor,
-                                                  contentPadding:
-                                                      EdgeInsets.zero,
-                                                  controlAffinity:
-                                                      ListTileControlAffinity
-                                                          .leading,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          Padding(
-                                            padding: EdgeInsets.symmetric(
-                                              horizontal:
-                                                  Dimensions.width * 0.03,
-                                            ),
-                                            child: TextField(
-                                              maxLines: 3,
-                                              decoration: InputDecoration(
-                                                border: OutlineInputBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(25),
-                                                ),
-                                                filled: true,
-                                                fillColor: Colora.scaffold,
-                                                hintText: 'یادداشت',
-                                                hintStyle: TextStyle(
-                                                  color: Colora.primaryColor
-                                                      .withValues(alpha: 0.5),
-                                                  fontSize: 12,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceAround,
-                                            children: [
-                                              Container(
-                                                width: Dimensions.width * 0.4,
-                                                height:
-                                                    Dimensions.height * 0.05,
-                                                margin: EdgeInsets.only(
-                                                  top: Dimensions.height * 0.01,
-                                                ),
-                                                decoration: BoxDecoration(
-                                                  color: Colora.scaffold,
-                                                  borderRadius:
-                                                      BorderRadius.circular(29),
-                                                ),
-                                                child: MaterialButton(
-                                                  onPressed: () {},
-                                                  child: const Text(
-                                                    'کپی',
-                                                    style: TextStyle(
-                                                      color:
-                                                          Colora.primaryColor,
-                                                      fontSize: 18,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                              Container(
-                                                width: Dimensions.width * 0.4,
-                                                height:
-                                                    Dimensions.height * 0.05,
-                                                margin: EdgeInsets.only(
-                                                  top: Dimensions.height * 0.01,
-                                                ),
-                                                decoration: BoxDecoration(
-                                                  color: Colora.scaffold,
-                                                  borderRadius:
-                                                      BorderRadius.circular(29),
-                                                ),
-                                                child: MaterialButton(
-                                                  onPressed: () {
-                                                    Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                        builder:
-                                                            (context) =>
-                                                                const BankCardSharingScreen(),
-                                                      ),
-                                                    );
-                                                  },
-                                                  child: const Text(
-                                                    'اشتراک گذاری',
-                                                    style: TextStyle(
-                                                      color:
-                                                          Colora.primaryColor,
-                                                      fontSize: 18,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      )
-                                      : const SizedBox.shrink(),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                  itemCount: bankCards.length,
-                ),
-              ),
+    return BlocConsumer<BankInfoCubit, BankInfoState>(
+      bloc: _cubit,
+      listener: (context, state) {
+        if (state.error != null) {
+          ScaffoldMessenger.of(context)
+            ..clearSnackBars()
+            ..showSnackBar(SnackBar(content: Text(state.error!)));
+        }
+      },
+      builder:
+          (context, state) => Scaffold(
+            appBar: DefaultAppBar(title: 'اطلاعات بانکی'),
+            floatingActionButton:
+                state.status == BankInfoStatus.loaded
+                    ? FloatingActionButton.extended(
+                      onPressed: () => _openEditor(state),
+                      icon: const Icon(Icons.add),
+                      label: const Text('افزودن'),
+                    )
+                    : null,
+            body: _body(state),
+          ),
     );
   }
-}
 
-class CardNumberFormatter extends TextInputFormatter {
-  @override
-  TextEditingValue formatEditUpdate(
-    TextEditingValue oldValue,
-    TextEditingValue newValue,
-  ) {
-    var inputText = newValue.text;
-
-    if (newValue.selection.baseOffset == 0) {
-      return newValue;
+  Widget _body(BankInfoState state) {
+    if (state.status == BankInfoStatus.initial ||
+        state.status == BankInfoStatus.loading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (state.status == BankInfoStatus.failure) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(state.error ?? 'دریافت اطلاعات بانکی ناموفق بود'),
+            const SizedBox(height: 12),
+            FilledButton(
+              onPressed: _cubit.load,
+              child: const Text('تلاش دوباره'),
+            ),
+          ],
+        ),
+      );
     }
 
-    var bufferString = StringBuffer();
-    for (int i = 0; i < inputText.length; i++) {
-      bufferString.write(inputText[i]);
-      var nonZeroIndexValue = i + 1;
-      if (nonZeroIndexValue % 4 == 0 && nonZeroIndexValue != inputText.length) {
-        bufferString.write(' ');
-      }
-    }
-
-    var string = bufferString.toString();
-    return newValue.copyWith(
-      text: string,
-      selection: TextSelection.collapsed(offset: string.length),
+    return Column(
+      children: [
+        if (state.status == BankInfoStatus.saving)
+          const LinearProgressIndicator(),
+        Expanded(
+          child: RefreshIndicator(
+            onRefresh: _cubit.load,
+            child: ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.fromLTRB(12, 12, 12, 92),
+              children:
+                  state.bankInfos.isEmpty
+                      ? const [
+                        SizedBox(height: 180),
+                        Center(child: Text('هنوز اطلاعات بانکی ثبت نشده است')),
+                      ]
+                      : state.bankInfos
+                          .map((info) => _bankInfoCard(state, info))
+                          .toList(),
+            ),
+          ),
+        ),
+      ],
     );
+  }
+
+  Widget _bankInfoCard(BankInfoState state, Map<String, dynamic> info) {
+    final id = info['id'].toString();
+    final pending = state.pendingIds.contains(id);
+    final cardNumber = info['card_number']?.toString() ?? '';
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: ExpansionTile(
+        leading: const CircleAvatar(child: Icon(Icons.account_balance)),
+        title: Text(info['bank_info']?.toString() ?? 'بانک'),
+        subtitle: Text(_spacedCard(cardNumber)),
+        childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+        children: [
+          _row('صاحب حساب', info['full_name']),
+          _row('شماره حساب', info['account_number']),
+          if ((info['iban']?.toString() ?? '').isNotEmpty)
+            _row('شبا', info['iban']),
+          _row(
+            'شعبه',
+            '${info['branch_name'] ?? ''} (${info['branch_id'] ?? ''})',
+          ),
+          if ((info['description']?.toString() ?? '').isNotEmpty)
+            _row('توضیحات', info['description']),
+          const Divider(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              IconButton(
+                tooltip: 'کپی شماره کارت',
+                onPressed:
+                    () => Clipboard.setData(ClipboardData(text: cardNumber)),
+                icon: const Icon(Icons.copy),
+              ),
+              IconButton(
+                tooltip: 'ویرایش',
+                onPressed: pending ? null : () => _openEditor(state, info),
+                icon: const Icon(Icons.edit),
+              ),
+              pending
+                  ? const Padding(
+                    padding: EdgeInsets.all(12),
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  )
+                  : IconButton(
+                    tooltip: 'حذف',
+                    onPressed: () => _delete(info),
+                    icon: const Icon(Icons.delete_outline),
+                  ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _row(String label, dynamic value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 100,
+            child: Text(
+              label,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+          Expanded(child: SelectableText(value?.toString() ?? '')),
+        ],
+      ),
+    );
+  }
+
+  String _spacedCard(String value) {
+    final digits = value.replaceAll(' ', '');
+    return RegExp(
+      '.{1,4}',
+    ).allMatches(digits).map((match) => match.group(0)).join(' ');
   }
 }

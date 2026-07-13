@@ -53,7 +53,7 @@ exists but connected to nothing.
 | `POST user/pin/create/` | `AuthApiService.userAuth` | OK |
 | `POST user/pin/verify/` | `AuthApiService.verifyUser` | OK (but see C1/C3) |
 | `GET/PUT user/profile/` | `ProfileApiService` + `ProfileCubit` + `VendorProfileScreen` | OK — real self data; mobile/legacy IBAN are read-only, fake document controls removed |
-| `user/bank-info/list/`, `user/bank/info/*` (CRUD) | `bank_card` feature is UI-only, no data layer | SHELL |
+| `user/bank-info/list/`, `user/bank/info/*` (CRUD) | `BankApiService` + `BankInfoCubit` + real list/editor | OK — explicit self-scoped CRUD, validation errors surfaced |
 
 ### 2.2 Category (`api/v1/category/`)
 | Backend | Frontend | Status |
@@ -174,7 +174,7 @@ DioClient + BLoC in its owning batch:
 `BusinessBloc`, `ProfileBloc`, `CustomerBloc`, `ThemeBloc`, `CommentBloc`.
 
 **Features with zero data layer (pure UI):**
-chat, notification, product, reservation, service, bank_card,
+chat, notification, product, reservation, service,
 business_card, customer, panel, profile, store_setting_screens
 (vendor reuses create_workspace repo — partially real).
 

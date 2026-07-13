@@ -55,6 +55,7 @@ import 'package:asood/features/affiliate/data/affiliate_api_service.dart';
 import 'package:asood/features/referral/data/referral_api_service.dart';
 import 'package:asood/features/profile/data/profile_api_service.dart';
 import 'package:asood/features/bank_card/data/bank_api_service.dart';
+import 'package:asood/features/bank_card/bloc/bank_info_cubit.dart';
 import 'package:asood/features/auth/data/repository/auth_repository_imp.dart';
 import 'package:asood/features/auth/domain/repository/auth_repository.dart';
 import 'package:asood/features/auth/presentation/blocs/auth_bloc.dart';
@@ -139,6 +140,7 @@ locatorSetup() async {
   locator.registerFactory(
     () => BankApiService(dioClient: locator<DioClient>()),
   );
+  locator.registerFactory(() => BankInfoCubit(api: locator<BankApiService>()));
   // Fresh socket per room (each ChatRoomBloc owns and closes one).
   locator.registerFactory(
     () => ChatSocket(authSession: locator<AuthSession>()),

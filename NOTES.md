@@ -155,3 +155,12 @@ is rendered. A change uses idempotent `PUT user/market/bookmark/{id}/` with an
 explicit boolean. Removal drops the row optimistically, disables duplicate writes
 for that market, and restores the row and ID if the request fails. The backend state
 in the response wins over the optimistic state. Load failures render a retry action.
+
+## Bank information is persisted, not sampled
+`Finance` now exposes only the supported bank-information capability. The list and
+catalog load through `BankApiService`/`BankInfoCubit`; the form creates and updates
+the explicit backend fields and delete waits for server confirmation. The old Mellat
+sample card, static share poster, cosmetic dashboard/transaction/statement controls
+and empty button handlers were removed. Card/account/branch input is numeric, IBAN
+uses `IR` plus 24 digits, backend field errors remain visible, and copy uses the real
+saved card number. Do not re-add financial dashboards until authoritative APIs exist.
