@@ -192,3 +192,10 @@ Theme creation sends only the selected layout order; the backend owns the intern
 name. `MarketBloc` keeps authoritative success/failure state, reloads the server list
 after create, surfaces backend details through the screen listener, and no longer
 retains a fake local-only theme removal event/API.
+
+## Dashboard navigation exposes only supported capabilities
+The vendor menu is immutable configuration rather than mutable `dummyData`. Tiles
+with no route, the self-recursive vendor-dashboard link, the disabled SMS surface and
+the unpersisted business-card shortcut were removed. The buyer-discovery destination
+now contains only the real public-market search/list with retry behavior; its ten
+synthetic orders, named sample store and empty statistics tab were deleted.
