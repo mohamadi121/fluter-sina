@@ -20,4 +20,10 @@ void main() {
     expect(payload.containsKey('ship_cost'), isFalse);
     expect(payload['ship_cost_pay_type'], 'free');
   });
+
+  test('product payload has no legacy discount mutation fields', () {
+    final payload = ProductModel(market: 'm1', name: 'p1').toJson();
+
+    expect(payload.keys.where((key) => key.contains('discount')), isEmpty);
+  });
 }

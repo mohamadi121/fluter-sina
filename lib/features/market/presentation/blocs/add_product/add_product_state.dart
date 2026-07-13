@@ -2,8 +2,6 @@ part of 'add_product_bloc.dart';
 
 enum ProductType { good, service }
 
-enum DiscountType { none, percent, timed, group }
-
 enum PositionEnum { topLeft, topRight, bottomLeft, bottomRight }
 
 enum TagEnum { newProduct, specialOffer, comingSoon, none }
@@ -47,12 +45,6 @@ class AddProductState {
   final int productPrice;
   final bool productPriceEnable;
 
-  final int discountPercentage;
-  final int discountPeople;
-  final int discountDays;
-  final DiscountType discountType;
-  final PositionEnum discountPosition;
-
   final bool productGift;
   final ThemeProductModel? selectedProductGift;
   final bool productExtra;
@@ -92,12 +84,6 @@ class AddProductState {
     required this.productStockEnable,
     required this.productPrice,
     required this.productPriceEnable,
-
-    required this.discountType,
-    required this.discountPercentage,
-    required this.discountPeople,
-    required this.discountDays,
-    required this.discountPosition,
 
     required this.productGift,
     required this.selectedProductGift,
@@ -145,12 +131,6 @@ class AddProductState {
       productPrice: 0,
       productPriceEnable: false,
 
-      discountType: DiscountType.none,
-      discountPercentage: 50,
-      discountPeople: 0,
-      discountDays: 0,
-      discountPosition: PositionEnum.topLeft,
-
       productGift: false,
       productExtra: false,
       selectedProductGift: null,
@@ -196,12 +176,6 @@ class AddProductState {
     bool? productStockEnable,
     int? productPrice,
     bool? productPriceEnable,
-
-    DiscountType? discountType,
-    int? discountPercentage,
-    int? discountPeople,
-    int? discountDays,
-    PositionEnum? discountPosition,
 
     bool? productGift,
     ThemeProductModel? selectedProductGift,
@@ -249,12 +223,6 @@ class AddProductState {
       productStockEnable: productStockEnable ?? this.productStockEnable,
       productPrice: productPrice ?? this.productPrice,
       productPriceEnable: productPriceEnable ?? this.productPriceEnable,
-
-      discountType: discountType ?? this.discountType,
-      discountPercentage: discountPercentage ?? this.discountPercentage,
-      discountPeople: discountPeople ?? this.discountPeople,
-      discountDays: discountDays ?? this.discountDays,
-      discountPosition: discountPosition ?? this.discountPosition,
 
       productGift: productGift ?? this.productGift,
       selectedProductGift: selectedProductGift ?? this.selectedProductGift,

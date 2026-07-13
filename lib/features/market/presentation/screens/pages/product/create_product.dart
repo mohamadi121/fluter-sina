@@ -6,7 +6,6 @@ import 'package:asood/features/market/presentation/blocs/add_product/add_product
 import 'package:asood/features/market/presentation/blocs/bloc/market_bloc.dart';
 import 'package:asood/features/market/presentation/widgets/create_product/active_broadcast_widget.dart';
 import 'package:asood/features/market/presentation/widgets/create_product/category_selection_section.dart';
-import 'package:asood/features/market/presentation/widgets/create_product/discount_builder.dart';
 import 'package:asood/features/market/presentation/widgets/create_product/keyword_builder_widget.dart';
 import 'package:asood/features/market/presentation/widgets/create_product/price_widget.dart';
 import 'package:asood/features/market/presentation/widgets/create_product/product_pic_section.dart';
@@ -185,9 +184,6 @@ class _CreateProductState extends State<CreateProduct> {
                                   //price
                                   SizedBox(height: Dimensions.height * 0.01),
                                   PriceWidget(),
-
-                                  //discount
-                                  DiscountBuilder(),
 
                                   SizedBox(height: Dimensions.height * 0.01),
 

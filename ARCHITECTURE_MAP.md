@@ -80,7 +80,7 @@ exists but connected to nothing.
 ### 2.5 Product (`api/v1/owner/product/`, `api/v1/products/`)
 | Backend | Frontend | Status |
 |---|---|---|
-| `create/`, `discount/create/{pk}`, `list/{pk}`, `theme/create|list|update` | `ProductApiService` (market feature) | OK |
+| `create/`, `list/{pk}`, `theme/create|list|update` | `ProductApiService` (market feature) | OK; legacy `discount/create/{pk}` is explicit 409 and absent from Flutter |
 | `detail/{pk}/`, `ship/list|create/{pk}`, `theme/delete/{pk}` | shipping create intentionally absent; legacy list is backend-only | FAIL-CLOSED — customer-paid shipping requires order selection/snapshot first |
 | `GET products/` (public search w/ filters) | — | ABSENT — buyer-side product search missing; `features/product` bloc is an empty shell |
 

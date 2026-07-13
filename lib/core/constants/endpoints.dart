@@ -45,7 +45,6 @@ class Endpoints {
   // owner
   static String baseProduct = 'owner/product';
   static String createProduct = '$baseProduct/create/';
-  static String createProductDiscount = '$baseProduct/discount/create/';
   static String ownerProductListById = '$baseProduct/list/';
   static String ownerProductThemeCreate = '$baseProduct/theme/create/';
   static String ownerProductThemeList = '$baseProduct/theme/list/';

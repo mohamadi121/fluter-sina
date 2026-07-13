@@ -69,27 +69,6 @@ class ProductPriceStockEvent extends AddProductEvent {
   const ProductPriceStockEvent({this.priceEnable, this.stockEnable});
 }
 
-/// discount settings
-class DiscountTypeEvent extends AddProductEvent {
-  final DiscountType type;
-
-  const DiscountTypeEvent({required this.type});
-}
-
-class DiscountValuesEvent extends AddProductEvent {
-  final int? percentage;
-  final int? peopleNumber;
-  final int? daysNumber;
-  final PositionEnum? position;
-
-  const DiscountValuesEvent({
-    this.percentage,
-    this.peopleNumber,
-    this.daysNumber,
-    this.position,
-  });
-}
-
 class ProductTagSaleEvent extends AddProductEvent {
   final TagEnum? tag;
   final PositionEnum? position;

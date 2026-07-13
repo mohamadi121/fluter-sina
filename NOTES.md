@@ -173,3 +173,10 @@ so accepting a customer price would silently undercharge orders. Backend creatio
 cart add and checkout independently reject legacy `customer` products with
 `shipping_contract_unavailable`. Do not re-enable this option until the order model
 stores a selected option and immutable shipping amount.
+
+## Legacy product discount UI is removed
+Product creation no longer sends a discount request before the product exists. The
+old percentage/timed/group widget, its local state/events and repository/API methods
+were deleted because they targeted a legacy backend model that permanently changed
+the base price and was never consumed by cart. Configure discounts only through the
+real store discount flow backed by the checkout discount ledger.

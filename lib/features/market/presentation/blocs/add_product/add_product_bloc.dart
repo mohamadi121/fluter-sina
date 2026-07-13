@@ -26,9 +26,6 @@ class AddProductBloc extends Bloc<AddProductEvent, AddProductState> {
     on<ChangeProductPriceEvent>(_changeProductPrice);
     on<ChangeProductStockEvent>(_changeProductStock);
 
-    on<DiscountTypeEvent>(_changeDiscountType);
-    on<DiscountValuesEvent>(_changeDiscountValues);
-
     on<ProductExtraEvent>(_changeProductExtra);
     on<LoadProductListEvent>(_loadProductList);
     on<ChangeProductGiftAndRequiredEvent>(_changeProductRequiredGifted);
@@ -93,24 +90,6 @@ class AddProductBloc extends Bloc<AddProductEvent, AddProductState> {
       state.copyWith(
         productStockEnable: event.stockEnable,
         productPriceEnable: event.priceEnable,
-      ),
-    );
-  }
-
-  _changeDiscountType(DiscountTypeEvent event, Emitter<AddProductState> emit) {
-    emit(state.copyWith(discountType: event.type));
-  }
-
-  _changeDiscountValues(
-    DiscountValuesEvent event,
-    Emitter<AddProductState> emit,
-  ) {
-    emit(
-      state.copyWith(
-        discountPercentage: event.percentage,
-        discountPeople: event.peopleNumber,
-        discountDays: event.daysNumber,
-        discountPosition: event.position,
       ),
     );
   }
@@ -230,21 +209,7 @@ class AddProductBloc extends Bloc<AddProductEvent, AddProductState> {
     emit(state.copyWith(status: CWSStatus.loading));
 
     try {
-      // مرحله ۱: اگر تخفیف فعاله، اول تخفیف رو ایجاد کن
-      if (state.discountType != DiscountType.none) {
-        final discountRes = await productRepository.createProductDiscount(
-          event.market,
-          state.discountPosition,
-          state.discountPercentage,
-          state.discountDays,
-        );
-
-        if (discountRes is! Success) {
-          throw Exception('Failed to create product discount');
-        }
-      }
-
-      // مرحله ۲: ساخت مدل محصول
+      // ساخت مدل محصول
       final product = ProductModel(
         market: event.market,
         type: state.productType.name,
@@ -271,14 +236,14 @@ class AddProductBloc extends Bloc<AddProductEvent, AddProductState> {
         image: state.selectedCategoryImageFile,
       );
 
-      // مرحله ۳: ساخت محصول
+      // ساخت محصول
       final createProductRes = await productRepository.createProduct(product);
       if (createProductRes is Success) {
         final productModel = ProductModel.fromJson(
           createProductRes.response as Map<String, dynamic>,
         );
 
-        // مرحله ۴: آپدیت تم مارکت
+        // آپدیت تم مارکت
         final themeRes = await productRepository.updateMarketTheme(
           themeId: event.themeId,
           productId: productModel.product!,
