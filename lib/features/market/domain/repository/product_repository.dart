@@ -26,6 +26,4 @@ abstract class ProductRepository {
     int? parentId,
   });
   Future<dynamic> deleteMarketTheme(String themeId);
-  Future<dynamic> getShipList(String productId);
-  Future<dynamic> createShip(String productId, Map<String, dynamic> body);
 }

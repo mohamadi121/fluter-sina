@@ -10,7 +10,7 @@ enum TagEnum { newProduct, specialOffer, comingSoon, none }
 
 enum SellTypeEnum { online, person, both }
 
-enum SendPriceEnum { market, customer, free }
+enum SendPriceEnum { market, free }
 
 enum PublishStatusEnum {
   draft,

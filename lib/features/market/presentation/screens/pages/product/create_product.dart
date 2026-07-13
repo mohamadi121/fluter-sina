@@ -206,12 +206,6 @@ class _CreateProductState extends State<CreateProduct> {
                                   //sell section
                                   SelectSellTypeSection(),
 
-                                  //post price
-                                  if (state.productSendPrice ==
-                                      SendPriceEnum.customer) ...[
-                                    // CustomerPostpriceSection(),
-                                  ],
-
                                   SizedBox(height: Dimensions.height * 0.01),
 
                                   //pic

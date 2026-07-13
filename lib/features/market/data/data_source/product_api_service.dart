@@ -142,30 +142,6 @@ class ProductApiService {
     }
   }
 
-  // Shipping entries are per product (apps/product ship views).
-  Future getShipList(String productId) async {
-    try {
-      Response res = await dioClient.getData(
-        "${Endpoints.baseProduct}/ship/list/$productId/",
-      );
-      return apiStatus(res);
-    } catch (e) {
-      return apiFailure(e);
-    }
-  }
-
-  Future createShip(String productId, Map<String, dynamic> body) async {
-    try {
-      Response res = await dioClient.postData(
-        "${Endpoints.baseProduct}/ship/create/$productId/",
-        body,
-      );
-      return apiStatus(res);
-    } catch (e) {
-      return apiFailure(e);
-    }
-  }
-
   /// POST user/comment/create/ — bare `{"message", "id"}` with 201.
   /// content_type: 'product' | 'market'; parentId for replies.
   Future createComment({

@@ -44,7 +44,6 @@ class _ProductScreenState extends State<ProductScreen> {
   String get stock => _detail['stock']?.toString() ?? '';
   String get mainPrice => _detail['main_price']?.toString() ?? '';
   String get marketPrice => _detail['marketer_price']?.toString() ?? '';
-  String get shipCost => _detail['shipping_cost']?.toString() ?? '';
 
   String get tag {
     switch (_detail['tag']?.toString()) {
@@ -83,8 +82,6 @@ class _ProductScreenState extends State<ProductScreen> {
     final first = images.first;
     return first is Map ? (first['image']?.toString() ?? '') : '';
   }
-
-  List testSina = ['sina ', 'hashemi', 'is the best '];
 
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();

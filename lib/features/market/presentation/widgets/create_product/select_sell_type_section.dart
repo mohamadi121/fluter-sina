@@ -48,69 +48,68 @@ class SelectSellTypeSection extends StatelessWidget {
   }
 
   Widget _buildSellTypeRow(AddProductState state, AddProductBloc bloc) {
-    return Row(
-      spacing: 5,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children:
-          SellTypeEnum.values.map((type) {
-            final label = _getSellTypeLabel(type);
-            return Expanded(
-              child: Row(
-                children: [
-                  Expanded(child: _buildLabel(label)),
-                  Flexible(
-                    child: Radio<SellTypeEnum>(
-                      visualDensity: const VisualDensity(
-                        horizontal: VisualDensity.minimumDensity,
-                        vertical: VisualDensity.minimumDensity,
+    return RadioGroup<SellTypeEnum>(
+      groupValue: state.productSellType,
+      onChanged: (value) => bloc.add(ProductTagSaleEvent(sellType: value)),
+      child: Row(
+        spacing: 5,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children:
+            SellTypeEnum.values.map((type) {
+              final label = _getSellTypeLabel(type);
+              return Expanded(
+                child: Row(
+                  children: [
+                    Expanded(child: _buildLabel(label)),
+                    Flexible(
+                      child: Radio<SellTypeEnum>(
+                        visualDensity: const VisualDensity(
+                          horizontal: VisualDensity.minimumDensity,
+                          vertical: VisualDensity.minimumDensity,
+                        ),
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        fillColor: WidgetStateProperty.all(Colora.primaryColor),
+                        value: type,
                       ),
-
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      fillColor: WidgetStateProperty.all(Colora.primaryColor),
-                      value: type,
-                      groupValue: state.productSellType,
-                      onChanged: (value) {
-                        bloc.add(ProductTagSaleEvent(sellType: value));
-                      },
                     ),
-                  ),
-                ],
-              ),
-            );
-          }).toList(),
+                  ],
+                ),
+              );
+            }).toList(),
+      ),
     );
   }
 
   Widget _buildSendPriceRow(AddProductState state, AddProductBloc bloc) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children:
-          SendPriceEnum.values.map((type) {
-            final label = _getSendPriceLabel(type);
-            return Expanded(
-              child: Row(
-                spacing: 8,
-                children: [
-                  Expanded(child: _buildLabel(label)),
-                  Flexible(
-                    child: Radio<SendPriceEnum>(
-                      visualDensity: const VisualDensity(
-                        horizontal: VisualDensity.minimumDensity,
-                        vertical: VisualDensity.minimumDensity,
+    return RadioGroup<SendPriceEnum>(
+      groupValue: state.productSendPrice,
+      onChanged: (value) => bloc.add(ProductTagSaleEvent(sendPrice: value)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children:
+            SendPriceEnum.values.map((type) {
+              final label = _getSendPriceLabel(type);
+              return Expanded(
+                child: Row(
+                  spacing: 8,
+                  children: [
+                    Expanded(child: _buildLabel(label)),
+                    Flexible(
+                      child: Radio<SendPriceEnum>(
+                        visualDensity: const VisualDensity(
+                          horizontal: VisualDensity.minimumDensity,
+                          vertical: VisualDensity.minimumDensity,
+                        ),
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        fillColor: WidgetStateProperty.all(Colora.primaryColor),
+                        value: type,
                       ),
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      fillColor: WidgetStateProperty.all(Colora.primaryColor),
-                      value: type,
-                      groupValue: state.productSendPrice,
-                      onChanged: (value) {
-                        bloc.add(ProductTagSaleEvent(sendPrice: value));
-                      },
                     ),
-                  ),
-                ],
-              ),
-            );
-          }).toList(),
+                  ],
+                ),
+              );
+            }).toList(),
+      ),
     );
   }
 
@@ -142,8 +141,6 @@ class SelectSellTypeSection extends StatelessWidget {
     switch (type) {
       case SendPriceEnum.market:
         return 'به عهده فروشگاه';
-      case SendPriceEnum.customer:
-        return 'به عهده مشتری';
       case SendPriceEnum.free:
         return 'رایگان';
     }

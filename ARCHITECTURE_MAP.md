@@ -81,7 +81,7 @@ exists but connected to nothing.
 | Backend | Frontend | Status |
 |---|---|---|
 | `create/`, `discount/create/{pk}`, `list/{pk}`, `theme/create|list|update` | `ProductApiService` (market feature) | OK |
-| `detail/{pk}/`, `ship/list|create/{pk}`, `theme/delete/{pk}` | — | ABSENT |
+| `detail/{pk}/`, `ship/list|create/{pk}`, `theme/delete/{pk}` | shipping create intentionally absent; legacy list is backend-only | FAIL-CLOSED — customer-paid shipping requires order selection/snapshot first |
 | `GET products/` (public search w/ filters) | — | ABSENT — buyer-side product search missing; `features/product` bloc is an empty shell |
 
 ### 2.6 Comments (`api/v1/user/comment/`)
@@ -179,7 +179,6 @@ business_card, customer, panel, profile, store_setting_screens
 (vendor reuses create_workspace repo — partially real).
 
 **Mock/hardcoded data:**
-- `add_product_bloc.dart:257` — `shipCost: 2000 // TODO: Update ship cost from backend` (hardcoded business value).
 - `store_card.dart`, `vendor_home.dart`, `market_preview_screen.dart`, `store_detail_screen.dart`, `store_appbar.dart` — contain mock/placeholder markers (verify per batch). `profile.dart` was repaired in Batch 5g.
 
 **Dead UI:** 26 `onPressed/onTap: () {}` or `onPressed: null` sites (buttons that do nothing).

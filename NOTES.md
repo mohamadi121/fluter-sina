@@ -164,3 +164,12 @@ sample card, static share poster, cosmetic dashboard/transaction/statement contr
 and empty button handlers were removed. Card/account/branch input is numeric, IBAN
 uses `IR` plus 24 digits, backend field errors remain visible, and copy uses the real
 saved card number. Do not re-add financial dashboards until authoritative APIs exist.
+
+## Customer-paid shipping fails closed
+Product creation offers only seller-paid or free shipping. The former customer-paid
+radio, its disconnected price form and the unused shipping write/list client methods
+were removed: checkout has no selected-shipping-option or shipping-price snapshot,
+so accepting a customer price would silently undercharge orders. Backend creation,
+cart add and checkout independently reject legacy `customer` products with
+`shipping_contract_unavailable`. Do not re-enable this option until the order model
+stores a selected option and immutable shipping amount.

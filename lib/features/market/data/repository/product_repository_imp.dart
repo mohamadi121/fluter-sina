@@ -83,14 +83,4 @@ class ProductRepositoryImp implements ProductRepository {
   Future deleteMarketTheme(String themeId) {
     return productApiService.deleteMarketTheme(themeId);
   }
-
-  @override
-  Future getShipList(String productId) {
-    return productApiService.getShipList(productId);
-  }
-
-  @override
-  Future createShip(String productId, Map<String, dynamic> body) {
-    return productApiService.createShip(productId, body);
-  }
 }
