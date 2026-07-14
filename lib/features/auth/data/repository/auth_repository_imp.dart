@@ -15,4 +15,7 @@ class AuthRepositoryImp implements AuthRepository {
   Future<dynamic> verifyCode(String number, String code) {
     return authApiService.verifyUser(number, code);
   }
+
+  @override
+  Future<dynamic> logout() => authApiService.logout();
 }

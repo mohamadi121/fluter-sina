@@ -10,6 +10,8 @@ class ChatRoomModel {
   final bool isOnline;
   final String? lastMessage;
   final DateTime? lastMessageAt;
+  final String? currentUserRole;
+  final Map<String, bool> capabilities;
 
   const ChatRoomModel({
     required this.id,
@@ -22,6 +24,8 @@ class ChatRoomModel {
     this.isOnline = false,
     this.lastMessage,
     this.lastMessageAt,
+    this.currentUserRole,
+    this.capabilities = const {},
   });
 
   factory ChatRoomModel.fromJson(Map<String, dynamic> json) {
@@ -40,8 +44,19 @@ class ChatRoomModel {
               ? lastMessage['content']?.toString()
               : lastMessage?.toString(),
       lastMessageAt: _asDate(json['last_message_at']),
+      currentUserRole: json['current_user_role']?.toString(),
+      capabilities:
+          json['capabilities'] is Map
+              ? Map<String, bool>.from(
+                (json['capabilities'] as Map).map(
+                  (key, value) => MapEntry(key.toString(), value == true),
+                ),
+              )
+              : const {},
     );
   }
+
+  bool capability(String name) => capabilities[name] == true;
 
   static int? _asInt(dynamic v) {
     if (v is int) return v;

@@ -29,13 +29,20 @@ void main() {
   test('load maps dashboard data', () async {
     api.dashboardRes = Success(
       code: 200,
-      response: {'total_orders': 12, 'total_revenue': '450000'},
+      response: {
+        'paid_orders': 12,
+        'gross_revenue': '450000.000',
+        'refunds_deducted': false,
+        'gross_revenue_disclaimer':
+            'Gross paid revenue; refunds are not deducted.',
+      },
     );
 
     await cubit.load();
 
     expect(cubit.state.status, AnalyticsStatus.loaded);
-    expect(cubit.state.data['total_orders'], 12);
+    expect(cubit.state.data['paid_orders'], 12);
+    expect(cubit.state.data['refunds_deducted'], isFalse);
   });
 
   test('failure surfaces detail', () async {

@@ -214,7 +214,7 @@ class _WalletScreenContent extends StatelessWidget {
     final walletId = walletState.wallet.id;
 
     final controller = TextEditingController();
-    final amount = await showDialog<double>(
+    final amount = await showDialog<int>(
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
@@ -231,7 +231,7 @@ class _WalletScreenContent extends StatelessWidget {
             ),
             TextButton(
               onPressed: () {
-                final value = double.tryParse(controller.text.trim());
+                final value = int.tryParse(controller.text.trim());
                 Navigator.of(dialogContext).pop(value);
               },
               child: const Text('پرداخت'),

@@ -69,6 +69,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   Future<void> _logout(Logout event, Emitter<AuthState> emit) async {
+    try {
+      await authRepository.logout();
+    } catch (_) {
+      // Local logout must remain available during a network outage. The
+      // server token expires independently and no credential is logged.
+    }
     await authSession.clear();
     emit(AuthState.initial());
   }

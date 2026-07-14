@@ -21,7 +21,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:iconsax/iconsax.dart';
 import 'package:shimmer/shimmer.dart';
 
 class MarketPreviewScreen extends StatefulWidget {
@@ -670,7 +669,7 @@ class _MarketPreviewScreenState extends State<MarketPreviewScreen> {
                                     }
                                   },
                                   child: Icon(
-                                    Iconsax.share5,
+                                    Icons.share,
                                     color: state.fontColor,
                                     size: Dimensions.width * 0.055,
                                   ),
@@ -1276,17 +1275,17 @@ productView(
 //                                             CrossAxisAlignment.center,
 //                                         children: [
 //                                           Icon(
-//                                             Iconsax.eye,
+//                                             Icons.visibility,
 //                                             // Icons.visibility,
 //                                             color: styleState.fontColor,
 //                                           ),
 //                                           Icon(
-//                                             Iconsax.trash,
+//                                             Icons.delete,
 //                                             // Icons.delete,
 //                                             color: styleState.fontColor,
 //                                           ),
 //                                           Icon(
-//                                             Iconsax.setting,
+//                                             Icons.settings,
 //                                             // Icons.settings,
 //                                             color: styleState.fontColor,
 //                                           ),

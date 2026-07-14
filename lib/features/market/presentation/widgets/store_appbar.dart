@@ -11,7 +11,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:iconsax/iconsax.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -1129,7 +1128,7 @@ class _StoreAppbar2State extends State<StoreAppbar2> {
                                   ),
                                 ),
                                 child: Icon(
-                                  Iconsax.edit5,
+                                  Icons.edit,
                                   // Icons.edit_rounded,
                                   color: widget.fontColor!,
                                   size: Dimensions.width * 0.05,
@@ -1184,7 +1183,7 @@ class _StoreAppbar2State extends State<StoreAppbar2> {
                         border: Border.all(color: widget.mainColor!, width: 2),
                       ),
                       child: Icon(
-                        Iconsax.edit5,
+                        Icons.edit,
                         // Icons.edit_rounded,
                         color: widget.fontColor!,
                         size: Dimensions.width * 0.05,

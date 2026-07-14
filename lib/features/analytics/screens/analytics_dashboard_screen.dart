@@ -17,7 +17,6 @@ class AnalyticsDashboardScreen extends StatefulWidget {
 
 class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen> {
   late final AnalyticsCubit _cubit;
-  final _formatter = NumberFormat('#,###');
 
   @override
   void initState() {
@@ -49,73 +48,150 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen> {
             case AnalyticsStatus.failure:
               return Center(child: Text(state.error ?? 'خطا در دریافت آمار'));
             case AnalyticsStatus.loaded:
-              final d = state.data;
-              return RefreshIndicator(
-                onRefresh: _cubit.load,
-                child: GridView.count(
-                  padding: const EdgeInsets.all(12),
-                  crossAxisCount: 2,
-                  childAspectRatio: 1.4,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                  children: [
-                    _tile('سفارش‌ها', _num(d['total_orders'])),
-                    _tile('درآمد', '${_num(d['total_revenue'])} ت'),
-                    _tile('کاربران', _num(d['total_users'])),
-                    _tile('کاربران فعال', _num(d['active_users'])),
-                    _tile('محصولات فروخته‌شده', _num(d['products_sold'])),
-                    _tile('نرخ تبدیل', '${_pct(d['conversion_rate'])}٪'),
-                    _tile('میانگین سفارش', '${_num(d['avg_order_value'])} ت'),
-                    _tile('بازارها', _num(d['total_markets'])),
-                  ],
-                ),
-              );
+              return _DashboardBody(data: state.data, onRefresh: _cubit.load);
           }
         },
       ),
     );
   }
+}
 
-  String _num(dynamic v) {
-    if (v is num) return _formatter.format(v);
-    if (v is String) {
-      final parsed = num.tryParse(v);
-      return parsed != null ? _formatter.format(parsed) : v;
-    }
-    return '0';
-  }
+class _DashboardBody extends StatelessWidget {
+  const _DashboardBody({required this.data, required this.onRefresh});
 
-  String _pct(dynamic v) {
-    final n = v is num ? v : num.tryParse('$v') ?? 0;
-    return n.toStringAsFixed(1);
-  }
+  final Map<String, dynamic> data;
+  final Future<void> Function() onRefresh;
 
-  Widget _tile(String label, String value) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colora.lightBlue,
-        borderRadius: BorderRadius.circular(16),
+  @override
+  Widget build(BuildContext context) {
+    final tiles = <({String label, String value})>[
+      (label: 'سفارش‌های پرداخت‌شده', value: _number(data['paid_orders'])),
+      (label: 'درآمد ناخالص', value: '${_number(data['gross_revenue'])} تومان'),
+      (label: 'خریداران یکتا', value: _number(data['unique_buyers'])),
+      (label: 'تعداد فروش', value: _number(data['units_sold'])),
+      (label: 'بازدید محصول', value: _number(data['product_views'])),
+      (label: 'افزودن به سبد', value: _number(data['add_to_cart_count'])),
+      (
+        label: 'بازدیدکنندگان احرازشده',
+        value: _number(data['authenticated_unique_product_viewers']),
       ),
-      padding: const EdgeInsets.all(12),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      (label: 'نرخ تبدیل', value: '${_percent(data['conversion_rate'])}٪'),
+    ];
+
+    return RefreshIndicator(
+      onRefresh: onRefresh,
+      child: ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.all(12),
         children: [
-          Text(
-            value,
-            style: const TextStyle(
-              color: Colora.primaryColor,
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-            ),
+          GrossRevenueDisclaimer(
+            refundsDeducted: data['refunds_deducted'] == true,
           ),
-          const SizedBox(height: 6),
-          Text(
-            label,
-            textAlign: TextAlign.center,
-            style: const TextStyle(color: Colora.primaryColor),
+          const SizedBox(height: 12),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final tileWidth = (constraints.maxWidth - 12) / 2;
+              return Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                children: [
+                  for (final tile in tiles)
+                    SizedBox(
+                      width: tileWidth,
+                      height: 118,
+                      child: _MetricTile(label: tile.label, value: tile.value),
+                    ),
+                ],
+              );
+            },
           ),
         ],
       ),
     );
   }
+}
+
+/// User-visible financial scope. This must stay adjacent to gross revenue.
+class GrossRevenueDisclaimer extends StatelessWidget {
+  const GrossRevenueDisclaimer({super.key, required this.refundsDeducted});
+
+  final bool refundsDeducted;
+
+  @override
+  Widget build(BuildContext context) {
+    if (refundsDeducted) return const SizedBox.shrink();
+    return Container(
+      key: const Key('gross-revenue-refund-disclaimer'),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.amber.shade50,
+        border: Border.all(color: Colors.amber.shade700),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: const Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.info_outline, color: Colors.orange),
+          SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              'درآمد نمایش‌داده‌شده ناخالص و پرداخت‌شده است؛ مبالغ بازپرداخت‌شده از آن کسر نشده است.',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MetricTile extends StatelessWidget {
+  const _MetricTile({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: Colora.lightBlue,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              value,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Colora.primaryColor,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: Colora.primaryColor),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+final _numberFormat = NumberFormat('#,###.###');
+
+String _number(dynamic value) {
+  final number = value is num ? value : num.tryParse('$value');
+  return number == null ? '۰' : _numberFormat.format(number);
+}
+
+String _percent(dynamic value) {
+  final number = value is num ? value : num.tryParse('$value') ?? 0;
+  return number.toStringAsFixed(1);
 }

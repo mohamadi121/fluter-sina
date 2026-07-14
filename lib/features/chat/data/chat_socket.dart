@@ -3,50 +3,48 @@ import 'dart:convert';
 
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-import 'package:asood/core/auth/auth_session.dart';
+import 'package:asood/core/auth/websocket_ticket_api.dart';
 import 'package:asood/core/constants/endpoints.dart';
 import 'package:asood/core/logging/app_logger.dart';
 
 /// Live chat transport over the backend's Channels WebSocket
-/// (`ws/chat/<room_id>/?token=<key>`). Emits decoded server frames and
+/// (`ws/chat/<room_id>/?ticket=<one-use-ticket>`). Emits decoded server frames and
 /// exposes helpers for the client→server frame types the consumer handles.
 class ChatSocket {
-  final AuthSession authSession;
+  final WebSocketTicketApi ticketApi;
 
   WebSocketChannel? _channel;
   StreamController<Map<String, dynamic>>? _controller;
   StreamSubscription? _sub;
 
-  ChatSocket({required this.authSession});
+  ChatSocket({required this.ticketApi});
 
   Stream<Map<String, dynamic>> get frames =>
       _controller?.stream ?? const Stream.empty();
 
   bool get isConnected => _channel != null;
 
-  /// Builds `wss://host/ws/chat/{roomId}/?token={key}` from the REST base URL.
-  Uri _socketUri(String roomId) {
+  Uri _socketUri(WebSocketTicket credentials) {
     final base = Uri.parse(Endpoints.baseUrl); // https://host/api/v1/
     final scheme = base.scheme == 'https' ? 'wss' : 'ws';
-    final token = authSession.token ?? '';
     return Uri(
       scheme: scheme,
       host: base.host,
       port: base.hasPort ? base.port : null,
-      path: '/ws/chat/$roomId/',
-      queryParameters: {'token': token},
+      path: credentials.path,
+      queryParameters: {'ticket': credentials.ticket},
     );
   }
 
-  void connect(String roomId) {
+  Future<void> connect(String roomId) async {
     disconnect();
-    final uri = _socketUri(roomId);
-    AppLogger.info('chat_ws', 'connecting to ${uri.path}');
-
     final controller = StreamController<Map<String, dynamic>>.broadcast();
     _controller = controller;
 
     try {
+      final credentials = await ticketApi.issueChatTicket(roomId);
+      final uri = _socketUri(credentials);
+      AppLogger.info('chat_ws', 'connecting to ${uri.path}');
       final channel = WebSocketChannel.connect(uri);
       _channel = channel;
       _sub = channel.stream.listen(

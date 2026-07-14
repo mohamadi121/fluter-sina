@@ -7,9 +7,10 @@ import 'package:asood/core/constants/endpoints.dart';
 import 'package:asood/core/logging/app_logger.dart';
 import 'package:asood/core/widgets/appbar/default_appbar.dart';
 import 'package:asood/features/payment/presentation/bloc/payment_bloc.dart';
+import 'package:asood/core/money/money.dart';
 
 class PaymentScreen extends StatelessWidget {
-  final double amount;
+  final int amount;
   final String targetContent;
   final String targetId;
 
@@ -34,7 +35,7 @@ class PaymentScreen extends StatelessWidget {
 }
 
 class _PaymentScreenContent extends StatefulWidget {
-  final double amount;
+  final int amount;
   final String targetContent;
   final String targetId;
 
@@ -230,7 +231,7 @@ class _PaymentScreenContentState extends State<_PaymentScreenContent> {
                 : () {
                   context.read<PaymentBloc>().add(
                     CreatePayment({
-                      'amount': widget.amount,
+                      'amount': encodeWholeMoney(widget.amount),
                       'target': widget.targetContent,
                       'target_id': widget.targetId,
                       'gateway': selectedGateway,

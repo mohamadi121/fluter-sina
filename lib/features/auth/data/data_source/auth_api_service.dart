@@ -6,7 +6,7 @@ import 'package:asood/core/http_client/api_status.dart';
 
 /// Auth against the backend's pin flow (DRF TokenAuthentication).
 /// `pin/verify/` returns `data: {token: <key>}`; there is no refresh token
-/// and no server-side logout endpoint. Token persistence lives in
+/// and a server-side logout endpoint. Token persistence lives in
 /// AuthSession, not here.
 class AuthApiService {
   final DioClient dioClient;
@@ -36,6 +36,15 @@ class AuthApiService {
         body,
         headers: Endpoints.simpleHeader,
       );
+      return apiStatus(res);
+    } catch (e) {
+      return apiFailure(e);
+    }
+  }
+
+  Future logout() async {
+    try {
+      final Response res = await dioClient.postData(Endpoints.logout, {});
       return apiStatus(res);
     } catch (e) {
       return apiFailure(e);

@@ -19,7 +19,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:iconsax/iconsax.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -335,7 +334,7 @@ class _StoreDetailScreenState extends State<StoreDetailScreen> {
                                                 )
                                                 : preview == ''
                                                 ? Icon(
-                                                  Iconsax.gallery_add5,
+                                                  Icons.add_photo_alternate,
                                                   // Icons.add_photo_alternate_rounded,
                                                   color: Colora.primaryColor,
                                                   size: Dimensions.width * 0.1,
@@ -947,9 +946,8 @@ class _StoreDetailScreenState extends State<StoreDetailScreen> {
                                                                     Alignment
                                                                         .bottomLeft,
                                                                 child: Icon(
-                                                                  Iconsax
-                                                                      .gallery_add5,
-                                                                  // Icons.add_photo_alternate_rounded,
+                                                                  Icons
+                                                                      .add_photo_alternate,
                                                                   color:
                                                                       state
                                                                           .topColor,

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:iconsax/iconsax.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:asood/core/constants/constants.dart';
@@ -31,21 +30,21 @@ const Map<String, List<Map<String, Object>>> dashboardMenuConfig = {
   'secondMenu': [
     {
       'title': 'امور مالی',
-      'image': Icon(Iconsax.bank, size: 60, color: Colors.white),
+      'image': Icon(Icons.account_balance, size: 60, color: Colors.white),
       'page': AppRoutes.finance,
     },
     {
       'title': 'رهیابی خرید',
-      'image': Icon(Iconsax.buy_crypto5, size: 60, color: Colors.white),
+      'image': Icon(Icons.shopping_bag, size: 60, color: Colors.white),
       'page': AppRoutes.customerDashboard,
     },
     {
       'title': 'اشتراک گذاری',
-      'image': Icon(Iconsax.share5, size: 60, color: Colors.white),
+      'image': Icon(Icons.share, size: 60, color: Colors.white),
     },
     {
       'title': 'علاقه مندی',
-      'image': Icon(Iconsax.heart5, size: 60, color: Colors.white),
+      'image': Icon(Icons.favorite, size: 60, color: Colors.white),
       'page': AppRoutes.bookmarks,
     },
   ],

@@ -60,9 +60,10 @@ class ChatRoomBloc extends Bloc<ChatRoomEvent, ChatRoomState> {
     );
 
     // Open the live socket and pipe frames back in as events.
-    socket.connect(event.roomId);
+    final connect = socket.connect(event.roomId);
     _frameSub?.cancel();
     _frameSub = socket.frames.listen((frame) => add(FrameReceived(frame)));
+    await connect;
   }
 
   Future<void> _onLoadMore(
@@ -167,6 +168,22 @@ class ChatRoomBloc extends Bloc<ChatRoomEvent, ChatRoomState> {
       case 'socket_closed':
       case 'socket_error':
         emit(state.copyWith(connection: ChatConnection.offline));
+        break;
+      case 'membership_updated':
+        if (_asInt(frame['user_id']) == state.currentUserId) {
+          emit(state.copyWith(currentUserRole: frame['role']?.toString()));
+        }
+        break;
+      case 'membership_revoked':
+        socket.disconnect();
+        emit(
+          state.copyWith(
+            status: ChatRoomStatus.failure,
+            connection: ChatConnection.offline,
+            accessRevoked: true,
+            error: 'دسترسی شما به این گفتگو لغو شده است.',
+          ),
+        );
         break;
       default:
         break;

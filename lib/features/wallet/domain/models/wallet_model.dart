@@ -1,6 +1,8 @@
+import 'package:asood/core/money/money.dart';
+
 class WalletModel {
   final String id;
-  final double balance;
+  final int balance;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
@@ -14,7 +16,7 @@ class WalletModel {
   factory WalletModel.fromJson(Map<String, dynamic> json) {
     return WalletModel(
       id: json['id']?.toString() ?? '',
-      balance: (json['balance'] ?? 0.0).toDouble(),
+      balance: parseWholeMoney(json['balance'] ?? 0),
       createdAt:
           json['created_at'] != null
               ? DateTime.parse(json['created_at'])
@@ -29,7 +31,7 @@ class WalletModel {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'balance': balance,
+      'balance': encodeWholeMoney(balance),
       'created_at': createdAt?.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
     };
@@ -39,7 +41,7 @@ class WalletModel {
 class TransactionModel {
   final String id;
   final String type;
-  final double amount;
+  final int amount;
   final String? description;
   final DateTime createdAt;
   final String? targetContent;
@@ -58,8 +60,8 @@ class TransactionModel {
   factory TransactionModel.fromJson(Map<String, dynamic> json) {
     return TransactionModel(
       id: json['id']?.toString() ?? '',
-      type: json['type']?.toString() ?? '',
-      amount: (json['amount'] ?? 0.0).toDouble(),
+      type: (json['action'] ?? json['type'])?.toString() ?? '',
+      amount: parseWholeMoney(json['amount'] ?? 0),
       description: json['description']?.toString(),
       createdAt:
           json['created_at'] != null
@@ -73,8 +75,8 @@ class TransactionModel {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'type': type,
-      'amount': amount,
+      'action': type,
+      'amount': encodeWholeMoney(amount),
       'description': description,
       'created_at': createdAt.toIso8601String(),
       'target_content': targetContent,

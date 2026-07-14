@@ -14,6 +14,8 @@ class Endpoints {
 
   static String loginCreate = "user/pin/create/";
   static String loginVerify = 'user/pin/verify/';
+  static String logout = 'user/logout/';
+  static String webSocketTicket = 'user/ws-ticket/';
 
   /// user
   static String userAdvertise = "advertisements/";

@@ -10,6 +10,8 @@ import '../../core/auth/in_memory_token_storage.dart';
 class _FakeAuthRepository implements AuthRepository {
   dynamic sendCodeResult;
   dynamic verifyCodeResult;
+  dynamic logoutResult;
+  bool logoutCalled = false;
 
   @override
   Future<dynamic> sendCode(String number) async => sendCodeResult;
@@ -17,6 +19,12 @@ class _FakeAuthRepository implements AuthRepository {
   @override
   Future<dynamic> verifyCode(String number, String code) async =>
       verifyCodeResult;
+
+  @override
+  Future<dynamic> logout() async {
+    logoutCalled = true;
+    return logoutResult;
+  }
 }
 
 void main() {
@@ -109,6 +117,7 @@ void main() {
 
   test('Logout clears session and resets state', () async {
     await session.setToken('tok');
+    repository.logoutResult = Success(code: 204);
 
     bloc.add(Logout());
 
@@ -117,5 +126,6 @@ void main() {
       emits(AuthStatus.initial),
     );
     expect(session.isAuthenticated, isFalse);
+    expect(repository.logoutCalled, isTrue);
   });
 }

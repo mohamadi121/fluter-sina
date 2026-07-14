@@ -113,8 +113,7 @@ class _WeekdayOpentimeState extends State<WeekdayOpentime> {
                         _buildTimeRow(
                           _timeRanges[day]![0],
                           _timeRanges[day]![1],
-                          (from) =>
-                              setState(() => _timeRanges[day]![0] = from),
+                          (from) => setState(() => _timeRanges[day]![0] = from),
                           (to) {
                             if (_isToAfterFrom(_timeRanges[day]![0], to)) {
                               setState(() => _timeRanges[day]![1] = to);

@@ -6,6 +6,7 @@ import 'package:asood/core/widgets/appbar/default_appbar.dart';
 import 'package:asood/features/chat/blocs/chat_list_cubit.dart';
 import 'package:asood/features/chat/data/models/chat_room_model.dart';
 import 'package:asood/features/chat/screens/chat_page.dart';
+import 'package:asood/features/chat/screens/create_group_screen.dart';
 import 'package:asood/features/chat/screens/support_tickets_screen.dart';
 import 'package:asood/locator.dart';
 
@@ -37,19 +38,47 @@ class _ChatListState extends State<ChatList> {
       color: Colora.primaryColor,
       child: SafeArea(
         child: Scaffold(
-          floatingActionButton: FloatingActionButton.extended(
-            backgroundColor: Colora.primaryColor,
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const SupportTicketsScreen()),
-              );
-            },
-            icon: const Icon(Icons.support_agent, color: Colors.white),
-            label: const Text(
-              'پشتیبانی',
-              style: TextStyle(color: Colors.white),
-            ),
+          floatingActionButton: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              FloatingActionButton.extended(
+                heroTag: 'create-chat-group',
+                backgroundColor: Colora.primaryColor,
+                onPressed: () async {
+                  final room = await Navigator.push<ChatRoomModel>(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const CreateGroupScreen(),
+                    ),
+                  );
+                  if (room != null) await _cubit.load();
+                },
+                icon: const Icon(Icons.group_add, color: Colors.white),
+                label: const Text(
+                  'گروه جدید',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+              const SizedBox(height: 8),
+              FloatingActionButton.extended(
+                heroTag: 'chat-support',
+                backgroundColor: Colora.primaryColor,
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const SupportTicketsScreen(),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.support_agent, color: Colors.white),
+                label: const Text(
+                  'پشتیبانی',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
           ),
           body: Stack(
             children: [
@@ -78,8 +107,10 @@ class _ChatListState extends State<ChatList> {
                           child: ListView.builder(
                             itemCount: state.rooms.length,
                             itemBuilder:
-                                (context, index) =>
-                                    _RoomTile(room: state.rooms[index]),
+                                (context, index) => _RoomTile(
+                                  room: state.rooms[index],
+                                  onChanged: _cubit.load,
+                                ),
                           ),
                         );
                     }
@@ -96,22 +127,29 @@ class _ChatListState extends State<ChatList> {
 }
 
 class _RoomTile extends StatelessWidget {
-  const _RoomTile({required this.room});
+  const _RoomTile({required this.room, required this.onChanged});
 
   final ChatRoomModel room;
+  final Future<void> Function() onChanged;
 
   @override
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       child: ListTile(
-        onTap: () {
-          Navigator.push(
+        onTap: () async {
+          final changed = await Navigator.push<bool>(
             context,
             MaterialPageRoute(
-              builder: (_) => ChatPage(roomId: room.id, roomName: room.name),
+              builder:
+                  (_) => ChatPage(
+                    roomId: room.id,
+                    roomName: room.name,
+                    room: room,
+                  ),
             ),
           );
+          if (changed == true) await onChanged();
         },
         leading: CircleAvatar(
           backgroundColor: Colora.primaryColor,

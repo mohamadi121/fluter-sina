@@ -2,14 +2,18 @@ import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:asood/core/auth/auth_session.dart';
+import 'package:asood/core/auth/websocket_ticket_api.dart';
 import 'package:asood/core/http_client/api_status.dart';
 import 'package:asood/features/chat/blocs/chat_room_bloc.dart';
 import 'package:asood/features/chat/data/chat_api_service.dart';
 import 'package:asood/features/chat/data/chat_repository.dart';
 import 'package:asood/features/chat/data/chat_socket.dart';
 
-import '../../core/auth/in_memory_token_storage.dart';
+class _UnusedTicketApi implements WebSocketTicketApi {
+  @override
+  dynamic noSuchMethod(Invocation invocation) =>
+      throw UnimplementedError('${invocation.memberName}');
+}
 
 class _FakeChatApi implements ChatApiService {
   dynamic messagesRes;
@@ -36,7 +40,7 @@ class _FakeChatApi implements ChatApiService {
 }
 
 class _FakeSocket extends ChatSocket {
-  _FakeSocket() : super(authSession: AuthSession(InMemoryTokenStorage(null)));
+  _FakeSocket() : super(ticketApi: _UnusedTicketApi());
 
   final _controller = StreamController<Map<String, dynamic>>.broadcast();
   bool connected = false;
@@ -49,7 +53,7 @@ class _FakeSocket extends ChatSocket {
   bool get isConnected => connected;
 
   @override
-  void connect(String roomId) => connected = true;
+  Future<void> connect(String roomId) async => connected = true;
 
   @override
   void sendMessage(String content, {String messageType = 'text'}) =>
@@ -152,6 +156,37 @@ void main() {
     socket.emitFrame({'type': 'socket_closed'});
     await pumpEventQueue();
 
+    expect(bloc.state.connection, ChatConnection.offline);
+  });
+
+  test('membership role update is applied to current user', () async {
+    api.messagesRes = emptyHistory();
+    bloc.add(const LoadRoom('r1'));
+    await pumpEventQueue();
+    socket.emitFrame({'type': 'connection_established', 'user_id': 5});
+    await pumpEventQueue();
+
+    socket.emitFrame({
+      'type': 'membership_updated',
+      'user_id': 5,
+      'role': 'admin',
+    });
+    await pumpEventQueue();
+
+    expect(bloc.state.currentUserRole, 'admin');
+  });
+
+  test('membership revocation closes socket and fails the room', () async {
+    api.messagesRes = emptyHistory();
+    bloc.add(const LoadRoom('r1'));
+    await pumpEventQueue();
+
+    socket.emitFrame({'type': 'membership_revoked'});
+    await pumpEventQueue();
+
+    expect(socket.connected, isFalse);
+    expect(bloc.state.accessRevoked, isTrue);
+    expect(bloc.state.status, ChatRoomStatus.failure);
     expect(bloc.state.connection, ChatConnection.offline);
   });
 

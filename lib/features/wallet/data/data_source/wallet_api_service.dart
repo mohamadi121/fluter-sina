@@ -1,5 +1,6 @@
 import 'package:asood/core/http_client/api_client.dart';
 import 'package:asood/core/http_client/api_status.dart';
+import 'package:asood/core/money/money.dart';
 
 class WalletApiService {
   final DioClient dioClient;
@@ -15,10 +16,10 @@ class WalletApiService {
     }
   }
 
-  Future checkBalance(double amount) async {
+  Future checkBalance(int amount) async {
     try {
       final res = await dioClient.postData('wallet/balance/check/', {
-        'amount': amount,
+        'amount': encodeWholeMoney(amount),
       });
       return apiStatus(res);
     } catch (e) {

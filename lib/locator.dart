@@ -29,6 +29,7 @@ import 'package:get_it/get_it.dart';
 
 import 'package:asood/core/auth/auth_session.dart';
 import 'package:asood/core/auth/token_storage.dart';
+import 'package:asood/core/auth/websocket_ticket_api.dart';
 import 'package:asood/core/constants/endpoints.dart';
 import 'package:asood/core/http_client/api_client.dart';
 import 'package:asood/features/auth/data/data_source/auth_api_service.dart';
@@ -76,6 +77,9 @@ locatorSetup() async {
       appBaseUrl: Endpoints.baseUrl,
       authSession: locator<AuthSession>(),
     ),
+  );
+  locator.registerFactory(
+    () => WebSocketTicketApi(dioClient: locator<DioClient>()),
   );
 
   /// Api Services
@@ -142,7 +146,7 @@ locatorSetup() async {
   locator.registerFactory(() => BankInfoCubit(api: locator<BankApiService>()));
   // Fresh socket per room (each ChatRoomBloc owns and closes one).
   locator.registerFactory(
-    () => ChatSocket(authSession: locator<AuthSession>()),
+    () => ChatSocket(ticketApi: locator<WebSocketTicketApi>()),
   );
   locator.registerFactory(
     () => DiscountApiService(dioClient: locator<DioClient>()),

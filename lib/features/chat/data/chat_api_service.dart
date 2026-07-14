@@ -73,4 +73,78 @@ class ChatApiService {
       return apiFailure(e);
     }
   }
+
+  Future participants(String roomId) async {
+    try {
+      final Response res = await dioClient.getData(
+        'chat/rooms/$roomId/participants/',
+      );
+      return apiStatus(res);
+    } catch (e) {
+      return apiFailure(e);
+    }
+  }
+
+  Future addParticipant(
+    String roomId, {
+    required String mobileNumber,
+    String role = 'member',
+  }) async {
+    try {
+      final Response res = await dioClient.postData(
+        'chat/rooms/$roomId/participants/',
+        {'mobile_number': mobileNumber, 'role': role},
+      );
+      return apiStatus(res);
+    } catch (e) {
+      return apiFailure(e);
+    }
+  }
+
+  Future changeParticipantRole(String roomId, int userId, String role) async {
+    try {
+      final Response res = await dioClient.patchData(
+        'chat/rooms/$roomId/participants/$userId/',
+        {'role': role},
+      );
+      return apiStatus(res);
+    } catch (e) {
+      return apiFailure(e);
+    }
+  }
+
+  Future removeParticipant(String roomId, int userId) async {
+    try {
+      final Response res = await dioClient.deleteData(
+        'chat/rooms/$roomId/participants/$userId/',
+      );
+      return apiStatus(res);
+    } catch (e) {
+      return apiFailure(e);
+    }
+  }
+
+  Future leaveRoom(String roomId) async {
+    try {
+      final Response res = await dioClient.postData(
+        'chat/rooms/$roomId/leave/',
+        {},
+      );
+      return apiStatus(res);
+    } catch (e) {
+      return apiFailure(e);
+    }
+  }
+
+  Future transferOwnership(String roomId, int userId) async {
+    try {
+      final Response res = await dioClient.postData(
+        'chat/rooms/$roomId/transfer-ownership/',
+        {'user_id': userId},
+      );
+      return apiStatus(res);
+    } catch (e) {
+      return apiFailure(e);
+    }
+  }
 }

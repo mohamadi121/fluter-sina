@@ -50,9 +50,18 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: 3.44.4
+          flutter-version: 3.44.0
           channel: stable
           cache: true
+
+      - name: Verify tag and pubspec versions match
+        run: |
+          PUBSPEC_VERSION="$(sed -n 's/^version:[[:space:]]*//p' pubspec.yaml | tr -d '\r')"
+          PUBSPEC_NAME="${PUBSPEC_VERSION%%+*}"
+          if [ "$PUBSPEC_NAME" != "${{ steps.version.outputs.version_name }}" ]; then
+            echo "::error::pubspec version $PUBSPEC_NAME does not match release version ${{ steps.version.outputs.version_name }}"
+            exit 1
+          fi
 
       - name: Install dependencies
         run: flutter pub get
@@ -95,7 +104,7 @@ jobs:
           gh release create "${{ steps.version.outputs.tag }}" \
             "dist/asood-${{ steps.version.outputs.version_name }}.apk" \
             --title "Asood ${{ steps.version.outputs.version_name }}" \
-            --notes "Automated release build for ${{ steps.version.outputs.tag }}. Download the APK below." \
+            --generate-notes \
             --target "${{ github.sha }}" || \
           gh release upload "${{ steps.version.outputs.tag }}" \
             "dist/asood-${{ steps.version.outputs.version_name }}.apk" --clobber

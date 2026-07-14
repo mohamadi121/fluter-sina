@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:go_router/go_router.dart';
-import 'package:iconsax/iconsax.dart';
 
 class CustomBottomNavigationBar extends StatefulWidget {
   final String? marketId;
@@ -165,7 +164,7 @@ void showBottomSheet(
                     context.push(AppRoutes.chatList);
                   },
                   icon: const Icon(
-                    Iconsax.message5,
+                    Icons.message,
                     // Icons.messenger_outline,
                     color: Colors.white,
                   ),
@@ -182,7 +181,7 @@ void showBottomSheet(
                     context.push(AppRoutes.shoppingCart);
                   },
                   icon: const Icon(
-                    Iconsax.shopping_cart5,
+                    Icons.shopping_cart,
                     // Icons.shopping_cart_rounded,
                     color: Colors.white,
                   ),

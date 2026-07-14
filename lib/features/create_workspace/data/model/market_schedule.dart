@@ -21,11 +21,6 @@ class MarketScheduleModel {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'market': market,
-      'day': day,
-      'start': start,
-      'end': end,
-    };
+    return {'market': market, 'day': day, 'start': start, 'end': end};
   }
 }

@@ -1,6 +1,8 @@
+import 'package:asood/core/money/money.dart';
+
 class PaymentModel {
   final String id;
-  final double amount;
+  final int amount;
   final String status;
   final String? gateway;
   final String? targetContent;
@@ -26,7 +28,7 @@ class PaymentModel {
   factory PaymentModel.fromJson(Map<String, dynamic> json) {
     return PaymentModel(
       id: json['id']?.toString() ?? '',
-      amount: (json['amount'] ?? 0.0).toDouble(),
+      amount: parseWholeMoney(json['amount'] ?? 0),
       status: json['status']?.toString() ?? '',
       gateway: json['gateway']?.toString(),
       targetContent: json['target_content']?.toString(),
@@ -47,7 +49,7 @@ class PaymentModel {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'amount': amount,
+      'amount': encodeWholeMoney(amount),
       'status': status,
       'gateway': gateway,
       'target_content': targetContent,

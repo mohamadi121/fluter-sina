@@ -15,6 +15,8 @@ class ChatRoomState extends Equatable {
   final bool sending;
   final bool otherTyping;
   final int? currentUserId;
+  final String? currentUserRole;
+  final bool accessRevoked;
   final String? error;
 
   const ChatRoomState({
@@ -28,6 +30,8 @@ class ChatRoomState extends Equatable {
     this.sending = false,
     this.otherTyping = false,
     this.currentUserId,
+    this.currentUserRole,
+    this.accessRevoked = false,
     this.error,
   });
 
@@ -42,6 +46,8 @@ class ChatRoomState extends Equatable {
     bool? sending,
     bool? otherTyping,
     int? currentUserId,
+    String? currentUserRole,
+    bool? accessRevoked,
     String? error,
   }) {
     return ChatRoomState(
@@ -55,6 +61,8 @@ class ChatRoomState extends Equatable {
       sending: sending ?? this.sending,
       otherTyping: otherTyping ?? this.otherTyping,
       currentUserId: currentUserId ?? this.currentUserId,
+      currentUserRole: currentUserRole ?? this.currentUserRole,
+      accessRevoked: accessRevoked ?? this.accessRevoked,
       error: error,
     );
   }
@@ -71,6 +79,8 @@ class ChatRoomState extends Equatable {
     sending,
     otherTyping,
     currentUserId,
+    currentUserRole,
+    accessRevoked,
     error,
   ];
 }

@@ -12,7 +12,7 @@ class LoadWalletBalance extends WalletEvent {
 }
 
 class CheckWalletBalance extends WalletEvent {
-  final double amount;
+  final int amount;
 
   const CheckWalletBalance(this.amount);
 

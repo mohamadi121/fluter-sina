@@ -7,13 +7,21 @@ import 'package:asood/features/chat/blocs/chat_room_bloc.dart';
 import 'package:asood/features/chat/data/chat_repository.dart';
 import 'package:asood/features/chat/data/chat_socket.dart';
 import 'package:asood/features/chat/data/models/chat_message_model.dart';
+import 'package:asood/features/chat/data/models/chat_room_model.dart';
+import 'package:asood/features/chat/screens/chat_members_screen.dart';
 import 'package:asood/locator.dart';
 
 class ChatPage extends StatefulWidget {
-  const ChatPage({super.key, required this.roomId, required this.roomName});
+  const ChatPage({
+    super.key,
+    required this.roomId,
+    required this.roomName,
+    this.room,
+  });
 
   final String roomId;
   final String roomName;
+  final ChatRoomModel? room;
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -83,17 +91,38 @@ class _ChatPageState extends State<ChatPage> {
             );
           },
         ),
+        actions: [
+          if (widget.room?.roomType == 'group')
+            IconButton(
+              tooltip: 'اعضای گفتگو',
+              icon: const Icon(Icons.group),
+              onPressed: () async {
+                final changed = await Navigator.push<bool>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => ChatMembersScreen(room: widget.room!),
+                  ),
+                );
+                if (!context.mounted) return;
+                if (changed == true) Navigator.pop(context, true);
+              },
+            ),
+        ],
       ),
       body: Column(
         children: [
           Expanded(
             child: BlocConsumer<ChatRoomBloc, ChatRoomState>(
               bloc: _bloc,
-              listenWhen: (a, b) => a.error != b.error && b.error != null,
+              listenWhen:
+                  (a, b) =>
+                      (a.error != b.error && b.error != null) ||
+                      (!a.accessRevoked && b.accessRevoked),
               listener: (context, state) {
                 ScaffoldMessenger.of(
                   context,
                 ).showSnackBar(SnackBar(content: Text(state.error!)));
+                if (state.accessRevoked) Navigator.pop(context, true);
               },
               builder: (context, state) {
                 if (state.status == ChatRoomStatus.loading ||

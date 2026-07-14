@@ -19,4 +19,26 @@ class ChatRepository {
   }) => api.sendMessage(roomId: roomId, content: content);
 
   Future<dynamic> markAsRead(String messageId) => api.markAsRead(messageId);
+
+  Future<dynamic> participants(String roomId) => api.participants(roomId);
+
+  Future<dynamic> addParticipant(
+    String roomId, {
+    required String mobileNumber,
+    String role = 'member',
+  }) => api.addParticipant(roomId, mobileNumber: mobileNumber, role: role);
+
+  Future<dynamic> changeParticipantRole(
+    String roomId,
+    int userId,
+    String role,
+  ) => api.changeParticipantRole(roomId, userId, role);
+
+  Future<dynamic> removeParticipant(String roomId, int userId) =>
+      api.removeParticipant(roomId, userId);
+
+  Future<dynamic> leaveRoom(String roomId) => api.leaveRoom(roomId);
+
+  Future<dynamic> transferOwnership(String roomId, int userId) =>
+      api.transferOwnership(roomId, userId);
 }

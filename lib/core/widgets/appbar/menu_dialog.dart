@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:asood/core/auth/auth_session.dart';
 import 'package:asood/core/router/app_routers.dart';
-import 'package:asood/locator.dart';
+import 'package:asood/features/auth/presentation/blocs/auth_bloc.dart';
 
 class MenuDialog extends StatelessWidget {
   const MenuDialog({super.key});
@@ -14,9 +14,10 @@ class MenuDialog extends StatelessWidget {
     router.push(route);
   }
 
-  Future<void> _logout(BuildContext context) async {
+  void _logout(BuildContext context) {
+    final authBloc = context.read<AuthBloc>();
     Navigator.of(context).pop();
-    await locator<AuthSession>().clear();
+    authBloc.add(Logout());
   }
 
   @override
